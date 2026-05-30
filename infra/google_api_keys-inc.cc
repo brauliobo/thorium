@@ -44,7 +44,7 @@
 #define DUMMY_API_TOKEN "dummytoken"
 
 #if !defined(GOOGLE_API_KEY)
-#define GOOGLE_API_KEY "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+#define GOOGLE_API_KEY DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_METRICS_SIGNING_KEY)
@@ -52,26 +52,24 @@
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_MAIN)
-#define GOOGLE_CLIENT_ID_MAIN "77185425430.apps.googleusercontent.com"
+#define GOOGLE_CLIENT_ID_MAIN DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_CLIENT_SECRET_MAIN)
-#define GOOGLE_CLIENT_SECRET_MAIN "OTJgUOQcT7lO7GsGZq2G4IlT"
+#define GOOGLE_CLIENT_SECRET_MAIN DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_REMOTING)
-#define GOOGLE_CLIENT_ID_REMOTING "440925447803-avn2sj1kc099s0r7v62je5s339mu0am1.apps.googleusercontent.com"
+#define GOOGLE_CLIENT_ID_REMOTING DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_CLIENT_SECRET_REMOTING)
-#define GOOGLE_CLIENT_SECRET_REMOTING "Bgur6DFiOMM1h8x-AQpuTQlK"
+#define GOOGLE_CLIENT_SECRET_REMOTING DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_REMOTING_HOST)
 #define GOOGLE_CLIENT_ID_REMOTING_HOST DUMMY_API_TOKEN
 #endif
-
-check on untracked files like this one
 
 #if !defined(GOOGLE_CLIENT_SECRET_REMOTING_HOST)
 #define GOOGLE_CLIENT_SECRET_REMOTING_HOST DUMMY_API_TOKEN
@@ -89,7 +87,7 @@ check on untracked files like this one
 
 // API key for the Speech On-Device API (SODA).
 #if !defined(GOOGLE_API_KEY_SODA)
-#define GOOGLE_API_KEY_SODA "ce04d119-129f-404e-b4fe-6b913fffb6cb"
+#define GOOGLE_API_KEY_SODA DUMMY_API_TOKEN
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -122,13 +120,13 @@ check on untracked files like this one
 // IDs and secrets above that have not been set (and only those; they
 // will not override already-set values).
 #if !defined(GOOGLE_DEFAULT_API_KEY)
-#define GOOGLE_DEFAULT_API_KEY "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
+#define GOOGLE_DEFAULT_API_KEY DUMMY_API_TOKEN
 #endif
 #if !defined(GOOGLE_DEFAULT_CLIENT_ID)
-#define GOOGLE_DEFAULT_CLIENT_ID "77185425430.apps.googleusercontent.com"
+#define GOOGLE_DEFAULT_CLIENT_ID ""
 #endif
 #if !defined(GOOGLE_DEFAULT_CLIENT_SECRET)
-#define GOOGLE_DEFAULT_CLIENT_SECRET "OTJgUOQcT7lO7GsGZq2G4IlT"
+#define GOOGLE_DEFAULT_CLIENT_SECRET ""
 #endif
 
 namespace google_apis {

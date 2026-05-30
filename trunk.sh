@@ -28,6 +28,7 @@ case $1 in
 esac
 
 # chromium/src dir env variable
+THORIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -35,12 +36,35 @@ else
     CR_SRC_DIR="${CR_DIR}"
     export CR_SRC_DIR
 fi
+CR_ROOT="$(dirname "${CR_SRC_DIR}")"
 
 printf "\n" &&
 printf "${bold}${GRE}Script to Rebase/Sync the Chromium repo.${c0}\n" &&
 printf "\n" &&
 printf "${YEL}Rebasing/Syncing and running hooks...\n" &&
 tput sgr0 &&
+
+if [ ! -d "${CR_SRC_DIR}/.git" ]; then
+    printf "${YEL}Creating Chromium git checkout at ${CR_SRC_DIR}...${c0}\n"
+    mkdir -p "${CR_ROOT}"
+    cd "${CR_ROOT}"
+    if command -v fetch >/dev/null 2>&1; then
+        fetch --nohooks chromium
+    else
+        git clone https://chromium.googlesource.com/chromium/src.git "${CR_SRC_DIR}"
+        cat > "${CR_ROOT}/.gclient" <<EOF
+solutions = [
+  {
+    "name": "src",
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    "managed": False,
+    "custom_deps": {},
+    "custom_vars": {},
+  },
+]
+EOF
+    fi
+fi
 
 cd ${CR_SRC_DIR}/v8/ &&
 
@@ -68,10 +92,6 @@ git clean -ffd &&
 git rebase-update &&
 
 git fetch --tags &&
-
-# Use our artifacts hash
-cd $HOME/thorium &&
-cp -v src/build/vs_toolchain.py ${CR_SRC_DIR}/build/ &&
 cd ${CR_SRC_DIR} &&
 
 printf "${GRE}gclient sync${c0}\n"  &&
@@ -118,6 +138,6 @@ tput sgr0 &&
 #printf "${c7}            Long Live Chromium\041\n${c0}\n" &&
 
 printf "\n" &&
-cat ~/thorium/logos/chromium_logo_ascii_art.txt &&
+cat "${THORIUM_ROOT}/logos/chromium_logo_ascii_art.txt" &&
 printf "\n" &&
 tput sgr0
