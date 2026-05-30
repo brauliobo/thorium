@@ -45,6 +45,7 @@ case $1 in
 esac
 
 # chromium/src dir env variable
+THORIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -60,11 +61,10 @@ mkdir -v -p ${CR_SRC_DIR}/out/thorium/ &&
 
 printf "\n" &&
 printf "${YEL}Copying Thorium source files over the Chromium tree...${c0}\n" &&
-# Copy libjxl src
-cd ~/thorium &&
-printf "\n" &&
-printf "${YEL}Copying thorium-libjxl source for JPEG-XL Support...${c0}\n" &&
-cp -r -v thorium-libjxl/src/. ${CR_SRC_DIR}/ &&
+cd "${THORIUM_ROOT}" &&
+# Note: M147+ ships JPEG XL natively (enable_jxl_decoder declared in
+# third_party/blink/renderer/config.gni). The thorium-libjxl overlay is no
+# longer needed and has been removed.
 
 # Copy Thorium sources
 cp -r -v src/BUILD.gn ${CR_SRC_DIR}/ &&
@@ -89,105 +89,51 @@ cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
 
-patchThor () {
-	cp -v other/add-hevc-ffmpeg-decoder-parser.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/change-libavcodec-header.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
-	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
-	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-2024-ui.patch ${CR_SRC_DIR}/ &&
-	cp -v other/GPC.patch ${CR_SRC_DIR}/ &&
-	cp -v other/mini_installer.patch ${CR_SRC_DIR}/ &&
-	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
-	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
-	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
-	cp -v other/multi-language-translate.patch ${CR_SRC_DIR}/ &&
-	# Starting with M144, the following patches can be removed
-	cp -v other/partalloc.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_profile_selector_crash.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_getupdatesprocessor_crash.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_absl_undefined_symbol.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_file_dialog_crash.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_wayland_scale_crash.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_drag_and_drop_on_wayland.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_touch_emulator_double_tap_zoom.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix_setting_popover_invoker_crash.patch ${CR_SRC_DIR}/ &&
-	# Starting with M145, the following patch can be removed
-	cp -v other/fix_dangling_pointer_tooltip.patch ${CR_SRC_DIR}/ &&
-	# The following patch could not be fixed upstream because it
-	# is related to our custom flags
-	cp -v other/fix_disable_aero_crash.patch ${CR_SRC_DIR}/ &&
+apply_patch_once () {
+	local patch_dir="$1"
+	local patch_file="$2"
+	local label="$3"
 
+	printf "${YEL}%s...${c0}\n" "${label}"
+	if git -C "${patch_dir}" apply --check "${patch_file}" >/dev/null 2>&1; then
+		git -C "${patch_dir}" apply --reject "${patch_file}"
+	elif git -C "${patch_dir}" apply --check --reverse "${patch_file}" >/dev/null 2>&1; then
+		printf "${GRE}%s already applied; skipping.${c0}\n" "${label}"
+	else
+		die "${label} does not apply cleanly in ${patch_dir}"
+	fi
+}
+
+patchThor () {
 	printf "\n" &&
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
-	cd ${CR_SRC_DIR}/third_party/ffmpeg &&
-	git apply --reject ./add-hevc-ffmpeg-decoder-parser.patch &&
-  printf "${YEL}libavcodec header patch for HEVC...${c0}\n" &&
-	git apply --reject ./change-libavcodec-header.patch &&
+	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/add-hevc-ffmpeg-decoder-parser.patch" "HEVC ffmpeg parser patch" &&
+	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/change-libavcodec-header.patch" "libavcodec header patch for HEVC" &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./fix-policy-templates.patch &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/fix-policy-templates.patch" "Policy templates patch" &&
 
 	printf "\n" &&
 	printf "${YEL}Patching FTP support...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./ftp-support-thorium.patch &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/ftp-support-thorium.patch" "FTP support patch" &&
 
-	printf "\n" &&
-	printf "${YEL}Patching in GPC support...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./GPC.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Patching for Thorium 2024 UI...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./thorium-2024-ui.patch &&
-	printf "${YEL}Download Shelf patch...${c0}\n" &&
-	git apply --reject ./restore_download_shelf.patch &&
-
-	printf "${YEL}Patching mini_installer...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./mini_installer.patch &&
-
-    printf "${YEL}Patching Multi language translate...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-    git apply --reject ./multi-language-translate.patch &&
+	printf "${YEL}Injecting Thorium-branded translations into Chromium .xtb bundles...${c0}\n" &&
+	python3 "${THORIUM_ROOT}/infra/merge_thorium_xtb.py" "${CR_SRC_DIR}" &&
 
 	printf "\n" &&
 	printf "${YEL}Applying other Misc. patches...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	printf "${YEL}Open in same tab patch...${c0}\n" &&
-	git apply --reject ./open_in_same_tab.patch &&
-	printf "${YEL}Thorium WebUI patch...${c0}\n" &&
-	git apply --reject ./thorium_webui.patch &&
-	printf "${YEL}Thorium Updater patch...${c0}\n" &&
-	git apply --reject ./win_updater.patch &&
-	printf "${YEL}Thorium Keyboard Shortcuts patch...${c0}\n" &&
-	git apply --reject ./keyboard_shortcuts.patch &&
-	printf "${YEL}Disable Privacy Sandbox patch...${c0}\n" &&
-	git apply --reject ./disable-privacy-sandbox.patch &&
-	printf "${YEL}Partalloc fix...${c0}\n" &&
-	git apply --reject ./partalloc.patch &&
-	printf "${YEL}Absl undefined symbol fix...${c0}\n" &&
-	git apply --reject ./fix_absl_undefined_symbol.patch &&
-	printf "${YEL}Some crashes fixes...${c0}\n" &&
-	git apply --reject ./fix_profile_selector_crash.patch &&
-	git apply --reject ./fix_getupdatesprocessor_crash.patch &&
-	git apply --reject ./fix_dangling_pointer_tooltip.patch &&
-	git apply --reject ./fix_disable_aero_crash.patch &&
-	git apply --reject ./fix_file_dialog_crash.patch &&
-	git apply --reject ./fix_wayland_scale_crash.patch &&
-	git apply --reject ./fix_setting_popover_invoker_crash.patch &&
-	printf "${YEL}Fix Drag and Drop on wayland...${c0}\n" &&
-	git apply --reject ./fix_drag_and_drop_on_wayland.patch &&
-	printf "${YEL}Fix Touch Emulator Double Tap Zoom...${c0}\n" &&
-	git apply --reject ./fix_touch_emulator_double_tap_zoom.patch
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/open_in_same_tab.patch" "Open in same tab patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/thorium_webui.patch" "Thorium WebUI patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/keyboard_shortcuts.patch" "Thorium Keyboard Shortcuts patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/GPC.patch" "Global Privacy Control patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/disable-privacy-sandbox.patch" "Disable Privacy Sandbox patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
+	apply_patch_once "${CR_SRC_DIR}/v8" "${THORIUM_ROOT}/other/v8-simd-buildflags.patch" "V8 SIMD build flags patch" &&
+	# Kept because it is related to Thorium custom flags (not upstreamable).
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/fix_disable_aero_crash.patch" "Disable aero crash fix"
 }
-[ -f ${CR_SRC_DIR}/fix-policy-templates.patch ] || patchThor;
+patchThor;
 
 patchAC3 () {
 	#cp -v other/ffmpeg_hevc_ac3.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
@@ -196,7 +142,7 @@ patchAC3 () {
 	#printf "${YEL}Patching FFMPEG for AC3 & E-AC3...${c0}\n" &&
 	#cd ${CR_SRC_DIR}/third_party/ffmpeg &&
 	#git apply --reject ./ffmpeg_hevc_ac3.patch &&
-	cd ~/thorium
+	cd "${THORIUM_ROOT}"
 }
 
 patchSSE2 () {
@@ -206,10 +152,10 @@ patchSSE2 () {
 	printf "${YEL}Patching ANGLE for SSE2...${c0}\n" &&
 	cd ${CR_SRC_DIR}/third_party/angle/src &&
 	git apply --reject ./angle-lockfree.patch &&
-	cd ~/thorium
+	cd "${THORIUM_ROOT}"
 }
 
-cd ~/thorium &&
+cd "${THORIUM_ROOT}" &&
 
 printf "\n" &&
 echo "Copying other files to \`out/thorium\`" &&
@@ -232,7 +178,7 @@ copyMacOS () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=mac update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd ~/thorium &&
+	cd "${THORIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -276,7 +222,7 @@ copyWOA () {
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd ~/thorium &&
+	cd "${THORIUM_ROOT}" &&
 	# Use regular arm.gni from src, pending further testing
 	# cp -v arm/woa_arm.gni ${CR_SRC_DIR}/build/config/arm.gni &&
 	printf "\n"
@@ -338,7 +284,7 @@ copySSE3 () {
 	cp -v other/thor_ver_linux/wrapper-sse3 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd ~/thorium &&
+	cd "${THORIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -355,7 +301,7 @@ copySSE2 () {
 	cp -v other/thor_ver_linux/wrapper-sse2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd ~/thorium &&
+	cd "${THORIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	[ -f ${CR_SRC_DIR}/third_party/angle/src/angle-lockfree.patch ] || patchSSE2;
 	printf "\n"
@@ -393,7 +339,7 @@ copyAndroid () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=android-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=android-arm32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd ~/thorium &&
+	cd "${THORIUM_ROOT}" &&
 	printf "\n"
 }
 case $1 in
@@ -416,7 +362,7 @@ esac
 printf "\n" &&
 printf "${GRE}Done!${c0}\n" &&
 
-#. ~/thorium/aliases.txt &&
+#. "${THORIUM_ROOT}/aliases.txt" &&
 
 #printf "\n" &&
 #printf "export ${CYA}NINJA_SUMMARIZE_BUILD=1${c0}\n" &&
@@ -437,7 +383,7 @@ printf "${GRE}Done!${c0}\n" &&
 #printf "alias ${YEL}pgomac-arm${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
 #printf "\n" &&
 
-cd ~/thorium &&
+cd "${THORIUM_ROOT}" &&
 cat ./logos/thorium_ascii_art.txt &&
 
 printf "${YEL}Tip: See the ${CYA}aliases.txt${YEL} file for some handy bash aliases.${c0}\n" &&

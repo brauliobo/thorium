@@ -17,15 +17,7 @@
      kOsLinux, SINGLE_VALUE_TYPE("auto-dark-mode")},
 #endif // BUILDFLAG(IS_LINUX)
 
-    {"thorium-2024",
-     "Enable Experimental Thorium 2024 (Th24) UI",
-     "Enable a new \"hybrid\" UI, which restores many parts of the pre-Chrome Refresh 2023 UI. Good for people "
-     "who find the new UI ugly or harder to use.",
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kThorium2024)},
-    {"restore-tab-button",
-     "Restore Tab Button",
-     "Enable a new toolbar button to restore your recently closed tabs.",
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kRestoreTabButton)},
+    // thorium-2024 + restore-tab-button: require thorium-2024-ui patch, not ported to M147.
     {"prominent-active-tab-titles",
      "Prominent Active Tab Titles",
      "Makes the active tab title bolder so that it is easier to identify.",
@@ -122,12 +114,7 @@
      "Switch to the left/right tab if a scroll wheel event happens over the tabstrip, or the empty space beside the tabstrip.",
      kOsDesktop, MULTI_VALUE_TYPE(kScrollEventChangesTab)},
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"middle-click-autoscroll",
-     "Middle Click Autoscroll",
-     "Enables autoscrolling when the middle mouse button is pressed.",
-     kOsDesktop, FEATURE_VALUE_TYPE(blink::features::kMiddleClickAutoscroll)},
-#endif // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    // middle-click-autoscroll: blink::features::kMiddleClickAutoscroll removed in M147.
 
     {"autoplay-policy",
      "Configure AutoPlay Policy",
@@ -140,12 +127,7 @@
      "Allows downloading files from mixed origin/cross origin schemes.",
      kOsAll, SINGLE_VALUE_TYPE("allow-insecure-downloads")},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"download-shelf",
-     "Restore Download Shelf",
-     "When enabled, the traditional download shelf is used instead of the download bubble in the toolbar. Thorium flag",
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kDownloadShelf)},
-#endif // BUILDFLAG(IS_ANDROID)
+    // download-shelf: requires restore_download_shelf patch, not ported to M147.
 
     {"show-avatar-button",
      "Show/Hide the Avatar Button",
@@ -181,25 +163,14 @@
      "Enable Native GPU Memory Buffers",
      "Enables native CPU-mappable GPU memory buffer support on Linux.",
      kOsLinux, SINGLE_VALUE_TYPE(switches::kEnableNativeGpuMemoryBuffers)},
-    {"vaapi-video-decode-linux-gl",
-     "GL Vaapi Video Decode",
-     "Toggle whether the GL backend is used for VAAPI video decode acceleration. "
-     "Enabled by default, but may break some configurations. Thorium flag.",
-     kOsLinux, FEATURE_VALUE_TYPE(media::kAcceleratedVideoDecodeLinuxGL)},
-    {"touchpad-overscroll-history-navigation",
-     "Touchpad Overscroll History Navigation",
-     "Enables back/forward navigation via touchpad overscroll gestures.",
-     kOsLinux, FEATURE_VALUE_TYPE(features::kTouchpadOverscrollHistoryNavigation)},
+    // vaapi-video-decode-linux-gl + touchpad-overscroll-history-navigation:
+    // depend on Thorium media/content patches not ported to M147.
     {"gtk-version",
      "GTK Version Override",
      "Choose whether to use the GTK3 or GTK4 backend. It should be set to match the default GTK used by the system, "
      "but can be overridden for testing or experimenting.",
      kOsLinux, MULTI_VALUE_TYPE(kGtkVersionChoices)},
-    {"vaapi-on-nvidia-gpus",
-     "VAAPI on nVidia GPUs",
-     "Toggle whether VAAPI is enabled when proprietary nVidia Drivers are installed. "
-     "Requires `vdpau-va-driver` to be installed, and can be buggy. Thorium flag.",
-     kOsLinux, FEATURE_VALUE_TYPE(media::kVaapiOnNvidiaGPUs)},
+    // vaapi-on-nvidia-gpus: media::kVaapiOnNvidiaGPUs not present in M147.
 #endif // BUILDFLAG(IS_LINUX)
 
     {"gpu-no-context-lost",
@@ -229,13 +200,7 @@
      "Determines whether a window should close once the last tab is closed.",
      kOsDesktop, MULTI_VALUE_TYPE(kCloseWindowWithLastTab)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"media-router",
-     "Enable/Disable Media Router",
-     "Media router is a component responsible for pairing Thorium to devices and endpoints, "
-     "for streaming and rendering media sources on those devices. This is used, for example, for Cast.",
-     kOsDesktop, FEATURE_VALUE_TYPE(media_router::kMediaRouter)},
-#endif // BUILDFLAG(IS_ANDROID)
+    // media-router: media_router::kMediaRouter not exposed as a flag feature in M147.
 
     {"show-fps-counter",
      "Show FPS Counter",
@@ -274,14 +239,7 @@
      "reset back to the default (Disabled).",
      kOsDesktop, SINGLE_VALUE_TYPE("revert-from-portable")},
 
-#if BUILDFLAG(IS_LINUX)
-    {"password-store",
-     "Password Store Backend",
-     "Choose the password store backend, instead of using the automatically detected one. "
-     "Sometimes the default detected backend is incorrect, or you would want `Basic`, "
-     "instead of the platform provided password stores on Linux. (i.e. for portable usage.)",
-     kOsLinux, MULTI_VALUE_TYPE(kPasswordStoreChoices)},
-#endif // BUILDFLAG(IS_LINUX)
+    // password-store dropped: password_manager::kPasswordStore removed in M147.
 
 #if BUILDFLAG(IS_WIN)
     {"enable-exclusive-audio",

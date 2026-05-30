@@ -14,7 +14,6 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
@@ -346,7 +345,6 @@ static_library("content_shell_lib") {
     "//media/mojo/services",
     "//net",
     "//net:net_resources",
-    "//ppapi/buildflags",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp",
     "//services/test/echo:lib",
@@ -845,21 +843,6 @@ if (is_apple) {
 }
 
 if (is_mac) {
-  if (enable_ppapi) {
-    bundle_data("content_shell_framework_plugins") {
-      sources = [
-        "$root_out_dir/blink_deprecated_test_plugin.plugin",
-        "$root_out_dir/blink_test_plugin.plugin",
-      ]
-
-      outputs = [ "{{bundle_contents_dir}}/{{source_file_part}}" ]
-
-      public_deps = [
-        "//ppapi:blink_deprecated_test_plugin",
-        "//ppapi:blink_test_plugin",
-      ]
-    }
-  }
 
   content_shell_framework_name = "$content_shell_product_name Framework"
   content_shell_helper_name = "$content_shell_product_name Helper"
@@ -926,9 +909,6 @@ if (is_mac) {
       ":content_shell_swiftshader_binaries",
     ]
 
-    if (enable_ppapi) {
-      deps += [ ":content_shell_framework_plugins" ]
-    }
 
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is

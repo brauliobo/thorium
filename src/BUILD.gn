@@ -21,15 +21,12 @@ import("//build/toolchain/rbe.gni")
 import("//build/util/generate_wrapper.gni")
 import("//chrome/enterprise_companion/buildflags.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/nacl/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//mojo/public/rust/rust.gni")
 import("//pdf/features.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
 import("//services/on_device_model/on_device_model.gni")
@@ -288,12 +285,6 @@ group("gn_all") {
       deps += [ "//chrome/enterprise_companion" ]
     }
 
-    if (enable_ppapi) {
-      deps += [
-        "//ppapi:ppapi_unittests",
-        "//ppapi/examples",
-      ]
-    }
 
     if (!is_ios && !is_castos) {
       if (!is_fuchsia) {
@@ -687,28 +678,12 @@ group("gn_all") {
       # TODO(https://crbug.com/1299021): These dependencies might be
       # redundant given that we were able to disable them, apparently without
       # negative consequences, for the ARM32-NaCl-on-ARM64 case.
-      if (enable_nacl) {
-        if (target_cpu != "arm64") {
-          deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
-        }
-
-        if (is_linux || is_chromeos) {
-          # TODO(dpranke): Figure out what platforms should actually have this.
-          deps += [ "//components/nacl/loader:nacl_helper" ]
-        }
-      }
 
       if (media_use_ffmpeg && !is_android) {
         deps += [ "//media:ffmpeg_regression_tests" ]
       }
     }
 
-    if (enable_ppapi) {
-      deps += [
-        "//ppapi:pepper_hash_for_uma",
-        "//ppapi:ppapi_perftests",
-      ]
-    }
 
     if (is_android || is_linux) {
       deps += [
@@ -911,9 +886,6 @@ group("gn_all") {
     }
 
     # TODO(https://crbug.com/1299021): Remove the special case for arm64.
-    if (enable_nacl && target_cpu != "arm64") {
-      deps += [ "//native_client_sdk/src:nacl_core_sdk" ]
-    }
 
     if (((is_linux || is_chromeos) && use_ozone) || is_fuchsia) {
       deps += [
@@ -1162,9 +1134,6 @@ if (is_chromeos) {
       "//ui/ozone/gl:ozone_gl_unittests",
     ]
 
-    if (enable_ppapi) {
-      data_deps += [ "//ppapi/examples/video_decode" ]
-    }
 
     if (use_v4l2_codec || use_vaapi) {
       data_deps += [
@@ -1563,7 +1532,6 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/permissionclient/",
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",
-      "//third_party/blink/web_tests/ppapi/",
       "//third_party/blink/web_tests/printing/",
       "//third_party/blink/web_tests/register-protocol-handler/",
       "//third_party/blink/web_tests/regress/",

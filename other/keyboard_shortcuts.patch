@@ -60,10 +60,10 @@ index f7a207457997b..37a33c0e835db 100644
       ui::VKEY_D},
      {IDC_MINIMIZE_WINDOW, ui::EF_COMMAND_DOWN, ui::VKEY_M},
      {IDC_SELECT_NEXT_TAB, ui::EF_CONTROL_DOWN, ui::VKEY_TAB},
-diff --git a/chrome/browser/ui/views/accelerator_table.cc b/chrome/browser/ui/views/accelerator_table.cc
+diff --git a/chrome/browser/ui/accelerator_table.cc b/chrome/browser/ui/accelerator_table.cc
 index 9a52cf832f28e..67948411837ef 100644
---- a/chrome/browser/ui/views/accelerator_table.cc
-+++ b/chrome/browser/ui/views/accelerator_table.cc
+--- a/chrome/browser/ui/accelerator_table.cc
++++ b/chrome/browser/ui/accelerator_table.cc
 @@ -1,4 +1,4 @@
 -// Copyright 2012 The Chromium Authors
 +// Copyright 2026 The Chromium Authors and Alex313031
@@ -91,17 +91,5 @@ index 9a52cf832f28e..67948411837ef 100644
  #endif  // ENABLE_PRINTING
      {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_BOOKMARKS},
      {ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-@@ -313,11 +316,11 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
-     // Doing this check here and not at the bottom since kUIDebugAcceleratorMap
-     // contains Ctrl+Alt keys but we don't enable those for the public.
- #if DCHECK_IS_ON()
--    constexpr int kCtrlAlt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
-+    /* constexpr int kCtrlAlt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
-     for (auto& mapping : *accelerators) {
-       DCHECK((mapping.modifiers & kCtrlAlt) != kCtrlAlt)
-           << "Accelerators with Ctrl+Alt are reserved by Windows.";
--    }
-+    } */
- #endif
  
      if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {

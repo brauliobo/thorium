@@ -159,22 +159,6 @@ const FeatureEntry::Choice kCloseWindowWithLastTab[] = {
      "never"},
 };
 
-#if BUILDFLAG(IS_LINUX)
-const FeatureEntry::Choice kPasswordStoreChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Basic",
-     password_manager::kPasswordStore, "basic"},
-    {"Kwallet",
-     password_manager::kPasswordStore, "kwallet"},
-    {"Kwallet5",
-     password_manager::kPasswordStore, "kwallet5"},
-    {"Gnome",
-     password_manager::kPasswordStore, "gnome"},
-    {"Gnome-Keyring",
-     password_manager::kPasswordStore, "gnome-keyring"},
-    {"Gnome-LibSecret",
-     password_manager::kPasswordStore, "gnome-libsecret"},
-};
-#endif // BUILDFLAG(IS_LINUX)
+// kPasswordStoreChoices dropped: password_manager::kPasswordStore removed in M147.
 
 #endif  // CHROME_BROWSER_THORIUM_FLAG_CHOICES_H_

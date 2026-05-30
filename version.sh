@@ -28,6 +28,7 @@ case $1 in
 esac
 
 # chromium/src dir env variable
+THORIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -36,7 +37,7 @@ else
     export CR_SRC_DIR
 fi
 
-THOR_VER="138.0.7204.306"
+THOR_VER="148.0.7778.215"
 
 export THOR_VER &&
 
@@ -50,15 +51,7 @@ cd ${CR_SRC_DIR} &&
 
 git checkout -f tags/$THOR_VER &&
 
-cd ~/thorium &&
-
-# Use our artifacts hash
-cp -v src/build/vs_toolchain.py ${CR_SRC_DIR}/build/ &&
-
-# Add //third_party/libjxl to DEPS
-cp -v thorium-libjxl/src/DEPS ${CR_SRC_DIR}/ &&
-cp -v thorium-libjxl/src/.gitmodules ${CR_SRC_DIR}/ &&
-cp -v thorium-libjxl/src/third_party/.gitignore ${CR_SRC_DIR}/third_party/ &&
+# M147+ ships JPEG XL natively; no thorium-libjxl DEPS overlay required.
 
 cd ${CR_SRC_DIR} &&
 
@@ -106,7 +99,7 @@ else
 fi
 printf "\n" &&
 
-cd ~/thorium &&
+cd "${THORIUM_ROOT}" &&
 
 printf "${GRE}Done! ${YEL}You can now run \'./setup.sh\'\n"
 tput sgr0
