@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Kada web lokacija zatraži privatno predučitavanje linkova na stranici, Thorium koristi Googleove servere. Time se vaš identitet sakriva od predučitane web lokacije, ali Google uči koje web lokacije se predučitavaju.</translation>
+<translation id="469847031616755573">Thorium je vaš zadani preglednik</translation>
+<translation id="9121116283800901015">O programu Thorium</translation>
+<translation id="7557415942066581350">Prilikom prijave na Googleove usluge kao što su Gmail ili YouTube koristeći <ph name="USER_EMAIL" /> možete se automatski prijaviti u Thorium putem istog računa</translation>
+<translation id="8063674192889594521">Postavite novi Thorium profil</translation>
+<translation id="2813532507332782105">Thoriumovi sigurnosni alati</translation>
+<translation id="5404516918685923379">Pregledajte ključne kontrole privatnosti i sigurnosti na Thoriumu</translation>
+<translation id="391022854039785855">Da izbrišete podatke pregledanja samo s ovog uređaja, a da ih zadržite na Google računu, <ph name="BEGIN_LINK" />odjavite se iz Thoriuma<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">Isključivanjem ove postavke, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave na Thorium</translation>
+<translation id="3879276044795274924">Prilagodite Thorium</translation>
+<translation id="6349701846617734224">Pomoću <ph name="BEGIN_LINK" />Thoriumovih alata<ph name="END_LINK" /> možete pregledati sigurno i zadržati kontrolu</translation>
+<translation id="113825514187113500">U Thoriumu</translation>
+<translation id="2513495859821894442">Da dobijate lozinke i drugo na svim svojim uređajima, prijavite se u Thorium</translation>
+<translation id="1290370037980749495">Thorium radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno (preporučeno)</translation>
+<translation id="3203458745325150724">Vaš Thorium</translation>
+<translation id="3892055234200984404">O &amp;Thoriumu</translation>
+<translation id="8312332850957380094">Drugi profili u Thoriumu</translation>
+<translation id="2823243626069255310">Prilagodite novi Thorium profil</translation>
+<translation id="7057723382073894700">V8 je Thoriumov pokretač programskih jezika JavaScript i WebAssembly koji se koristi za poboljšanje performansi web lokacija</translation>
+<translation id="9073817226409915222">Ostavi aplikacije da rade u pozadini kada se zatvori Thorium</translation>
+<translation id="5737116114768420447">Upravljajte profilima u Thoriumu</translation>
+<translation id="3390772469177266069">Thorium će vas obavijestiti ako nešto budete trebali pregledati</translation>
+<translation id="253414695030364725">Thorium predučitava stranice za koje postoji vjerovatnoća da ćete ih posjetiti kako bi se brže učitavale prilikom posjete</translation>
+<translation id="1965458093883218976">Saznajte kako vas Thorium štiti</translation>
+<translation id="6097413908033623736">Pomozite nam da poboljšamo Thorium tako što ćete nam prijaviti <ph name="BEGIN_LINK" />trenutne postavke<ph name="END_LINK" /></translation>
+<translation id="7153173282073382515">Anonimni način rada u Thoriumu</translation>
+<translation id="1861871537231630745">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Thoriumovih upozorenja.</translation>
+<translation id="8182056223343645142">Odjava iz Thoriuma</translation>
+<translation id="4860412983011031251">Potražite pomoć s Thoriumom</translation>
+<translation id="6079265919870015811">Dodaj Thorium profil</translation>
+<translation id="7473833913849364138">Thorium predučitava stranice, što ubrzava pregledanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitanim stranicama<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Ako dijelite i izvještaje o korištenju Thoriuma, ti izvještaji uključuju URL-ove koje posjećujete</translation>
+<translation id="9072534646955460921">Pomoću Thorium profila možete odvojiti sve svoje sadržaje u Thoriumu. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
+<translation id="4308905027810063387">Odjavi se iz Thoriuma</translation>
+<translation id="6312135329022974196">Drugi profili u Thoriumu</translation>
+<translation id="8828163608353368128">Dozvoli prijavljivanje u Thorium</translation>
+<translation id="6497325017313227277">Ukloni iz Thoriuma</translation>
+<translation id="8315496929814159292">Postavite Thorium kao zadani preglednik</translation>
+<translation id="438883585792992435">Thorium oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Thoriuma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih. <ph name="BEGIN_LINK" />Saznajte više o Uštedi memorije<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Thorium redovno provjerava ima li vaš preglednik najsigurnije postavke. Obavijestit ćemo vas ako nešto bude potrebno pregledati.</translation>
+<translation id="4212981493728012253">Da zaštitite podatke, omogućite Thoriumu da ukloni odobrenja s web lokacija koje u posljednje vrijeme niste posjetili. Ovo ne zaustavlja slanje obavještenja.</translation>
+<translation id="3224040524634124542">Ako dozvolite kolačiće, Thorium ih može koristiti prilikom predučitavanja</translation>
+<translation id="1967056554017864811">Prilagodite svoj Thorium profil</translation>
+<translation id="682714496634566410">Dajte naziv Thorium profilu</translation>
+<translation id="1927215335595997320">Thorium predučitava još više stranica za koje postoji vjerovatnoća da ćete ih posjetiti kako bi se brže učitavale prilikom posjete</translation>
+<translation id="4344849281720725205">Ako sačuvate oznake i na svoj Google račun možete pratiti cijene proizvoda u Thoriumu i primati obavještenja kada cijena padne</translation>
+<translation id="2905944704289173754">Sinhronizirajte i personalizirajte Thorium na svim uređajima</translation>
+<translation id="7023976647734322618">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. Thorium koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
+<translation id="3124765553592510724">Kad pišete u traci za adresu ili u okviru za pretraživanje, Thorium šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
+<translation id="5501994443630499490">Uključite dodatnu zaštitu za Thoriumov pokretač programskih jezika JavaScript i WebAssembly</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />Thorium vas upozorava<ph name="END_LINK" /> o nesigurnim web lokacijama i preuzimanjima</translation>
+<translation id="6539171476340543682">Thorium može provjeravati vaše lozinke kada ih sačuvate</translation>
+<translation id="5422284534340886571">Dodaj Thorium profil</translation>
+<translation id="5346310914638900016">Upravljajte profilima u Thoriumu</translation>
+<translation id="2601544977861663592">Prijavite se u Thorium</translation>
+<translation id="4933700843989736491">Prijava u Thorium prilikom prijave na druge Googleove usluge</translation>
+<translation id="7886351526956375471">Ko koristi Thorium?</translation>
+<translation id="6618835206810857815">Autorska prava <ph name="YEAR" /> Alex313031. Sva prava zadržana.</translation>

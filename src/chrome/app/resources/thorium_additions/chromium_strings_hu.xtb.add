@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Ha valamely webhely a linkek privát módon való előtöltését kéri az oldalán, a Thorium a Google szervereit használja. Ez a művelet elrejti az Ön személyazonosságát az előtöltött webhely elől, de a Google értesül arról, hogy mely webhelyek töltődnek be előre.</translation>
+<translation id="469847031616755573">A Thorium az alapértelmezett böngésző</translation>
+<translation id="9121116283800901015">A Thorium névjegye</translation>
+<translation id="7557415942066581350">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Thoriumba is.</translation>
+<translation id="8063674192889594521">Új Thorium-profil beállítása</translation>
+<translation id="2813532507332782105">A Thorium biztonsági eszközei</translation>
+<translation id="5404516918685923379">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Thoriumban</translation>
+<translation id="391022854039785855">Ha csak erről az eszközről szeretné törölni böngészési adatait, Google-fiókjából azonban nem, <ph name="BEGIN_LINK" />jelentkezzen ki a Thoriumból<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Thoriumba is bejelentkezne</translation>
+<translation id="3879276044795274924">A Thorium személyre szabása</translation>
+<translation id="6349701846617734224">A <ph name="BEGIN_LINK" />Thorium eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
+<translation id="113825514187113500">A Thoriumban</translation>
+<translation id="2513495859821894442">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyebekhez, jelentkezzen be a Thoriumba</translation>
+<translation id="1290370037980749495">A Thorium gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük (ajánlott)</translation>
+<translation id="3203458745325150724">A Thorium</translation>
+<translation id="3892055234200984404">A &amp;Thorium névjegye</translation>
+<translation id="8312332850957380094">Egyéb Thorium-profilok</translation>
+<translation id="2823243626069255310">Szabja személyre az új Thorium-profilját</translation>
+<translation id="7057723382073894700">A V8 a Thorium JavaScript- és WebAssembly-motorja, amely a webhelyek teljesítményének javítására szolgál</translation>
+<translation id="9073817226409915222">A háttéralkalmazások továbbfuttatása, ha a Thoriumot bezárják</translation>
+<translation id="5737116114768420447">Thorium-profilok kezelése</translation>
+<translation id="3390772469177266069">A Thorium értesíti Önt, ha bármit érdemes áttekintenie</translation>
+<translation id="253414695030364725">A Thorium előtölt olyan oldalakat, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be</translation>
+<translation id="1965458093883218976">További információ arról, hogy miként gondoskodik a Thorium az Ön biztonságáról</translation>
+<translation id="6097413908033623736">Segítsen a Thorium fejlesztésében a <ph name="BEGIN_LINK" />jelenlegi beállítások<ph name="END_LINK" /> elküldésével</translation>
+<translation id="7153173282073382515">Thorium inkognitó mód</translation>
+<translation id="1861871537231630745">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Thorium figyelmeztetéseinek kihagyását.</translation>
+<translation id="8182056223343645142">Kijelentkezés a Thoriumból</translation>
+<translation id="4860412983011031251">Segítség a Thorium használatával kapcsolatban</translation>
+<translation id="6079265919870015811">Thorium-profil hozzáadása</translation>
+<translation id="7473833913849364138">A Thorium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést. <ph name="BEGIN_LINK" />További információ az oldalak előtöltéséről<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Ha a Thorium használati jelentéseit is megosztja, ezek a jelentések tartalmazzák az Ön által felkeresett URL-eket.</translation>
+<translation id="9072534646955460921">A Thorium-profilokkal különválaszthatja minden Thorium-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
+<translation id="4308905027810063387">Kijelentkezés a Thoriumból</translation>
+<translation id="6312135329022974196">Egyéb Thorium-profilok</translation>
+<translation id="8828163608353368128">Thorium-bejelentkezés engedélyezése</translation>
+<translation id="6497325017313227277">Eltávolítás a Thoriumból</translation>
+<translation id="8315496929814159292">A Thorium beállítása alapértelmezett böngészőként</translation>
+<translation id="438883585792992435">A Thorium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Thorium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ a Memóriatakarékos funkcióról<ph name="END_LINK" />.</translation>
+<translation id="1318664233874758685">A Thorium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
+<translation id="4212981493728012253">Adatainak védelme érdekében engedélyezze, hogy a Thorium eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában. Ez nem állítja le az értesítéseket.</translation>
+<translation id="3224040524634124542">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Thorium előtöltéskor felhasználja őket.</translation>
+<translation id="1967056554017864811">A Thorium-profil személyre szabása</translation>
+<translation id="682714496634566410">Nevezze el Thorium-profilját</translation>
+<translation id="1927215335595997320">A Thorium még több olyan oldalt előtölt, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be.</translation>
+<translation id="4344849281720725205">Ha Google-fiókjába is menti könyvjelzőit, a Thoriumban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
+<translation id="2905944704289173754">Szinkronizálhatja és személyre szabhatja a Thoriumot minden eszközén</translation>
+<translation id="7023976647734322618">Megnehezítheti az internetes forgalmához hozzáférő személyek számára, hogy lássák, milyen webhelyeket keres fel. A Thorium biztonságos kapcsolatot használ a webhelyek IP-címének DNS-ben (domainnévrendszerben) való megkereséséhez.</translation>
+<translation id="3124765553592510724">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Thorium a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
+<translation id="5501994443630499490">Kiegészítő védelem bekapcsolása a Thorium JavaScript- és WebAssembly-motorjában</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />A Thorium figyelmezteti<ph name="END_LINK" /> a nem biztonságos webhelyekre és letöltésekre</translation>
+<translation id="6539171476340543682">A Thorium képes a jelszavak ellenőrzésére, ha Ön menti őket</translation>
+<translation id="5422284534340886571">Thorium-profil hozzáadása</translation>
+<translation id="5346310914638900016">Thorium-profilok kezelése</translation>
+<translation id="2601544977861663592">Bejelentkezés a Thoriumba</translation>
+<translation id="4933700843989736491">Bejelentkezés a Thoriumba, amikor más Google-szolgáltatásokba is bejelentkezik</translation>
+<translation id="7886351526956375471">Ki használja a Thoriumot?</translation>
+<translation id="6618835206810857815">Szerzői jog <ph name="YEAR" /> Alex313031. Minden jog fenntartva.</translation>

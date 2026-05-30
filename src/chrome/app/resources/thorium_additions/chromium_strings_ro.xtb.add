@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Thorium folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
+<translation id="469847031616755573">Thorium este browserul prestabilit</translation>
+<translation id="9121116283800901015">Despre Thorium</translation>
+<translation id="7557415942066581350">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Thorium cu același cont</translation>
+<translation id="8063674192889594521">Configurează noul profil Thorium</translation>
+<translation id="2813532507332782105">Instrumentele de siguranță din Thorium</translation>
+<translation id="5404516918685923379">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Thorium</translation>
+<translation id="391022854039785855">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Thorium<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Thorium</translation>
+<translation id="3879276044795274924">Personalizează Thorium</translation>
+<translation id="6349701846617734224">Cu <ph name="BEGIN_LINK" />instrumentele din Thorium<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
+<translation id="113825514187113500">În Thorium</translation>
+<translation id="2513495859821894442">Pentru a accesa parolele și alte date pe toate dispozitivele, conectează-te la Thorium</translation>
+<translation id="1290370037980749495">Thorium rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze conform destinației lor (recomandat)</translation>
+<translation id="3203458745325150724">Thorium</translation>
+<translation id="3892055234200984404">Despre &amp;Thorium</translation>
+<translation id="8312332850957380094">Alte profiluri Thorium</translation>
+<translation id="2823243626069255310">Personalizează noul profil Thorium</translation>
+<translation id="7057723382073894700">V8 este motorul JavaScript și WebAssembly din Thorium, folosit pentru a îmbunătăți performanța site-ului</translation>
+<translation id="9073817226409915222">Rulați în continuare aplicații de fundal când Thorium este închis</translation>
+<translation id="5737116114768420447">Gestionează profilurile Thorium</translation>
+<translation id="3390772469177266069">Thorium te va anunța dacă trebuie să examinezi ceva</translation>
+<translation id="253414695030364725">Thorium preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
+<translation id="1965458093883218976">Află cum te protejează Thorium</translation>
+<translation id="6097413908033623736">Contribuie la îmbunătățirea browserului Thorium raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
+<translation id="7153173282073382515">Modul incognito din Thorium</translation>
+<translation id="1861871537231630745">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți alege să omiți avertismentele din Thorium.</translation>
+<translation id="8182056223343645142">Deconectează-te de la Thorium</translation>
+<translation id="4860412983011031251">Obține ajutor privind Thorium</translation>
+<translation id="6079265919870015811">Adaugă un profil Thorium</translation>
+<translation id="7473833913849364138">Thorium preîncarcă paginile, astfel încât navigarea și căutarea să fie mai rapide. <ph name="BEGIN_LINK" />Află mai multe despre preîncărcarea paginilor<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Dacă trimiți rapoarte privind folosirea Thorium, acestea includ adresele URL pe care le accesezi</translation>
+<translation id="9072534646955460921">Cu ajutorul profilurilor Thorium, poți separa toate informațiile din Thorium. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
+<translation id="4308905027810063387">Deconectează-te de la Thorium</translation>
+<translation id="6312135329022974196">Alte profiluri Thorium</translation>
+<translation id="8828163608353368128">Permite conectarea la Thorium</translation>
+<translation id="6497325017313227277">Eliminați din Thorium</translation>
+<translation id="8315496929814159292">Setați Thorium ca browser prestabilit</translation>
+<translation id="438883585792992435">Thorium eliberează memoria din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Thorium funcționează rapid. Filele inactive se reactivează automat când revii la ele. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea memoriei<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Thorium verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
+<translation id="4212981493728012253">Pentru a-ți proteja datele, permite browserului Thorium să elimine permisiunile de pe site-urile pe care nu le-ai accesat recent. Nu oprește notificările.</translation>
+<translation id="3224040524634124542">Dacă permiți cookie-uri, Thorium le poate folosi pentru preîncărcare</translation>
+<translation id="1967056554017864811">Personalizează-ți profilul Thorium</translation>
+<translation id="682714496634566410">Denumește profilul Thorium</translation>
+<translation id="1927215335595997320">Thorium preîncarcă și mai multe pagini pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi.</translation>
+<translation id="4344849281720725205">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Thorium și să primești notificări când scad</translation>
+<translation id="2905944704289173754">Sincronizează și personalizează Thorium pe toate dispozitivele</translation>
+<translation id="7023976647734322618">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Thorium folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
+<translation id="3124765553592510724">Când introduci text în bara de adrese sau în caseta de căutare, Thorium trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
+<translation id="5501994443630499490">Activează protecția suplimentară în motorul JavaScript și WebAssembly din Thorium</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />Thorium te avertizează<ph name="END_LINK" /> cu privire la site-urile și descărcările nesigure</translation>
+<translation id="6539171476340543682">Thorium îți poate verifica parolele dacă le salvezi</translation>
+<translation id="5422284534340886571">Adaugă un profil Thorium</translation>
+<translation id="5346310914638900016">Gestionează profilurile Thorium</translation>
+<translation id="2601544977861663592">Conectați-vă la Thorium</translation>
+<translation id="4933700843989736491">Conectează-te la Thorium când te conectezi la alte servicii Google</translation>
+<translation id="7886351526956375471">Cine folosește Thorium?</translation>
+<translation id="6618835206810857815">Drepturi de autor <ph name="YEAR" /> Alex313031. Toate drepturile rezervate.</translation>
