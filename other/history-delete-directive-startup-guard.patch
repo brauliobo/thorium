@@ -1,0 +1,23 @@
+diff --git a/components/history/core/browser/sync/delete_directive_handler.cc b/components/history/core/browser/sync/delete_directive_handler.cc
+index b43b4287b5..4beb49ecdb 100644
+--- a/components/history/core/browser/sync/delete_directive_handler.cc
++++ b/components/history/core/browser/sync/delete_directive_handler.cc
+@@ -479,12 +479,12 @@ DeleteDirectiveHandler::MergeDataAndStartSyncing(
+ 
+   sync_processor_ = std::move(sync_processor);
+   if (!initial_sync_data.empty()) {
+-    // Drop processed delete directives during startup.
+-    backend_task_scheduler_.Run(FROM_HERE,
+-                                std::make_unique<DeleteDirectiveTask>(
+-                                    weak_ptr_factory_.GetWeakPtr(),
+-                                    initial_sync_data, DROP_AFTER_PROCESSING),
+-                                &internal_tracker_);
++    // Persisted directives are best-effort cleanup state. Replaying a stale
++    // backlog can pin startup history I/O for large profiles; drop it and keep
++    // processing real-time delete directives below.
++    LOG(WARNING) << "Dropping " << initial_sync_data.size()
++                 << " persisted history delete directives at startup.";
++    FinishProcessing(DROP_AFTER_PROCESSING, initial_sync_data);
+   }
+ 
+   return std::nullopt;
