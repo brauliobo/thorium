@@ -1,12 +1,14 @@
 diff --git a/components/history/core/browser/visit_database.cc b/components/history/core/browser/visit_database.cc
-index 52aeac4f06..3d0f15685e 100644
+index 52aeac4f06..b7e5f939f6 100644
 --- a/components/history/core/browser/visit_database.cc
 +++ b/components/history/core/browser/visit_database.cc
-@@ -824,6 +824,106 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
+@@ -824,6 +824,116 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
  bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
                                              VisitVector* visits) {
    visits->clear();
 +
++// TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
++// rolled out.
 +#if !BUILDFLAG(IS_IOS)
 +  const bool actor_visit_filtering_enabled =
 +      history::IsBrowsingHistoryActorIntegrationM2Enabled();
@@ -14,13 +16,14 @@ index 52aeac4f06..3d0f15685e 100644
 +  const bool actor_visit_filtering_enabled = false;
 +#endif
 +
-+  // Thorium: chrome://history can become effectively stuck on profiles with
-+  // very large numbers of repeated visits to the same URL. The generic path
-+  // streams every matching visit and removes duplicates in C++, which can mean
-+  // hundreds of thousands of rows for a few thousand final results. For the
-+  // common "one row per URL" query, let SQLite rank rows per URL first.
-+  if (options.duplicate_policy == QueryOptions::REMOVE_ALL_DUPLICATES &&
-+      !actor_visit_filtering_enabled) {
++  // For the common duplicate-removal queries, let SQLite rank rows before
++  // returning them. This avoids streaming every matching visit into C++ when
++  // profiles contain large numbers of repeated visits to the same URL.
++  const bool rank_duplicate_visits_in_sql =
++      !actor_visit_filtering_enabled &&
++      (options.duplicate_policy == QueryOptions::REMOVE_ALL_DUPLICATES ||
++       options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY);
++  if (rank_duplicate_visits_in_sql) {
 +    std::string joins;
 +    std::vector<std::string> where_clauses;
 +    std::vector<int64_t> binding_values;
@@ -58,25 +61,31 @@ index 52aeac4f06..3d0f15685e 100644
 +    binding_values.push_back(ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
 +    binding_values.push_back(ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 +
-+    std::string where_sql;
-+    if (!where_clauses.empty()) {
-+      where_sql = " WHERE " + base::JoinString(where_clauses, " AND ");
++    const std::string where_sql =
++        " WHERE " + base::JoinString(where_clauses, " AND ");
++
++    const char* order_sql = options.visit_order == QueryOptions::RECENT_FIRST
++                                ? "visits.visit_time DESC, visits.id DESC"
++                                : "visits.visit_time ASC, visits.id DESC";
++
++    std::string partition_sql = "visits.url";
++    if (options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY) {
++      partition_sql +=
++          ", strftime('%Y-%m-%d', "
++          "visits.visit_time / 1000000 - 11644473600, "
++          "'unixepoch', 'localtime')";
 +    }
 +
-+    const char* order_sql =
-+        options.visit_order == QueryOptions::RECENT_FIRST
-+            ? "visits.visit_time DESC, visits.id DESC"
-+            : "visits.visit_time ASC, visits.id DESC";
-+
-+    std::string sql =
-+        "SELECT" HISTORY_VISIT_ROW_FIELDS
-+        "FROM (SELECT" HISTORY_VISIT_ROW_FIELDS
-+        ", ROW_NUMBER() OVER (PARTITION BY visits.url ORDER BY ";
++    std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS
++                      "FROM (SELECT" HISTORY_VISIT_ROW_FIELDS
++                      ", ROW_NUMBER() OVER (PARTITION BY ";
++    sql += partition_sql;
++    sql += " ORDER BY ";
 +    sql += order_sql;
-+    sql += ") AS thorium_url_rank FROM visits";
++    sql += ") AS url_visit_rank FROM visits";
 +    sql += joins;
 +    sql += where_sql;
-+    sql += ") visits WHERE thorium_url_rank = 1 ORDER BY ";
++    sql += ") visits WHERE url_visit_rank = 1 ORDER BY ";
 +    sql += order_sql;
 +
 +    if (options.max_count > 0) {
@@ -85,7 +94,8 @@ index 52aeac4f06..3d0f15685e 100644
 +      sql += " LIMIT ?";
 +    }
 +
-+    sql::Statement statement(GetDB().GetUniqueStatement(base::cstring_view(sql)));
++    sql::Statement statement(
++        GetDB().GetUniqueStatement(base::cstring_view(sql)));
 +    if (statement.is_valid()) {
 +      int bind_index = 0;
 +      // Bind values in the same order as where_clauses: time range, optional
