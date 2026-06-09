@@ -129,6 +129,7 @@ patchThor () {
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/GPC.patch" "Global Privacy Control patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/disable-privacy-sandbox.patch" "Disable Privacy Sandbox patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-query-dedupe.patch" "History duplicate query patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-redirect-chain-cache.patch" "History redirect chain cache patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-delete-directive-startup-guard.patch" "History delete directive startup guard patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
 	# Kept because it is related to Thorium custom flags (not upstreamable).
