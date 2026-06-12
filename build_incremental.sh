@@ -54,7 +54,6 @@ run_ninja() {
 
 if [[ "$BUILD_PACKAGES" == 1 ]]; then
   run_ninja \
-    thorium_shell \
     clear_key_cdm \
     chromedriver \
     chrome/installer/linux:strip_chrome_binary \
@@ -72,13 +71,12 @@ if [[ "$BUILD_PACKAGES" == 1 ]]; then
   patchelf --remove-rpath out/thorium/thorium.stripped 2>/dev/null || true
   patchelf --remove-rpath out/thorium/chrome_management_service.stripped 2>/dev/null || true
 
-  cp -f "$THORIUM_DIR/thorium_shell/thorium_shell.png" out/thorium/thorium_shell.png
   cp -f "$THORIUM_DIR/thorium_shell/thorium.svg" out/thorium/thorium.svg
-  cp -f "$THORIUM_DIR/thorium_shell/thorium-shell.desktop" out/thorium/thorium-shell.desktop
-  cp -f "$THORIUM_DIR/thorium_shell/thorium-shell" out/thorium/thorium-shell
   cp -f "$THORIUM_DIR/pak_src/binaries/pak" out/thorium/pak
   cp -f "$THORIUM_DIR/infra/initial_preferences" out/thorium/initial_preferences
-  chmod 755 out/thorium/thorium-shell out/thorium/pak
+  rm -f out/thorium/thorium_shell out/thorium/thorium_shell.png \
+    out/thorium/thorium-shell out/thorium/thorium-shell.desktop
+  chmod 755 out/thorium/pak
 
   if [[ ! -x buildtools/third_party/eu-strip/bin/eu-strip ]] &&
      command -v eu-strip >/dev/null; then
