@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/extensions/api/settings_private/prefs_util.cc b/chrome/browser/extensions/api/settings_private/prefs_util.cc
-index 7238955992..3f5f5f7d29 100644
+index e81d7f44bfd9f..f05f3ec469b1a 100644
 --- a/chrome/browser/extensions/api/settings_private/prefs_util.cc
 +++ b/chrome/browser/extensions/api/settings_private/prefs_util.cc
-@@ -400,6 +400,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
+@@ -403,6 +403,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
    // Privacy Guide
    (*s_allowlist)[::prefs::kPrivacyGuideViewed] =
        settings_api::PrefType::kBoolean;
@@ -11,7 +11,7 @@ index 7238955992..3f5f5f7d29 100644
    // Privacy Sandbox page
    (*s_allowlist)[::prefs::kPrivacySandboxM1TopicsEnabled] =
 diff --git a/chrome/browser/renderer_preferences_util.cc b/chrome/browser/renderer_preferences_util.cc
-index 254a3b5a0c..586d6fc4e9 100644
+index 254a3b5a0cc92..586d6fc4e98b6 100644
 --- a/chrome/browser/renderer_preferences_util.cc
 +++ b/chrome/browser/renderer_preferences_util.cc
 @@ -152,6 +152,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
@@ -23,10 +23,10 @@ index 254a3b5a0c..586d6fc4e9 100644
        pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
  
 diff --git a/chrome/browser/ui/browser_ui_prefs.cc b/chrome/browser/ui/browser_ui_prefs.cc
-index 25d238a208..fc6a88e225 100644
+index 970e232178194..325ec109e759f 100644
 --- a/chrome/browser/ui/browser_ui_prefs.cc
 +++ b/chrome/browser/ui/browser_ui_prefs.cc
-@@ -142,6 +142,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
+@@ -145,6 +145,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
    registry->RegisterBooleanPref(
        prefs::kEnableDoNotTrack, false,
        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -37,10 +37,10 @@ index 25d238a208..fc6a88e225 100644
    registry->RegisterBooleanPref(prefs::kPrintPreviewUseSystemDefaultPrinter,
                                  false);
 diff --git a/chrome/browser/ui/prefs/pref_watcher.cc b/chrome/browser/ui/prefs/pref_watcher.cc
-index 38a856b093..77b76a51f3 100644
+index 4cae431a3012e..81fbdafb13566 100644
 --- a/chrome/browser/ui/prefs/pref_watcher.cc
 +++ b/chrome/browser/ui/prefs/pref_watcher.cc
-@@ -151,6 +151,7 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
+@@ -152,6 +152,7 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
                                       renderer_callback);
    profile_pref_change_registrar_.Add(prefs::kEnableDoNotTrack,
                                       renderer_callback);
@@ -49,10 +49,10 @@ index 38a856b093..77b76a51f3 100644
  #if !BUILDFLAG(IS_MAC)
    profile_pref_change_registrar_.Add(prefs::kFullscreenAllowed,
 diff --git a/chrome/common/pref_names.h b/chrome/common/pref_names.h
-index cb76d88636..13dbf3820b 100644
+index 08acbb0628037..a84b48742a3f9 100644
 --- a/chrome/common/pref_names.h
 +++ b/chrome/common/pref_names.h
-@@ -1092,6 +1092,10 @@ inline constexpr char kEnableReferrers[] = "enable_referrers";
+@@ -1010,6 +1010,10 @@ inline constexpr char kEnableReferrers[] = "enable_referrers";
  // Whether to send the DNT header.
  inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
  
@@ -64,7 +64,7 @@ index cb76d88636..13dbf3820b 100644
  // use of Clear Key key sytems, which is always allowed as required by the spec.
  // TODO(crbug.com/40549758): This pref was used as a WebPreference which is why
 diff --git a/content/browser/loader/browser_initiated_resource_request.cc b/content/browser/loader/browser_initiated_resource_request.cc
-index a8cdb42779..36efd26e75 100644
+index a8cdb42779b98..36efd26e75ca8 100644
 --- a/content/browser/loader/browser_initiated_resource_request.cc
 +++ b/content/browser/loader/browser_initiated_resource_request.cc
 @@ -30,6 +30,12 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
@@ -81,22 +81,22 @@ index a8cdb42779..36efd26e75 100644
    // TODO(crbug.com/40833603): WARNING: This bypasses the permissions policy.
    // Unfortunately, workers lack a permissions policy and to derive proper hints
 diff --git a/content/renderer/render_frame_impl.cc b/content/renderer/render_frame_impl.cc
-index 5936c5eaa0..90cec5f65e 100644
+index 16b998336897f..b250097276525 100644
 --- a/content/renderer/render_frame_impl.cc
 +++ b/content/renderer/render_frame_impl.cc
-@@ -4476,6 +4476,10 @@ void RenderFrameImpl::FinalizeRequestInternal(
+@@ -4514,6 +4518,10 @@ void RenderFrameImpl::FinalizeRequestInternal(
      request.SetHttpHeaderField(
-         blink::WebString::FromUTF8(blink::kDoNotTrackHeader), "1");
+         blink::WebString::FromUtf8(blink::kDoNotTrackHeader), "1");
    }
 +  if (GetWebView()->GetRendererPreferences().enable_gpc) {
 +    request.SetHttpHeaderField(
-+        blink::WebString::FromUTF8(blink::kSecGPCHeader), "1");
++        blink::WebString::FromUtf8(blink::kSecGPCHeader), "1");
 +  }
  
    // The request's extra data may indicate that we should set a custom user
    // agent. This needs to be done here, after WebKit is through with setting the
 diff --git a/third_party/blink/common/loader/loader_constants.cc b/third_party/blink/common/loader/loader_constants.cc
-index ae82ae372f..beb3409c46 100644
+index ae82ae372f79b..beb3409c46d79 100644
 --- a/third_party/blink/common/loader/loader_constants.cc
 +++ b/third_party/blink/common/loader/loader_constants.cc
 @@ -7,5 +7,6 @@
@@ -107,7 +107,7 @@ index ae82ae372f..beb3409c46 100644
  
  }  // namespace blink
 diff --git a/third_party/blink/common/renderer_preferences/renderer_preferences_mojom_traits.cc b/third_party/blink/common/renderer_preferences/renderer_preferences_mojom_traits.cc
-index bee7446211..89f3b4cf07 100644
+index a42179970119c..a388a68616def 100644
 --- a/third_party/blink/common/renderer_preferences/renderer_preferences_mojom_traits.cc
 +++ b/third_party/blink/common/renderer_preferences/renderer_preferences_mojom_traits.cc
 @@ -54,6 +54,7 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
@@ -119,7 +119,7 @@ index bee7446211..89f3b4cf07 100644
  
    if (!data.ReadWebrtcIpHandlingPolicy(&out->webrtc_ip_handling_policy))
 diff --git a/third_party/blink/public/common/loader/loader_constants.h b/third_party/blink/public/common/loader/loader_constants.h
-index 7b3fb4f53f..1fb38d32e4 100644
+index 7b3fb4f53f734..1fb38d32e4863 100644
 --- a/third_party/blink/public/common/loader/loader_constants.h
 +++ b/third_party/blink/public/common/loader/loader_constants.h
 @@ -11,6 +11,7 @@ namespace blink {
@@ -131,7 +131,7 @@ index 7b3fb4f53f..1fb38d32e4 100644
  // These values indicate the load progress constants shared between both
  // //content and //blink.
 diff --git a/third_party/blink/public/common/renderer_preferences/renderer_preferences.h b/third_party/blink/public/common/renderer_preferences/renderer_preferences.h
-index d608b6fad6..bb9ac77583 100644
+index 08d068cc0af4e..45d4bb340901a 100644
 --- a/third_party/blink/public/common/renderer_preferences/renderer_preferences.h
 +++ b/third_party/blink/public/common/renderer_preferences/renderer_preferences.h
 @@ -52,6 +52,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
@@ -143,7 +143,7 @@ index d608b6fad6..bb9ac77583 100644
  #if BUILDFLAG(IS_CHROMEOS)
    bool use_overlay_scrollbar{false};
 diff --git a/third_party/blink/public/common/renderer_preferences/renderer_preferences_mojom_traits.h b/third_party/blink/public/common/renderer_preferences/renderer_preferences_mojom_traits.h
-index 455f0facc5..29c2c54911 100644
+index 11270bb1e2293..e25d101022069 100644
 --- a/third_party/blink/public/common/renderer_preferences/renderer_preferences_mojom_traits.h
 +++ b/third_party/blink/public/common/renderer_preferences/renderer_preferences_mojom_traits.h
 @@ -128,6 +128,10 @@ struct BLINK_COMMON_EXPORT
@@ -158,7 +158,7 @@ index 455f0facc5..29c2c54911 100644
        const ::blink::RendererPreferences& data) {
      return data.enable_encrypted_media;
 diff --git a/third_party/blink/public/mojom/renderer_preferences.mojom b/third_party/blink/public/mojom/renderer_preferences.mojom
-index 835a170757..5b89d8d747 100644
+index aa6d396335d33..d77218f6cfffe 100644
 --- a/third_party/blink/public/mojom/renderer_preferences.mojom
 +++ b/third_party/blink/public/mojom/renderer_preferences.mojom
 @@ -89,6 +89,9 @@ struct RendererPreferences {
@@ -172,10 +172,10 @@ index 835a170757..5b89d8d747 100644
    // the use of Clear Key key system which is always allowed as required by the
    // spec.
 diff --git a/third_party/blink/renderer/bindings/idl_in_modules.gni b/third_party/blink/renderer/bindings/idl_in_modules.gni
-index f4ba97c2c5..e66cc62b53 100644
+index d968cedda43df..c49e19aa1da54 100644
 --- a/third_party/blink/renderer/bindings/idl_in_modules.gni
 +++ b/third_party/blink/renderer/bindings/idl_in_modules.gni
-@@ -1288,6 +1288,11 @@ static_idl_files_in_modules = [
+@@ -1293,6 +1293,11 @@ static_idl_files_in_modules = [
    "//third_party/blink/renderer/modules/xr/xr_webgl_sub_image.idl",
  ]
  
@@ -188,10 +188,10 @@ index f4ba97c2c5..e66cc62b53 100644
  # This uses target_os rather than current_os (which is what is_android is set
  # from) for the case of generating the v8 context snapshot for android. When
 diff --git a/third_party/blink/renderer/core/exported/web_view_impl.cc b/third_party/blink/renderer/core/exported/web_view_impl.cc
-index b5a7e1b177..fccbd2248b 100644
+index 92c8a39a2572a..996b31f05408b 100644
 --- a/third_party/blink/renderer/core/exported/web_view_impl.cc
 +++ b/third_party/blink/renderer/core/exported/web_view_impl.cc
-@@ -3754,6 +3754,9 @@ void WebViewImpl::UpdateRendererPreferences(
+@@ -3618,6 +3618,9 @@ void WebViewImpl::UpdateRendererPreferences(
    GetSettings()->SetCaretBrowsingEnabled(
        renderer_preferences_.caret_browsing_enabled);
  
@@ -202,7 +202,7 @@ index b5a7e1b177..fccbd2248b 100644
    GetSettings()->SetSelectionClipboardBufferAvailable(
        renderer_preferences_.selection_clipboard_buffer_available);
 diff --git a/third_party/blink/renderer/modules/BUILD.gn b/third_party/blink/renderer/modules/BUILD.gn
-index dadcaa5d82..cb3381b529 100644
+index 842b7834acd9e..708cc9e6226a5 100644
 --- a/third_party/blink/renderer/modules/BUILD.gn
 +++ b/third_party/blink/renderer/modules/BUILD.gn
 @@ -100,6 +100,7 @@ component("modules") {
@@ -213,113 +213,39 @@ index dadcaa5d82..cb3381b529 100644
      "//third_party/blink/renderer/modules/handwriting",
      "//third_party/blink/renderer/modules/hid",
      "//third_party/blink/renderer/modules/idle",
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn b/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn
-new file mode 100644
-index 0000000000..5c3c7ab4ad
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn
-@@ -0,0 +1,8 @@
-+import("//third_party/blink/renderer/modules/modules.gni")
-+
-+blink_modules_sources("global_privacy_control") {
-+  sources = [
-+    "global_privacy_control.cc",
-+    "global_privacy_control.h",
-+  ]
-+}
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc
-new file mode 100644
-index 0000000000..9884e6b68c
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc
-@@ -0,0 +1,9 @@
-+#include "third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h"
-+
-+namespace blink {
-+
-+bool GlobalPrivacyControl::globalPrivacyControl(NavigatorBase& navigator) {
-+  return true;
-+}
-+
-+}  // namespace blink
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h
-new file mode 100644
-index 0000000000..219f4dae95
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h
-@@ -0,0 +1,15 @@
-+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-+#define THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-+
-+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
-+
-+namespace blink {
-+
-+class GlobalPrivacyControl final {
-+ public:
-+  static bool globalPrivacyControl(NavigatorBase&);
-+};
-+
-+}  // namespace blink
-+
-+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl b/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl
-new file mode 100644
-index 0000000000..811c3f5d4d
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl
-@@ -0,0 +1,6 @@
-+[
-+    RuntimeEnabled=GlobalPrivacyControl,
-+    ImplementedAs=GlobalPrivacyControl
-+] partial interface Navigator {
-+    readonly attribute boolean globalPrivacyControl;
-+};
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl b/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl
-new file mode 100644
-index 0000000000..6e67ca2f50
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl
-@@ -0,0 +1,6 @@
-+[
-+    RuntimeEnabled=GlobalPrivacyControl,
-+    ImplementedAs=GlobalPrivacyControl
-+] partial interface WorkerNavigator {
-+    readonly attribute boolean globalPrivacyControl;
-+};
 diff --git a/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc b/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc
-index a7feeac80f..8a1831d74f 100644
+index 080b9b445198b..44644931c6158 100644
 --- a/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc
 +++ b/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc
 @@ -150,6 +150,9 @@ void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
    if (renderer_preferences_.enable_do_not_track) {
-     request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
+     request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
    }
 +  if (renderer_preferences_.enable_gpc) {
-+    request.SetHttpHeaderField(WebString::FromUTF8(kSecGPCHeader), "1");
++    request.SetHttpHeaderField(WebString::FromUtf8(kSecGPCHeader), "1");
 +  }
    auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
    url_request_extra_data->set_originated_from_service_worker(true);
  
 diff --git a/third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_global_scope_context_impl.cc b/third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_global_scope_context_impl.cc
-index 66a4ae752d..1025caa1e8 100644
+index e0e9af90a35fd..8370aae45dd53 100644
 --- a/third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_global_scope_context_impl.cc
 +++ b/third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_global_scope_context_impl.cc
 @@ -377,6 +377,9 @@ void DedicatedOrSharedWorkerGlobalScopeContextImpl::FinalizeRequest(
    if (renderer_preferences_.enable_do_not_track) {
-     request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
+     request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
    }
 +  if (renderer_preferences_.enable_gpc) {
-+    request.SetHttpHeaderField(WebString::FromUTF8(kSecGPCHeader), "1");
++    request.SetHttpHeaderField(WebString::FromUtf8(kSecGPCHeader), "1");
 +  }
  
    auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
    request.SetURLRequestExtraData(std::move(url_request_extra_data));
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-index 965c9c55bd..a1951503ac 100644
+index 1b59fe994a8b1..2eef5e2b29abf 100644
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -3099,6 +3099,11 @@
+@@ -3175,6 +3175,11 @@
        name: "GetUserMediaEchoCancellationModes",
        status: "stable",
      },

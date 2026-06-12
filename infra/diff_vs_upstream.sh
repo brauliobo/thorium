@@ -24,8 +24,18 @@ OUT="$THOR_ROOT/out/upstream_diff"
 rm -rf "$OUT" && mkdir -p "$OUT/diffs" "$OUT/patch_status"
 
 echo "Comparing overlay against chromium tag: $TARGET_TAG"
-( cd "$CR_SRC_DIR" && git fetch --tags --depth=1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG" 2>/dev/null || true )
+if ! ( cd "$CR_SRC_DIR" && git rev-parse -q --verify "refs/tags/$TARGET_TAG" >/dev/null ); then
+  ( cd "$CR_SRC_DIR" && git fetch --tags --depth=1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG" 2>/dev/null || true )
+fi
 ( cd "$CR_SRC_DIR" && git checkout -q "tags/$TARGET_TAG" ) || { echo "tag not found locally; pre-fetch $TARGET_TAG" >&2; exit 1; }
+
+list_overlay_files() {
+  if command -v rg >/dev/null 2>&1; then
+    rg --files src
+  else
+    find src -type f
+  fi
+}
 
 : > "$OUT/inventory.tsv"
 while IFS= read -r rel; do
@@ -41,7 +51,7 @@ while IFS= read -r rel; do
     diff -u "$up" "$rel" > "$OUT/diffs/$sub.diff" || true
   fi
   printf '%s\t%s\n' "$status" "$sub" >> "$OUT/inventory.tsv"
-done < <(find src -type f | sort)
+done < <(list_overlay_files | sort)
 
 awk -F'\t' '{n[$1]++} END{for (k in n) print k, n[k]}' "$OUT/inventory.tsv" > "$OUT/summary.counts"
 

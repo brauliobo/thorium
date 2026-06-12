@@ -38,6 +38,19 @@ fail() {
   exit 1
 }
 
+list_local_check_files() {
+  if command -v rg >/dev/null 2>&1; then
+    rg --files . \
+      -g '!arch-package-direct/**' \
+      -g '!aur/**' \
+      -g '!chromium-cl-*/**' \
+      -g '!macos-build/**' \
+      -g '!out/**'
+  else
+    git ls-files
+  fi
+}
+
 echo "Checking shell syntax..."
 bash -n trunk.sh version.sh upstream_version.sh setup.sh build_incremental.sh infra/*.sh
 
@@ -51,8 +64,8 @@ python3 -m py_compile \
 
 echo "Checking for local scratch files..."
 [ ! -e .claude ] || fail ".claude/ must not be committed"
-[ -z "$(find . -path '*/_incompat/*' -print -quit)" ] || fail "_incompat scratch files remain"
-[ -z "$(find . -name '*.needs-port' -o -name '*.disabled' -print -quit)" ] || fail "deferred patch scratch files remain"
+! list_local_check_files | rg -q '(^|/)_incompat/' || fail "_incompat scratch files remain"
+! list_local_check_files | rg -q '\.(needs-port|disabled)$' || fail "deferred patch scratch files remain"
 
 echo "Checking git whitespace outside patch payloads..."
 git diff --check -- ':!other/*.patch'
@@ -65,11 +78,11 @@ if [ "$WITH_UPSTREAM" -eq 1 ]; then
     infra/diff_vs_upstream.sh
   fi
 
-  if find out/upstream_diff/patch_status -name '*.rc' -exec sh -c '
+  if rg --files out/upstream_diff/patch_status | rg '\.rc$' | xargs -r sh -c '
       for rc_file do
         [ "$(cat "$rc_file")" = 0 ] || exit 1
       done
-    ' sh {} +; then
+    ' sh; then
     :
   else
     fail "one or more patches failed; see out/upstream_diff/patch_status"

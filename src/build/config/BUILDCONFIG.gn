@@ -174,6 +174,11 @@ declare_args() {
       is_debug && current_os != "ios" && current_os != "watchos"
 }
 
+declare_args() {
+  # True for Thorium overlay builds. This gates Thorium-only generated assets.
+  is_thorium_build = true
+}
+
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")
@@ -185,6 +190,15 @@ declare_args() {
   # the codebase which have been made manifestly safe.
   clang_unsafe_buffers_paths = ""
   clang_warning_suppression_file = ""
+}
+
+declare_args() {
+  # Whether to enable strict deps checks. This ensures that your dependencies
+  # are correctly declared (no missing deps and no accessing transitive deps).
+  enable_strict_deps = false
+}
+if (enable_strict_deps) {
+  generate_modulemap = "textual"
 }
 
 # ==============================================================================
@@ -367,6 +381,8 @@ default_compiler_configs = [
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:no_unresolved_symbols",
   "//build/config/compiler:runtime_library",
+  "//build/config/compiler:sanitize_c_array_bounds",
+  "//build/config/compiler:sanitize_return",
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:tot_warnings",
@@ -535,35 +551,6 @@ set_defaults("rust_proc_macro") {
   configs = default_rust_proc_macro_configs
 }
 
-DEFAULT_MODULE_DEPS = [
-  "//buildtools/third_party/libc++:_Builtin_float",
-  "//buildtools/third_party/libc++:_Builtin_intrinsics",
-  "//buildtools/third_party/libc++:_Builtin_inttypes",
-  "//buildtools/third_party/libc++:_Builtin_limits",
-  "//buildtools/third_party/libc++:_Builtin_stdalign",
-  "//buildtools/third_party/libc++:_Builtin_stdarg",
-  "//buildtools/third_party/libc++:_Builtin_stdatomic",
-  "//buildtools/third_party/libc++:_Builtin_stdbool",
-  "//buildtools/third_party/libc++:_Builtin_stddef",
-  "//buildtools/third_party/libc++:_Builtin_stdint",
-  "//buildtools/third_party/libc++:_Builtin_unwind",
-  "//buildtools/third_party/libc++:std",
-  "//buildtools/third_party/libc++:std_config",
-  "//buildtools/third_party/libc++:std_core",
-  "//buildtools/third_party/libc++:std_ctype_h",
-  "//buildtools/third_party/libc++:std_errno_h",
-  "//buildtools/third_party/libc++:std_fenv_h",
-  "//buildtools/third_party/libc++:std_float_h",
-  "//buildtools/third_party/libc++:std_inttypes_h",
-  "//buildtools/third_party/libc++:std_math_h",
-  "//buildtools/third_party/libc++:std_private_mbstate_t",
-  "//buildtools/third_party/libc++:std_stdatomic_h",
-  "//buildtools/third_party/libc++:std_stdbool_h",
-  "//buildtools/third_party/libc++:std_string_h",
-  "//buildtools/third_party/libc++:std_uchar_h",
-  "//buildtools/third_party/libc++:std_wctype_h",
-]
-
 # A helper for forwarding testonly and visibility.
 # Forwarding "*" does not include variables from outer scopes (to avoid copying
 # all globals into each template invocation), so it will not pick up
@@ -581,6 +568,9 @@ TESTONLY_AND_VISIBILITY = [
 # Variables
 #   use_libcxx_modules: If true, libc++'s modules are added to deps.
 #       This is true by default.
+#   strict_deps: If false, the strict deps check will be disabled even when the
+#       feature is enabled in args.gn.
+#       This is true by default.
 foreach(_target_type,
         [
           "source_set",
@@ -588,9 +578,7 @@ foreach(_target_type,
         ]) {
   template(_target_type) {
     target(_target_type, target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             TESTONLY_AND_VISIBILITY + [ "use_libcxx_modules" ])
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -599,33 +587,59 @@ foreach(_target_type,
         deps = []
       }
 
-      _use_libcxx_modules = true
-      if (defined(invoker.use_libcxx_modules)) {
-        _use_libcxx_modules = invoker.use_libcxx_modules
+      if (!defined(public_deps)) {
+        public_deps = []
       }
 
-      if (filter_include(configs,
-                         [
-                           "//build/config/compiler:exceptions",
-                           "//build/config/compiler:rtti",
-                         ]) != []) {
-        # Exceptions and RTTI flags are incompatible with libc++ modules build.
-        # So disable modules build for such targets.
-        _use_libcxx_modules = false
+      if (is_clang) {
+        # When clang is used, some target may use clang module. This dependency
+        # is required for things to work, regardless of whether the libc++
+        # module is used in this target or not.
+        public_deps += [ "//buildtools/third_party/libc++:headers" ]
       }
 
-      if (is_clang && _use_libcxx_modules) {
-        # This is necessary for Clang modules builds.
-        deps += DEFAULT_MODULE_DEPS
-      } else if (filter_include(configs,
-                                [ "//build/config/compiler:libcxx_module" ]) !=
-                 []) {
-        configs -= [ "//build/config/compiler:libcxx_module" ]
+      if (!defined(use_libcxx_modules)) {
+        use_libcxx_modules = is_clang
       }
 
-      # _use_libcxx_modules is considered unused, if is_clang = false in the
-      # above conditional.
-      not_needed([ "_use_libcxx_modules" ])
+      if (filter_include(
+              configs,
+              [
+                # TODO(https://github.com/llvm/llvm-project/pull/145654):
+                # Remove mac_no_default_new_delete_symbols after clang roll.
+                ":mac_no_default_new_delete_symbols",
+                "//build/config/compiler:exceptions",
+                "//build/config/compiler:rtti",
+              ]) != [] ||
+          filter_include(configs,
+                         [ "//build/config/compiler:no_exceptions" ]) == []) {
+        # Exceptions (i.e. if the 'no_exceptions' config is not used) and RTTI
+        # flags are incompatible with libc++ modules build. So disable modules
+        # build for such targets.
+        use_libcxx_modules = false
+      }
+
+      if (!defined(strict_deps)) {
+        strict_deps = enable_strict_deps
+      }
+
+      if (use_libcxx_modules && is_clang) {
+        if (strict_deps) {
+          configs += [ "//build/modules:strict_deps" ]
+        }
+      } else {
+        not_needed([ "strict_deps" ])
+      }
+
+      if (use_libcxx_modules) {
+        # Add a dependency needed for Clang modules builds.
+        deps += [ "//buildtools/third_party/libc++:all_modules" ]
+
+        if (!defined(invoker.generate_modulemap) &&
+            defined(generate_modulemap)) {
+          generate_modulemap = generate_modulemap
+        }
+      }
 
       # Consumed by the unsafe-buffers plugin during compile.
       #
@@ -658,6 +672,9 @@ foreach(_target_type,
 #       its subconfig "//build/config/c++:runtime_library").
 #   use_libcxx_modules: If true, libc++'s modules are added to deps.
 #       This is true by default.
+#   strict_deps: If false, the strict deps check will be disabled even when the
+#       feature is enabled in args.gn.
+#       This is true by default.
 foreach(_target_type,
         [
           "executable",
@@ -670,10 +687,7 @@ foreach(_target_type,
     target(_target_type, _target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [
-                                   "no_default_deps",
-                                   "use_libcxx_modules",
-                                 ])
+                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -711,33 +725,59 @@ foreach(_target_type,
         deps += [ "//build/config:${_target_type}_deps" ]
       }
 
-      _use_libcxx_modules = true
-      if (defined(invoker.use_libcxx_modules)) {
-        _use_libcxx_modules = invoker.use_libcxx_modules
+      if (!defined(public_deps)) {
+        public_deps = []
       }
 
-      if (filter_include(configs,
-                         [
-                           "//build/config/compiler:exceptions",
-                           "//build/config/compiler:rtti",
-                         ]) != []) {
-        # Exceptions and RTTI flags are incompatible with libc++ modules build.
-        # So disable modules build for such targets.
-        _use_libcxx_modules = false
+      if (is_clang) {
+        # When clang is used, some target may use clang module. This dependency
+        # is required for things to work, regardless of whether the libc++
+        # module is used in this target or not.
+        public_deps += [ "//buildtools/third_party/libc++:headers" ]
       }
 
-      if (is_clang && _use_libcxx_modules) {
-        # These are necessary for Clang modules builds.
-        deps += DEFAULT_MODULE_DEPS
-      } else if (filter_include(configs,
-                                [ "//build/config/compiler:libcxx_module" ]) !=
-                 []) {
-        configs -= [ "//build/config/compiler:libcxx_module" ]
+      if (!defined(use_libcxx_modules)) {
+        use_libcxx_modules = is_clang
       }
 
-      # _use_libcxx_modules is considered unused, if is_clang = false in the
-      # above conditional.
-      not_needed([ "_use_libcxx_modules" ])
+      if (filter_include(
+              configs,
+              [
+                # TODO(https://github.com/llvm/llvm-project/pull/145654):
+                # Remove mac_no_default_new_delete_symbols after clang roll.
+                ":mac_no_default_new_delete_symbols",
+                "//build/config/compiler:exceptions",
+                "//build/config/compiler:rtti",
+              ]) != [] ||
+          filter_include(configs,
+                         [ "//build/config/compiler:no_exceptions" ]) == []) {
+        # Exceptions (i.e. if the 'no_exceptions' config is not used) and RTTI
+        # flags are incompatible with libc++ modules build. So disable modules
+        # build for such targets.
+        use_libcxx_modules = false
+      }
+
+      if (!defined(strict_deps)) {
+        strict_deps = enable_strict_deps
+      }
+
+      if (use_libcxx_modules && is_clang) {
+        if (strict_deps) {
+          configs += [ "//build/modules:strict_deps" ]
+        }
+      } else {
+        not_needed([ "strict_deps" ])
+      }
+
+      if (use_libcxx_modules) {
+        # Add a dependency needed for Clang modules builds.
+        deps += [ "//buildtools/third_party/libc++:all_modules" ]
+
+        if (!defined(invoker.generate_modulemap) &&
+            defined(generate_modulemap)) {
+          generate_modulemap = generate_modulemap
+        }
+      }
 
       # On Android, write shared library output file to metadata. We will use
       # this information to, for instance, collect all shared libraries that

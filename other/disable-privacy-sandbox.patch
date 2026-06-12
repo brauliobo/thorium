@@ -1,5 +1,5 @@
 diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index 8b130bc3a3..451efd376f 100644
+index 8b130bc3a328f..451efd376f1d8 100644
 --- a/components/browsing_data/content/browsing_data_model.cc
 +++ b/components/browsing_data/content/browsing_data_model.cc
 @@ -991,16 +991,12 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
@@ -24,7 +24,7 @@ index 8b130bc3a3..451efd376f 100644
    base::RepeatingClosure completion =
        base::BindRepeating([](const base::OnceClosure&) {},
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index 3ecbd8bfcf..d035595142 100644
+index 32ffe5b41326d..0311bcfaf4a9c 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
 @@ -8,7 +8,7 @@
@@ -61,21 +61,17 @@ index 3ecbd8bfcf..d035595142 100644
  
  BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
               base::FEATURE_ENABLED_BY_DEFAULT);
-@@ -88,10 +88,10 @@ BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
+@@ -88,7 +88,7 @@ BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
  BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
  
  BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
 -             base::FEATURE_ENABLED_BY_DEFAULT);
 +             base::FEATURE_DISABLED_BY_DEFAULT);
  
- BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
--             base::FEATURE_ENABLED_BY_DEFAULT);
-+             base::FEATURE_DISABLED_BY_DEFAULT);
- 
  BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
  
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index b9474e9195..ed68d86d46 100644
+index b9474e91953b7..ed68d86d46987 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -51,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -88,7 +84,7 @@ index b9474e9195..ed68d86d46 100644
  
    registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 67fe54e55c..5314d7b2e4 100644
+index 1918ae42a3f69..bfcb307db5b79 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 @@ -129,7 +129,8 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
@@ -129,7 +125,7 @@ index 67fe54e55c..5314d7b2e4 100644
  
  PrivacySandboxSettingsImpl::Status
 diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 12f0902326..3caa1997aa 100644
+index 12f09023269e2..3caa1997aa6ad 100644
 --- a/content/browser/attribution_reporting/attribution_suitable_context.cc
 +++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
 @@ -59,67 +59,8 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
@@ -203,7 +199,7 @@ index 12f0902326..3caa1997aa 100644
  
  // static
 diff --git a/content/browser/interest_group/ad_auction_service_impl.cc b/content/browser/interest_group/ad_auction_service_impl.cc
-index 0f75f76282..a2d5ececb6 100644
+index 0f75f7628248f..a2d5ececb61ce 100644
 --- a/content/browser/interest_group/ad_auction_service_impl.cc
 +++ b/content/browser/interest_group/ad_auction_service_impl.cc
 @@ -190,6 +190,8 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -216,7 +212,7 @@ index 0f75f76282..a2d5ececb6 100644
  
    // The object is bound to the lifetime of `render_frame_host` and the mojo
 diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index ab16e6b159..026a832753 100644
+index ea8aefca775f5..58e231b9efe59 100644
 --- a/content/browser/storage_partition_impl.cc
 +++ b/content/browser/storage_partition_impl.cc
 @@ -1465,31 +1465,7 @@ void StoragePartitionImpl::Initialize(

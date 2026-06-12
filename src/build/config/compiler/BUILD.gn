@@ -5,20 +5,23 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/c++/c++.gni")
-import("//build/config/compiler_opt.gni")
+import("//build/config/c++/modules.gni")
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/compiler_opt.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/host_byteorder.gni")
 import("//build/config/pch.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
-import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -632,9 +635,7 @@ config("compiler") {
 
     # TODO(crbug.com/40283598): This causes binary size growth and potentially
     # other problems.
-    # TODO(crbug.com/40284925): This isn't supported by Cronet's mainline llvm version.
-    if (default_toolchain != "//build/toolchain/cros:target" &&
-        !llvm_android_mainline) {
+    if (default_toolchain != "//build/toolchain/cros:target") {
       cflags += [
         "-mllvm",
         "-split-threshold-for-reg-with-hint=0",
@@ -663,19 +664,18 @@ config("compiler") {
       }
     }
 
-    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
-    # (excluding toolchains that use an older version of LLVM).
+    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF.
     # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
-    if (is_linux && use_lld && !llvm_android_mainline && current_cpu != "arm" &&
-        default_toolchain != "//build/toolchain/cros:target") {
+    # It also causes segfault on Linux s390x:
+    # https://github.com/llvm/llvm-project/issues/149511
+    if (is_linux && use_lld && current_cpu != "arm" && current_cpu != "s390x") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
 
   # C11/C++11 compiler flags setup.
   # ---------------------------
-  if (is_linux || is_chromeos || is_android || (is_nacl && is_clang) ||
-      current_os == "aix") {
+  if (is_linux || is_chromeos || is_android || current_os == "aix") {
     if (is_clang) {
       standard_prefix = "c"
 
@@ -683,12 +683,6 @@ config("compiler") {
       # defined by the compiler.  However, lots of code relies on the
       # non-standard features that _GNU_SOURCE enables, so define it manually.
       defines += [ "_GNU_SOURCE" ]
-
-      if (is_nacl) {
-        # Undefine __STRICT_ANSI__ to get non-standard features which would
-        # otherwise not be enabled by NaCl's sysroots.
-        cflags += [ "-U__STRICT_ANSI__" ]
-      }
     } else {
       # Gcc does not support ##__VA_ARGS__ when in standards-conforming mode,
       # but we use this feature in several places in Chromium.
@@ -699,29 +693,15 @@ config("compiler") {
     }
 
     cflags_c += [ "-std=${standard_prefix}11" ]
-    if (is_nacl && !is_nacl_saigo) {
-      # This is for the pnacl_newlib toolchain. It's only used to build
-      # a few independent ppapi test files that don't pull in any other
-      # dependencies.
-      cflags_cc += [ "-std=${standard_prefix}++14" ]
-      if (is_clang) {
-        cflags_cc += [ "-fno-trigraphs" ]
-      }
-    } else if (is_clang) {
-      if (defined(use_cxx17) && use_cxx17) {
-        cflags_cc += [ "-std=${standard_prefix}++17" ]
-      } else {
-        cflags_cc += [ "-std=${standard_prefix}++20" ]
-      }
+    if (use_cxx23) {
+      cflags_cc += [ "-std=${standard_prefix}++23" ]
     } else {
-      # The gcc bots are currently using GCC 9, which is not new enough to
-      # support "c++20"/"gnu++20".
-      cflags_cc += [ "-std=${standard_prefix}++2a" ]
+      cflags_cc += [ "-std=${standard_prefix}++20" ]
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if (defined(use_cxx17) && use_cxx17) {
-      cflags_cc += [ "/std:c++17" ]
+    if (use_cxx23) {
+      cflags_cc += [ "/std:c++23preview" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
     }
@@ -731,16 +711,11 @@ config("compiler") {
       # See: https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
       cflags_cc += [ "/Zc:__cplusplus" ]
     }
-  } else if (!is_nacl) {
-    # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either
-    # gnu11/gnu++11 or c11/c++11; we technically don't need this toolchain any
-    # more, but there are still a few buildbots using it, so until those are
-    # turned off we need the !is_nacl clause and the (is_nacl && is_clang)
-    # clause, above.
+  } else {
     cflags_c += [ "-std=c11" ]
 
-    if (defined(use_cxx17) && use_cxx17) {
-      cflags_cc += [ "-std=c++17" ]
+    if (use_cxx23) {
+      cflags_cc += [ "-std=c++23" ]
     } else {
       cflags_cc += [ "-std=c++20" ]
     }
@@ -1755,11 +1730,17 @@ config("compiler_deterministic") {
     }
   }
 
-  if (use_libcxx_modules) {
+  if (use_clang_modules) {
     cflags += [
       # This removes absolute paths from .pcm files.
       "-Xclang",
       "-fmodule-file-home-is-cwd",
+
+      # Set a fixed dummy path to get deterministic module files even if the
+      # build happens in a different directory. See https://crbug.com/448270644
+      # for more context.
+      "-Xclang",
+      "-fmodules-cache-path=/not_exist_dummy_dir",
     ]
   }
 }
@@ -1857,14 +1838,26 @@ config("clang_revision") {
 # e.g. by setting in the the project's .gn file.
 config("clang_warning_suppression") {
   # Some build configs use older versions of clang that don't support WSMs
-  if (!is_nacl && default_toolchain != "//build/toolchain/cros:target" &&
-      !llvm_android_mainline && is_clang &&
+  if (!is_nacl && default_toolchain != "//build/toolchain/cros:target" && is_clang &&
       clang_warning_suppression_file != "") {
     from_build_root =
         rebase_path(clang_warning_suppression_file, root_build_dir)
     inputs = [ clang_warning_suppression_file ]
     cflags = [ "--warning-suppression-mappings=" + from_build_root ]
   }
+}
+
+# Enable bounds checks when indexing directly into C arrays.
+ubsan_hardening("c_array_bounds") {
+  sanitizer = "array-bounds"
+  condition = !(is_asan && target_cpu == "x86")
+
+  cflags = [ "-Wno-unsafe-buffer-usage-in-static-sized-array" ]
+}
+
+# Ensure non-void functions always hit a return statement.
+ubsan_hardening("return") {
+  sanitizer = "return"
 }
 
 config("rustc_revision") {
@@ -1905,19 +1898,11 @@ config("compiler_arm") {
 }
 
 config("libcxx_module") {
-  if (use_libcxx_modules) {
-    modulemap = rebase_path(
-            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
-            root_build_dir)
-    sysroot_modulemap =
-        rebase_path("//build/linux/amd64/module.modulemap", root_build_dir)
-
+  if (use_clang_modules) {
     cflags_cc = [
       "-fmodules",
-      "-fmodule-map-file=" + modulemap,
-      "-fbuiltin-module-map",
-      "-fmodule-map-file=" + sysroot_modulemap,
-      "-fno-implicit-module-maps",
+      clang_arg_prefix + "-fno-implicit-module-maps",
+      "-fno-implicit-modules",
 
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
@@ -1928,25 +1913,19 @@ config("libcxx_module") {
       # TODO(crbug.com/40440396): Clean up.
       "-Wno-modules-import-nested-redundant",
 
+      # This ensures that a diagnostic mismatch between a module and depender
+      # is not a config mismatch.
+      # For example, compiling libcxx without -Wfoo and then having another
+      # target which uses it declare -Wfoo should not be an error
+      "-Xclang",
+      "-fmodules-disable-diagnostic-validation",
+
       # Needed to allow using builtin modules when the headers are
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
     ]
 
-    if (use_explicit_libcxx_modules) {
-      cflags_cc += [
-        "-fno-implicit-modules",
-
-        # This is for exception handling mismatch.
-        "-Wno-module-file-config-mismatch",
-      ]
-    } else {
-      cflags_cc += [
-        "-fbuiltin-module-map",
-        "-fmodules-cache-path=" +
-            rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
-      ]
-    }
+    defines = [ "USE_LIBCXX_MODULES" ]
   }
 }
 
@@ -2248,17 +2227,6 @@ config("default_warnings") {
       # other issues if the versions are incompatible.
       cflags += [ "-Wno-version-check" ]
       ldflags += [ "-Wno-version-check" ]
-    }
-
-    # Some builders, such as Cronet, use a different version of Clang than
-    # Chromium. This can cause minor errors when compiling Chromium changes. We
-    # want to avoid these errors.
-    if (llvm_android_mainline) {
-      cflags += [
-        "-Wno-error=unknown-warning-option",
-        "-Wno-error=unused-command-line-argument",
-        "-Wno-error=unknown-pragmas",
-      ]
     }
 
     # Disable the GNU line marker warning when building a target with Icecc,
@@ -2635,6 +2603,12 @@ config("wglobal_constructors") {
 config("wexit_time_destructors") {
   if (is_clang) {
     cflags = [ "-Wexit-time-destructors" ]
+  }
+}
+
+config("no_exit_time_destructors") {
+  if (is_clang) {
+    cflags = [ "-Wno-exit-time-destructors" ]
   }
 }
 

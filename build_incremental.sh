@@ -32,6 +32,7 @@ for arg in "$@"; do
 done
 
 CR_SRC_DIR="${CR_DIR:-${CR_SRC_DIR:-$HOME/chromium/src}}"
+THORIUM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ ! -f "$CR_SRC_DIR/out/thorium/build.ninja" ]]; then
   echo "Missing $CR_SRC_DIR/out/thorium/build.ninja; run gn gen once before incremental builds." >&2
@@ -53,14 +54,37 @@ run_ninja() {
 
 if [[ "$BUILD_PACKAGES" == 1 ]]; then
   run_ninja \
+    thorium_shell \
+    clear_key_cdm \
+    chromedriver \
     chrome/installer/linux:strip_chrome_binary \
     chrome/installer/linux:strip_chrome_sandbox \
     chrome/installer/linux:strip_chrome_management_service
 
-  ln -f out/thorium/chrome.stripped out/thorium/thorium.stripped
+  if [[ -f out/thorium/chrome.stripped ]]; then
+    ln -f out/thorium/chrome.stripped out/thorium/thorium.stripped
+  elif [[ ! -f out/thorium/thorium.stripped ]]; then
+    echo "Missing stripped browser binary." >&2
+    exit 1
+  fi
+
   ln -f out/thorium/chrome_sandbox.stripped out/thorium/thorium_sandbox.stripped
   patchelf --remove-rpath out/thorium/thorium.stripped 2>/dev/null || true
   patchelf --remove-rpath out/thorium/chrome_management_service.stripped 2>/dev/null || true
+
+  cp -f "$THORIUM_DIR/thorium_shell/thorium_shell.png" out/thorium/thorium_shell.png
+  cp -f "$THORIUM_DIR/thorium_shell/thorium.svg" out/thorium/thorium.svg
+  cp -f "$THORIUM_DIR/thorium_shell/thorium-shell.desktop" out/thorium/thorium-shell.desktop
+  cp -f "$THORIUM_DIR/thorium_shell/thorium-shell" out/thorium/thorium-shell
+  cp -f "$THORIUM_DIR/pak_src/binaries/pak" out/thorium/pak
+  cp -f "$THORIUM_DIR/infra/initial_preferences" out/thorium/initial_preferences
+  chmod 755 out/thorium/thorium-shell out/thorium/pak
+
+  if [[ ! -x buildtools/third_party/eu-strip/bin/eu-strip ]] &&
+     command -v eu-strip >/dev/null; then
+    mkdir -p buildtools/third_party/eu-strip/bin
+    ln -sf "$(command -v eu-strip)" buildtools/third_party/eu-strip/bin/eu-strip
+  fi
 
   if [[ -f /etc/arch-release ]]; then
     run_ninja chrome/installer/linux:stable_rpm

@@ -15,6 +15,31 @@ yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
 try() { "$@" || die "${RED}Failed $*"; }
 
+copy_optional_overlay () {
+	local overlay_path="$1"
+
+	if [ -e "${overlay_path}" ]; then
+		cp -r -v "${overlay_path}" ${CR_SRC_DIR}/
+	else
+		printf "${YEL}Skipping missing optional overlay: %s${c0}\n" "${overlay_path}"
+	fi
+}
+
+apply_patch_once () {
+	local patch_dir="$1"
+	local patch_file="$2"
+	local label="$3"
+
+	printf "${YEL}%s...${c0}\n" "${label}"
+	if git -C "${patch_dir}" apply --check "${patch_file}" >/dev/null 2>&1; then
+		git -C "${patch_dir}" apply --reject "${patch_file}"
+	elif git -C "${patch_dir}" apply --check --reverse "${patch_file}" >/dev/null 2>&1; then
+		printf "${GRE}%s already applied; skipping.${c0}\n" "${label}"
+	else
+		die "${label} does not apply cleanly in ${patch_dir}"
+	fi
+}
+
 # --help
 displayHelp () {
 	printf "\n" &&
@@ -71,13 +96,14 @@ cp -r -v src/BUILD.gn ${CR_SRC_DIR}/ &&
 cp -r -v src/ash ${CR_SRC_DIR}/ &&
 cp -r -v src/build ${CR_SRC_DIR}/ &&
 cp -r -v src/chrome ${CR_SRC_DIR}/ &&
-cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/chromeos &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
 cp -r -v src/content ${CR_SRC_DIR}/ &&
-cp -r -v src/extensions ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/extensions &&
 cp -r -v src/google_apis ${CR_SRC_DIR}/ &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/ppapi &&
 cp -r -v src/sandbox ${CR_SRC_DIR}/ &&
 cp -r -v src/services ${CR_SRC_DIR}/ &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
@@ -88,21 +114,7 @@ cp -r -v src/v8 ${CR_SRC_DIR}/ &&
 cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
-
-apply_patch_once () {
-	local patch_dir="$1"
-	local patch_file="$2"
-	local label="$3"
-
-	printf "${YEL}%s...${c0}\n" "${label}"
-	if git -C "${patch_dir}" apply --check "${patch_file}" >/dev/null 2>&1; then
-		git -C "${patch_dir}" apply --reject "${patch_file}"
-	elif git -C "${patch_dir}" apply --check --reverse "${patch_file}" >/dev/null 2>&1; then
-		printf "${GRE}%s already applied; skipping.${c0}\n" "${label}"
-	else
-		die "${label} does not apply cleanly in ${patch_dir}"
-	fi
-}
+:
 
 patchThor () {
 	printf "\n" &&
