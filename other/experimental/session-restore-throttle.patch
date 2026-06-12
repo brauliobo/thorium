@@ -1,0 +1,28 @@
+diff --git a/chrome/browser/performance_manager/policies/background_tab_loading_policy.h b/chrome/browser/performance_manager/policies/background_tab_loading_policy.h
+index 1e48416a5a..a7a868219b 100644
+--- a/chrome/browser/performance_manager/policies/background_tab_loading_policy.h
++++ b/chrome/browser/performance_manager/policies/background_tab_loading_policy.h
+@@ -251,12 +251,12 @@ class BackgroundTabLoadingPolicy
+ 
+   // The minimum total number of restored tabs to load, unless overridden in a
+   // test.
+-  static constexpr uint32_t kMinTabsToLoad = 4;
++  static constexpr uint32_t kMinTabsToLoad = 1;
+   uint32_t min_tabs_to_load_ = kMinTabsToLoad;
+ 
+   // The maximum total number of restored tabs to load, unless overridden in a
+   // test.
+-  static constexpr uint32_t kMaxTabsToLoad = 20;
++  static constexpr uint32_t kMaxTabsToLoad = 1;
+   uint32_t max_tabs_to_load_ = kMaxTabsToLoad;
+ 
+   // The minimum amount of memory to keep free.
+@@ -269,7 +269,7 @@ class BackgroundTabLoadingPolicy
+   static constexpr uint32_t kMinSimultaneousTabLoads = 1;
+ 
+   // Upper bound for the maximum number of tabs to load simultaneously.
+-  static constexpr uint32_t kMaxSimultaneousTabLoads = 4;
++  static constexpr uint32_t kMaxSimultaneousTabLoads = 1;
+ 
+   // The number of CPU cores required per permitted simultaneous tab
+   // load.
