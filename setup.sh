@@ -100,16 +100,16 @@ copy_optional_overlay src/chromeos &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
 cp -r -v src/content ${CR_SRC_DIR}/ &&
 copy_optional_overlay src/extensions &&
-cp -r -v src/google_apis ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/google_apis &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
 copy_optional_overlay src/ppapi &&
 cp -r -v src/sandbox ${CR_SRC_DIR}/ &&
-cp -r -v src/services ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/services &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
 cp -r -v src/tools ${CR_SRC_DIR}/ &&
 cp -r -v src/ui ${CR_SRC_DIR}/ &&
-cp -r -v src/v8 ${CR_SRC_DIR}/ &&
+copy_optional_overlay src/v8 &&
 
 cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
