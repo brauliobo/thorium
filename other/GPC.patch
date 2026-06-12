@@ -80,6 +80,25 @@ index a8cdb42779b98..36efd26e75ca8 100644
  
    // TODO(crbug.com/40833603): WARNING: This bypasses the permissions policy.
    // Unfortunately, workers lack a permissions policy and to derive proper hints
+diff --git a/content/browser/renderer_host/ipc_utils.cc b/content/browser/renderer_host/ipc_utils.cc
+index 4e9bf143e8a03..1f51a6b8e6d72 100644
+--- a/content/browser/renderer_host/ipc_utils.cc
++++ b/content/browser/renderer_host/ipc_utils.cc
+@@ -23,6 +23,7 @@
+ #include "mojo/public/cpp/system/message_pipe.h"
+ #include "net/http/http_request_headers.h"
++#include "third_party/blink/public/common/loader/loader_constants.h"
+ #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+ #include "ui/base/window_open_disposition.h"
+ 
+@@ -478,6 +479,7 @@ bool VerifyNavigationHeaders(RenderProcessHost* process,
+         header.name() != net::HttpRequestHeaders::kContentType &&
+         header.name() != net::HttpRequestHeaders::kUserAgent &&
+         header.name() != net::HttpRequestHeaders::kSecPurpose &&
++        header.name() != blink::kSecGPCHeader &&
+         header.name() != net::HttpRequestHeaders::kDNT) {
+       if (base::FeatureList::IsEnabled(
+               features::kKillOnInvalidNavigationHeaders)) {
 diff --git a/content/renderer/render_frame_impl.cc b/content/renderer/render_frame_impl.cc
 index 16b998336897f..b250097276525 100644
 --- a/content/renderer/render_frame_impl.cc
