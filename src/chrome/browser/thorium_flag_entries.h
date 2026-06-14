@@ -170,7 +170,10 @@
      "Choose whether to use the GTK3 or GTK4 backend. It should be set to match the default GTK used by the system, "
      "but can be overridden for testing or experimenting.",
      kOsLinux, MULTI_VALUE_TYPE(kGtkVersionChoices)},
-    // vaapi-on-nvidia-gpus: media::kVaapiOnNvidiaGPUs not present in M147.
+    {"vaapi-on-nvidia-gpus",
+     "Enable VA-API on NVIDIA GPUs",
+     "Enables VA-API hardware video decode on NVIDIA GPUs when the nvidia-vaapi-driver stack is installed.",
+     kOsLinux, FEATURE_VALUE_TYPE(media::kVaapiOnNvidiaGPUs)},
 #endif // BUILDFLAG(IS_LINUX)
 
     {"gpu-no-context-lost",
