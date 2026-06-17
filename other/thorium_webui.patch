@@ -80,23 +80,3 @@ index 5096175e285c1..6d4a41ab2815f 100644
 +    {{thorium_project}} is based on {{opensource_project}} and is made available as source code
 +    <a href="{{thorium_link}}">here</a>. Chromium source code is available <a href="{{opensource_link}}">here</a>.
  </div>
-diff --git a/ui/webui/resources/BUILD.gn b/ui/webui/resources/BUILD.gn
-index ff89ccb3a6deb..9dc03893cf506 100644
---- a/ui/webui/resources/BUILD.gn
-+++ b/ui/webui/resources/BUILD.gn
-@@ -38,6 +38,7 @@ generate_grd("build_grd") {
-     "images:build_grdp",
-     "js:build_grdp",
-     "mojo:build_grdp",
-+    "text:build_grdp",
-     "//third_party/lit/v3_0:build_grdp",
-   ]
-   grdp_files = [
-@@ -48,6 +49,7 @@ generate_grd("build_grd") {
-     "$target_gen_dir/images/resources.grdp",
-     "$target_gen_dir/js/resources.grdp",
-     "$target_gen_dir/mojo/resources.grdp",
-+    "$target_gen_dir/text/resources.grdp",
-   ]
- 
-   if ((!is_android && !is_ios) || enable_webui_ntp || is_desktop_android) {

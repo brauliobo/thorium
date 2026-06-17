@@ -104,17 +104,6 @@ diff --git a/content/renderer/render_frame_impl.cc b/content/renderer/render_fra
 index 16b998336897f..b250097276525 100644
 --- a/content/renderer/render_frame_impl.cc
 +++ b/content/renderer/render_frame_impl.cc
-@@ -2391,6 +2391,10 @@ RenderFrameImpl::GetRemoteAssociatedInterfaces() {
-   return remote_associated_interfaces_.get();
- }
- 
-+bool RenderFrameImpl::IsFTPDirectoryListing() {
-+  return frame_->GetDocumentLoader()->IsListingFtpDirectory();
-+}
-+
- void RenderFrameImpl::SetSelectedText(const std::u16string& selection_text,
-                                       size_t offset,
-                                       const gfx::Range& range) {
 @@ -4514,6 +4518,10 @@ void RenderFrameImpl::FinalizeRequestInternal(
      request.SetHttpHeaderField(
          blink::WebString::FromUtf8(blink::kDoNotTrackHeader), "1");
@@ -244,80 +233,6 @@ index 842b7834acd9e..708cc9e6226a5 100644
      "//third_party/blink/renderer/modules/handwriting",
      "//third_party/blink/renderer/modules/hid",
      "//third_party/blink/renderer/modules/idle",
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn b/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn
-new file mode 100644
-index 0000000000000..5c3c7ab4adc59
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/BUILD.gn
-@@ -0,0 +1,8 @@
-+import("//third_party/blink/renderer/modules/modules.gni")
-+
-+blink_modules_sources("global_privacy_control") {
-+  sources = [
-+    "global_privacy_control.cc",
-+    "global_privacy_control.h",
-+  ]
-+}
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc
-new file mode 100644
-index 0000000000000..9884e6b68c0fc
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.cc
-@@ -0,0 +1,9 @@
-+#include "third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h"
-+
-+namespace blink {
-+
-+bool GlobalPrivacyControl::globalPrivacyControl(NavigatorBase& navigator) {
-+  return true;
-+}
-+
-+}  // namespace blink
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h
-new file mode 100644
-index 0000000000000..219f4dae955c2
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/global_privacy_control.h
-@@ -0,0 +1,15 @@
-+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-+#define THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-+
-+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
-+
-+namespace blink {
-+
-+class GlobalPrivacyControl final {
-+ public:
-+  static bool globalPrivacyControl(NavigatorBase&);
-+};
-+
-+}  // namespace blink
-+
-+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_GLOBAL_PRIVACY_CONTROL_GLOBAL_PRIVACY_CONTROL_H_
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl b/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl
-new file mode 100644
-index 0000000000000..811c3f5d4d17e
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl
-@@ -0,0 +1,6 @@
-+[
-+    RuntimeEnabled=GlobalPrivacyControl,
-+    ImplementedAs=GlobalPrivacyControl
-+] partial interface Navigator {
-+    readonly attribute boolean globalPrivacyControl;
-+};
-diff --git a/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl b/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl
-new file mode 100644
-index 0000000000000..6e67ca2f50ff9
---- /dev/null
-+++ b/third_party/blink/renderer/modules/global_privacy_control/worker_navigator_global_privacy_control.idl
-@@ -0,0 +1,6 @@
-+[
-+    RuntimeEnabled=GlobalPrivacyControl,
-+    ImplementedAs=GlobalPrivacyControl
-+] partial interface WorkerNavigator {
-+    readonly attribute boolean globalPrivacyControl;
-+};
 diff --git a/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc b/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc
 index 080b9b445198b..44644931c6158 100644
 --- a/third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.cc
