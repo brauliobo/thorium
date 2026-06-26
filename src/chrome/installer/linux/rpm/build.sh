@@ -61,6 +61,7 @@ verify_package() {
   local ADDITIONAL_RPM_DEPENDS="/bin/sh, \
   rpmlib(CompressedFileNames) <= 3.0.4-1, \
   rpmlib(FileDigests) <= 4.6.0-1, \
+  rpmlib(LargeFiles) <= 4.12.0-1, \
   rpmlib(PayloadFilesHavePrefix) <= 4.0-1, \
   /usr/sbin/update-alternatives"
   if [ ${IS_OFFICIAL_BUILD} -ne 0 ]; then
@@ -68,7 +69,11 @@ verify_package() {
       rpmlib(PayloadIsXz) <= 5.2-1"
   fi
   echo "${DEPENDS}" "${ADDITIONAL_RPM_DEPENDS}" | sed 's/,/\n/g' | \
-      sed 's/^ *//' | LANG=C sort | uniq > "${EXPECTED_DEPENDS}"
+      sed 's/^ *//' | grep -vxF \
+      -e 'libffmpeg.so()(64bit)' \
+      -e 'libgcc_s.so.1(GCC_4.0.0)(64bit)' \
+      -e 'libgcc_s.so.1(GCC_4.2.0)(64bit)' | LANG=C sort | uniq \
+      > "${EXPECTED_DEPENDS}"
   rpm -qpR "${OUTPUTDIR}/${PKGNAME}.${ARCHITECTURE}.rpm" | LANG=C sort | uniq \
       > "${ACTUAL_DEPENDS}"
   cp -fv ${EXPECTED_DEPENDS} ${OUTPUTDIR}
