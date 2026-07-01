@@ -14,6 +14,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/ftp/ftp_auth_cache.h"
 #include "net/ftp/ftp_network_transaction.h"
@@ -101,7 +102,8 @@ void URLRequestFtpJob::Start() {
     DCHECK_EQ(request_->context()->proxy_resolution_service(),
               proxy_resolution_service_);
     rv = proxy_resolution_service_->ResolveProxy(
-        request_->url(), "GET", NetworkAnonymizationKey(), &proxy_info_,
+        request_->url(), "GET", NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, &proxy_info_,
         base::BindOnce(&URLRequestFtpJob::OnResolveProxyComplete,
                        base::Unretained(this)),
         &proxy_resolve_request_, request_->net_log(), DEFAULT_PRIORITY);

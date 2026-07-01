@@ -24,7 +24,7 @@ index 8b130bc3a328f..451efd376f1d8 100644
    base::RepeatingClosure completion =
        base::BindRepeating([](const base::OnceClosure&) {},
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index 32ffe5b41326d..0311bcfaf4a9c 100644
+index c2a7047d75598..b82ad41ebceec 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
 @@ -8,7 +8,7 @@
@@ -36,7 +36,7 @@ index 32ffe5b41326d..0311bcfaf4a9c 100644
  
  const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
  const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
-@@ -60,7 +60,7 @@ BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
+@@ -58,7 +58,7 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
  BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
  
  BASE_FEATURE(kEnforcePrivacySandboxAttestations,
@@ -45,7 +45,7 @@ index 32ffe5b41326d..0311bcfaf4a9c 100644
  
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
               base::FEATURE_DISABLED_BY_DEFAULT);
-@@ -74,13 +74,13 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
+@@ -72,13 +72,13 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
  #endif  // BUILDFLAG(IS_ANDROID)
  
  BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
@@ -61,17 +61,15 @@ index 32ffe5b41326d..0311bcfaf4a9c 100644
  
  BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
               base::FEATURE_ENABLED_BY_DEFAULT);
-@@ -88,7 +88,7 @@ BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
- BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
- 
- BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
--             base::FEATURE_ENABLED_BY_DEFAULT);
-+             base::FEATURE_DISABLED_BY_DEFAULT);
- 
+@@ -88,5 +88,5 @@ BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
  BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
  
+ BASE_FEATURE(kPrivacySandboxAdPrivacyUxDeprecation,
+-             base::FEATURE_ENABLED_BY_DEFAULT);
++             base::FEATURE_DISABLED_BY_DEFAULT);
+ }  // namespace privacy_sandbox
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index b9474e91953b7..ed68d86d46987 100644
+index c58d4cb4a9e53..29149cc0844d9 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -51,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -84,7 +82,7 @@ index b9474e91953b7..ed68d86d46987 100644
  
    registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 1918ae42a3f69..bfcb307db5b79 100644
+index 90e887eef88c6..135d26550f5ec 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 @@ -129,7 +129,8 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
@@ -212,10 +210,10 @@ index 0f75f7628248f..a2d5ececb61ce 100644
  
    // The object is bound to the lifetime of `render_frame_host` and the mojo
 diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index ea8aefca775f5..58e231b9efe59 100644
+index 2a49d3a2e90b9..3314c89b9de1e 100644
 --- a/content/browser/storage_partition_impl.cc
 +++ b/content/browser/storage_partition_impl.cc
-@@ -1465,31 +1465,7 @@ void StoragePartitionImpl::Initialize(
+@@ -1468,31 +1468,7 @@ void StoragePartitionImpl::Initialize(
  
    bucket_manager_ = std::make_unique<BucketManager>(this);
  
@@ -248,7 +246,7 @@ index ea8aefca775f5..58e231b9efe59 100644
  
    // The Topics API is not available in Incognito mode.
    if (!is_in_memory() &&
-@@ -1540,21 +1516,7 @@ void StoragePartitionImpl::Initialize(
+@@ -1543,21 +1519,7 @@ void StoragePartitionImpl::Initialize(
    }
  #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
  

@@ -404,7 +404,7 @@ test("components_unittests") {
     deps += [
       "//components/enterprise:unit_tests",
       "//components/enterprise/common:unit_tests",
-      "//components/enterprise/connectors/core:cloud_content_scanning_unittests",
+      "//components/enterprise/connectors/core:cloud_content_scanning_unit_tests",
       "//components/enterprise/connectors/core:unit_tests",
       "//components/enterprise/data_protection:unit_tests",
       "//components/enterprise/obfuscation/core:unit_tests",
@@ -471,7 +471,6 @@ test("components_unittests") {
 
   if (use_blink) {
     deps += [
-      "//components/accessibility_annotator/first_run:unit_tests",
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",

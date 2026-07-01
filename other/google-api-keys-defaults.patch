@@ -1,5 +1,5 @@
 diff --git a/google_apis/default_api_keys-inc.cc b/google_apis/default_api_keys-inc.cc
-index 9b97a5460c..8f8bd08488 100644
+index 613f4cfedcb4c..4b5ddb7174bd0 100644
 --- a/google_apis/default_api_keys-inc.cc
 +++ b/google_apis/default_api_keys-inc.cc
 @@ -16,7 +16,7 @@
@@ -11,7 +11,7 @@ index 9b97a5460c..8f8bd08488 100644
  #endif
  
  #if !defined(GOOGLE_METRICS_SIGNING_KEY)
-@@ -31,46 +31,46 @@
+@@ -31,52 +31,52 @@
  #endif  // #if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
  
  #if !defined(GOOGLE_CLIENT_ID_MAIN)
@@ -66,8 +66,15 @@ index 9b97a5460c..8f8bd08488 100644
 +#define GOOGLE_API_KEY_SODA google_apis::DefaultApiKeys::kThorApiKeySoda
  #endif
  
+ // API key for the Translate Private API.
+ #if !defined(GOOGLE_API_KEY_PARTIAL_TRANSLATE)
+ #define GOOGLE_API_KEY_PARTIAL_TRANSLATE \
+-  google_apis::DefaultApiKeys::kUnsetApiToken
++  google_apis::DefaultApiKeys::kThorApiKey
+ #endif
+ 
  #if !BUILDFLAG(IS_ANDROID)
-@@ -120,10 +120,10 @@
+@@ -126,10 +126,10 @@
  // IDs and secrets above that have not been set (and only those; they
  // will not override already-set values).
  #if !defined(GOOGLE_DEFAULT_CLIENT_ID)
@@ -81,7 +88,7 @@ index 9b97a5460c..8f8bd08488 100644
  
  constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
 diff --git a/google_apis/default_api_keys.h b/google_apis/default_api_keys.h
-index 7e0b201a1a..63362e716b 100644
+index 42f0775345ffe..c8587406268c5 100644
 --- a/google_apis/default_api_keys.h
 +++ b/google_apis/default_api_keys.h
 @@ -18,6 +18,21 @@ struct DefaultApiKeys {

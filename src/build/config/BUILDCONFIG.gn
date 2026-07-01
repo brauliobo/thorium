@@ -376,7 +376,6 @@ default_compiler_configs = [
   "//build/config/compiler:default_symbols",
   "//build/config/compiler:disallow_unstable_features",
   "//build/config/compiler:libcxx_hardening",
-  "//build/config/compiler:libcxx_module",
   "//build/config/compiler:no_exceptions",
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:no_unresolved_symbols",
@@ -591,15 +590,8 @@ foreach(_target_type,
         public_deps = []
       }
 
-      if (is_clang) {
-        # When clang is used, some target may use clang module. This dependency
-        # is required for things to work, regardless of whether the libc++
-        # module is used in this target or not.
-        public_deps += [ "//buildtools/third_party/libc++:headers" ]
-      }
-
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = is_clang
+        use_libcxx_modules = false
       }
 
       if (filter_include(
@@ -729,15 +721,8 @@ foreach(_target_type,
         public_deps = []
       }
 
-      if (is_clang) {
-        # When clang is used, some target may use clang module. This dependency
-        # is required for things to work, regardless of whether the libc++
-        # module is used in this target or not.
-        public_deps += [ "//buildtools/third_party/libc++:headers" ]
-      }
-
       if (!defined(use_libcxx_modules)) {
-        use_libcxx_modules = is_clang
+        use_libcxx_modules = false
       }
 
       if (filter_include(

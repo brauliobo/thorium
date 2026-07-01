@@ -393,7 +393,6 @@ group("gn_all") {
       deps += [
         "//extensions:extensions_unittests",
         "//extensions/browser/api/declarative_net_request/filter_list_converter",
-        "//extensions/shell:app_shell_unittests",
       ]
     }
 
@@ -658,10 +657,6 @@ group("gn_all") {
           "//third_party/leveldatabase:env_chromium_unittests",
           "//third_party/libaddressinput:libaddressinput_unittests",
         ]
-      }
-
-      if (enable_extensions) {
-        deps += [ "//extensions/shell:app_shell" ]
       }
 
       # TODO(https://crbug.com/1299021): These dependencies might be

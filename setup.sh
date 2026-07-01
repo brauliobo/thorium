@@ -40,6 +40,14 @@ apply_patch_once () {
 	fi
 }
 
+prepare_ffmpeg_hevc_autorename_sources () {
+	local hevc_dir="${CR_SRC_DIR}/third_party/ffmpeg/libavcodec/hevc"
+
+	cp -v "${hevc_dir}/cabac.c" "${hevc_dir}/autorename_libavcodec_hevc_cabac.c"
+	cp -v "${hevc_dir}/parse.c" "${hevc_dir}/autorename_libavcodec_hevc_parse.c"
+	cp -v "${hevc_dir}/parser.c" "${hevc_dir}/autorename_libavcodec_hevc_parser.c"
+}
+
 # --help
 displayHelp () {
 	printf "\n" &&
@@ -83,6 +91,7 @@ printf "\n" &&
 printf "${YEL}Creating build output directory...${c0}\n" &&
 
 mkdir -v -p ${CR_SRC_DIR}/out/thorium/ &&
+cp -v args.gn ${CR_SRC_DIR}/out/thorium/ &&
 
 printf "\n" &&
 printf "${YEL}Copying Thorium source files over the Chromium tree...${c0}\n" &&
@@ -121,6 +130,7 @@ patchThor () {
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
 	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/add-hevc-ffmpeg-decoder-parser.patch" "HEVC ffmpeg parser patch" &&
 	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/change-libavcodec-header.patch" "libavcodec header patch for HEVC" &&
+	prepare_ffmpeg_hevc_autorename_sources &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&
@@ -407,4 +417,4 @@ printf "${RED} IMPORTANT: If you ran setup.sh without any flags, you must also r
 printf "\n" &&
 printf "${GRE}  Enjoy Thorium!\n" &&
 printf "\n" &&
-tput sgr0
+tput sgr0 || true

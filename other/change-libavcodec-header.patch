@@ -12,7 +12,7 @@ index 55d5741f87..f6bde3028f 100644
  #include "hevc.h"
  #include "hevcdec.h"
 diff --git a/libavcodec/hevc/dsp_template.c b/libavcodec/hevc/dsp_template.c
-index f703f6d071..7465c9acc9 100644
+index e7b21127ba..d902a0ca6b 100644
 --- a/libavcodec/hevc/dsp_template.c
 +++ b/libavcodec/hevc/dsp_template.c
 @@ -20,13 +20,13 @@
@@ -33,7 +33,7 @@ index f703f6d071..7465c9acc9 100644
  
  static void FUNC(put_pcm)(uint8_t *_dst, ptrdiff_t stride, int width, int height,
                            GetBitContext *gb, int pcm_bit_depth)
-@@ -838,7 +838,7 @@ static void FUNC(put_hevc_epel_bi_w_hv)(uint8_t *_dst, ptrdiff_t _dststride,
+@@ -836,7 +836,7 @@ static void FUNC(put_hevc_epel_bi_w_hv)(uint8_t *_dst, ptrdiff_t _dststride,
  #define TQ2 pix[2  * xstride + 3 * ystride]
  #define TQ3 pix[3  * xstride + 3 * ystride]
  
@@ -56,7 +56,7 @@ index 68ae0e9ef6..e897ad5d58 100644
  #define LUMA 0
  #define CB 1
 diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
-index 5af8f16771..4b2c30f2e0 100644
+index 473899abc5..a0bc2537fb 100644
 --- a/libavcodec/hevc/hevcdec.c
 +++ b/libavcodec/hevc/hevcdec.c
 @@ -39,24 +39,24 @@
@@ -150,7 +150,7 @@ index 62bcd91172..af03925bad 100644
  #define START_CODE 0x000001 ///< start_code_prefix_one_3bytes
  
 diff --git a/libavcodec/hevc/pred_template.c b/libavcodec/hevc/pred_template.c
-index b4c2fcf506..d873c1c5b6 100644
+index e6069fd267..86870ed681 100644
 --- a/libavcodec/hevc/pred_template.c
 +++ b/libavcodec/hevc/pred_template.c
 @@ -22,7 +22,7 @@
@@ -161,9 +161,9 @@ index b4c2fcf506..d873c1c5b6 100644
 +#include "libavcodec/bit_depth_template.c"
  #include "pred.h"
  
- #define POS(x, y) src[(x) + stride * (y)]
+ static void FUNC(ref_filter_3tap)(uint8_t *filtered_left,
 diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
-index 46b38564d5..423e373735 100644
+index f090a31803..6d3791ac9d 100644
 --- a/libavcodec/hevc/ps.c
 +++ b/libavcodec/hevc/ps.c
 @@ -25,11 +25,11 @@
@@ -198,7 +198,7 @@ index 7fbcb3ba4e..4e44f849ba 100644
  static void write_ptl_layer(PutBitContext *pb, PTLCommon *ptl)
  {
 diff --git a/libavcodec/hevc/refs.c b/libavcodec/hevc/refs.c
-index ccf7258ec4..797e789e61 100644
+index 55db706a8a..248061fad7 100644
 --- a/libavcodec/hevc/refs.c
 +++ b/libavcodec/hevc/refs.c
 @@ -25,11 +25,11 @@

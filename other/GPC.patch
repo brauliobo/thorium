@@ -265,7 +265,7 @@ diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 
 index 1b59fe994a8b1..2eef5e2b29abf 100644
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -3175,6 +3175,11 @@
+@@ -3252,6 +3252,11 @@
        name: "GetUserMediaEchoCancellationModes",
        status: "stable",
      },
@@ -275,5 +275,5 @@ index 1b59fe994a8b1..2eef5e2b29abf 100644
 +      public: true,
 +    },
      {
-       name: "GroupEffect",
-       status: "test",
+       name: "GraphemeClusterBoundsCheck",
+       status: "stable",

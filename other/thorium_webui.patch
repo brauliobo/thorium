@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/webui/BUILD.gn b/chrome/browser/ui/webui/BUILD.gn
-index fa8bdb024fbee..517347e91bf66 100644
+index 70818ce2da0e8..e5c35940f14d8 100644
 --- a/chrome/browser/ui/webui/BUILD.gn
 +++ b/chrome/browser/ui/webui/BUILD.gn
 @@ -32,6 +32,7 @@ source_set("configs") {
@@ -11,10 +11,10 @@ index fa8bdb024fbee..517347e91bf66 100644
  
    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 diff --git a/chrome/browser/ui/webui/chrome_web_ui_configs.cc b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
-index 9daef52054236..d50f7f9b10295 100644
+index bced2aebb3495..56836e1a186b3 100644
 --- a/chrome/browser/ui/webui/chrome_web_ui_configs.cc
 +++ b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
-@@ -54,6 +54,7 @@
+@@ -55,6 +55,7 @@
  #include "chrome/browser/ui/webui/signin_internals_ui.h"
  #include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
  #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
@@ -22,7 +22,7 @@ index 9daef52054236..d50f7f9b10295 100644
  #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
  #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
  #include "chrome/browser/ui/webui/version/version_ui.h"
-@@ -297,6 +298,7 @@ void RegisterChromeWebUIConfigs() {
+@@ -303,6 +304,7 @@ void RegisterChromeWebUIConfigs() {
                       subresource_filter::SubresourceFilterInternalsUIConfig>());
    map.AddWebUIConfig(std::make_unique<SiteEngagementUIConfig>());
    map.AddWebUIConfig(std::make_unique<SyncInternalsUIConfig>());
@@ -31,24 +31,22 @@ index 9daef52054236..d50f7f9b10295 100644
    map.AddWebUIConfig(std::make_unique<UsbInternalsUIConfig>());
    map.AddWebUIConfig(std::make_unique<user_actions_ui::UserActionsUIConfig>());
 diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
-index ec24b0ffaf339..1dfba3b186b6e 100644
+index c978f8f218b40..d2c64274d7a17 100644
 --- a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
 +++ b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
-@@ -352,7 +352,8 @@ bool ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
-       // https://crbug.com/40583261
+@@ -353,6 +353,7 @@ bool ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
        origin.host() == chrome::kChromeUIDownloadsHost ||
        // https://crbug.com/376417346
--      origin.host() == chrome::kChromeUIExtensionsHost;
-+      origin.host() == chrome::kChromeUIExtensionsHost ||
-+      origin.host() == chrome::kChromeUIEggsHost;
+       origin.host() == chrome::kChromeUIExtensionsHost ||
++      origin.host() == chrome::kChromeUIEggsHost ||
+       // https://crbug.com/509216218
+       origin.host() == chrome::kChromeUIDrivePickerHostHost;
  }
- 
- ChromeWebUIControllerFactory::ChromeWebUIControllerFactory() = default;
 diff --git a/chrome/common/webui_url_constants.cc b/chrome/common/webui_url_constants.cc
-index dd37ab85cec11..01e6bd243b48c 100644
+index 307b2de1bdb81..8641dfe9b805b 100644
 --- a/chrome/common/webui_url_constants.cc
 +++ b/chrome/common/webui_url_constants.cc
-@@ -121,6 +121,7 @@ bool IsSystemWebUIHost(std::string_view host) {
+@@ -122,6 +122,7 @@ bool IsSystemWebUIHost(std::string_view host) {
  // These hosts will also be suggested by BuiltinProvider.
  base::span<const base::cstring_view> ChromeURLHosts() {
    static constexpr auto kChromeURLHosts = std::to_array<base::cstring_view>({
@@ -57,7 +55,7 @@ index dd37ab85cec11..01e6bd243b48c 100644
        kChromeUIAccessibilityHost,
        kChromeUIActorInternalsHost,
 diff --git a/chrome/common/webui_url_constants.h b/chrome/common/webui_url_constants.h
-index e128efef6cf36..d2c1a60747f50 100644
+index 8288814da7d14..847afaec0a2b6 100644
 --- a/chrome/common/webui_url_constants.h
 +++ b/chrome/common/webui_url_constants.h
 @@ -33,6 +33,8 @@ namespace chrome {

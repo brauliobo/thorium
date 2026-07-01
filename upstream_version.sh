@@ -36,7 +36,7 @@ else
     export CR_SRC_DIR
 fi
 
-CR_VER="149.0.7827.155"
+CR_VER="150.0.7871.46"
 
 export CR_VER &&
 
@@ -75,7 +75,7 @@ printf "\n"
 	
 printf "${YEL}Downloading PGO Profiles for Linux & Windows...\n" &&
 printf "\n" &&
-tput sgr0 &&
+{ tput sgr0 || true; } &&
 
 python3 tools/update_pgo_profiles.py --target=linux update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 
@@ -85,7 +85,7 @@ printf "\n" &&
 
 printf "${YEL}Downloading PGO Profile for V8 (for when v8_enable_builtins_optimization = true)\n" &&
 printf "\n" &&
-tput sgr0 &&
+{ tput sgr0 || true; } &&
 
 if [ -n "$MSYSTEM" ]; then
   python3 v8/tools/builtins-pgo/download_profiles.py --depot-tools=/c/src/depot_tools --force download
@@ -95,4 +95,4 @@ fi
 printf "\n" &&
 
 printf "${GRE}Done!\n"
-tput sgr0
+tput sgr0 || true

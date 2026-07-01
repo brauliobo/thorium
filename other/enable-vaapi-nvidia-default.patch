@@ -1,17 +1,24 @@
 diff --git a/media/base/media_switches.cc b/media/base/media_switches.cc
-index 6d7d55e8b3f5d..c77b9f3b3c321 100644
+index 840180d9d5f29..fae095a72c25b 100644
 --- a/media/base/media_switches.cc
 +++ b/media/base/media_switches.cc
-@@ -768,9 +768,10 @@ BASE_FEATURE(kVaapiIgnoreDriverChecks, base::FEATURE_DISABLED_BY_DEFAULT);
+@@ -764,15 +764,16 @@ BASE_FEATURE(kVaapiIgnoreDriverChecks, base::FEATURE_DISABLED_BY_DEFAULT);
  #endif  // BUILDFLAG(IS_LINUX)
  
  // NVIDIA VA-API drivers do not support Chromium and can sometimes cause
 -// crashes, disable VA-API on NVIDIA GPUs by default. See crbug.com/1492880.
--BASE_FEATURE(kVaapiOnNvidiaGPUs, base::FEATURE_DISABLED_BY_DEFAULT);
 +// crashes upstream. Thorium enables it by default to preserve Linux VA-API
 +// behavior for users with nvidia-vaapi-driver installed. See crbug.com/1492880.
-+BASE_FEATURE(kVaapiOnNvidiaGPUs, base::FEATURE_ENABLED_BY_DEFAULT);
+ // NVIDIA has been considering possibly supporting for an improved driver for
+ // hardware acceleration for ARM64 linux devices, so we have separated out the
+ // feature flag on that architecture.
+ BASE_FEATURE(kVaapiOnNvidiaGPUs,
+ #if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_LINUX)
+-             base::FEATURE_DISABLED_BY_DEFAULT
++             base::FEATURE_ENABLED_BY_DEFAULT
+ #else
+-             base::FEATURE_DISABLED_BY_DEFAULT
++             base::FEATURE_ENABLED_BY_DEFAULT
+ #endif
+ );
  
- // Ensures that the VAAPI context has been created before performing encrypted
- // slice header parsing on ChromeOS VAAPI systems.
- // TODO(b/520117896): remove the feature when a workaround can be found in the

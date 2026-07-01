@@ -2251,10 +2251,9 @@ config("default_warnings") {
 
   # Rust warnings
 
-  # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
-  # an error by default eventually; see
-  # https://github.com/rust-lang/rust/issues/71668
-  rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
+  # Chromium 150's HarfBuzz Rust code still performs unsafe operations inside
+  # unsafe fns without nested unsafe blocks.
+  rustflags = [ "-Aunsafe_op_in_unsafe_fn" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------

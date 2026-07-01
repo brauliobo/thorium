@@ -11,7 +11,7 @@ index 52aeac4f06..b7e5f939f6 100644
 +// rolled out.
 +#if !BUILDFLAG(IS_IOS)
 +  const bool actor_visit_filtering_enabled =
-+      history::IsBrowsingHistoryActorIntegrationM2Enabled();
++      history::IsBrowsingHistoryActorIntegrationM3Enabled();
 +#else
 +  const bool actor_visit_filtering_enabled = false;
 +#endif
