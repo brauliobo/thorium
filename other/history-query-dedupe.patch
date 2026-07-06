@@ -1,8 +1,8 @@
 diff --git a/components/history/core/browser/visit_database.cc b/components/history/core/browser/visit_database.cc
-index 52aeac4f06..b7e5f939f6 100644
+index 73bd519289c2d..6e55f50ae16b8 100644
 --- a/components/history/core/browser/visit_database.cc
 +++ b/components/history/core/browser/visit_database.cc
-@@ -824,6 +824,116 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
+@@ -823,6 +823,145 @@ GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
  bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
                                              VisitVector* visits) {
    visits->clear();
@@ -16,9 +16,9 @@ index 52aeac4f06..b7e5f939f6 100644
 +  const bool actor_visit_filtering_enabled = false;
 +#endif
 +
-+  // For the common duplicate-removal queries, let SQLite rank rows before
-+  // returning them. This avoids streaming every matching visit into C++ when
-+  // profiles contain large numbers of repeated visits to the same URL.
++  // For the common duplicate-removal queries, let SQLite reduce each duplicate
++  // group to the first matching visit before returning rows to C++. Chromium's
++  // bundled SQLite omits window functions, so use grouped aggregates here.
 +  const bool rank_duplicate_visits_in_sql =
 +      !actor_visit_filtering_enabled &&
 +      (options.duplicate_policy == QueryOptions::REMOVE_ALL_DUPLICATES ||
@@ -67,25 +67,54 @@ index 52aeac4f06..b7e5f939f6 100644
 +    const char* order_sql = options.visit_order == QueryOptions::RECENT_FIRST
 +                                ? "visits.visit_time DESC, visits.id DESC"
 +                                : "visits.visit_time ASC, visits.id DESC";
++    const char* visit_time_aggregate =
++        options.visit_order == QueryOptions::RECENT_FIRST ? "MAX" : "MIN";
 +
-+    std::string partition_sql = "visits.url";
++    const bool dedupe_per_day =
++        options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY;
++    std::string dedupe_columns = "url";
 +    if (options.duplicate_policy == QueryOptions::REMOVE_DUPLICATES_PER_DAY) {
-+      partition_sql +=
-+          ", strftime('%Y-%m-%d', "
-+          "visits.visit_time / 1000000 - 11644473600, "
-+          "'unixepoch', 'localtime')";
++      dedupe_columns += ", dedupe_day";
 +    }
 +
-+    std::string sql = "SELECT" HISTORY_VISIT_ROW_FIELDS
-+                      "FROM (SELECT" HISTORY_VISIT_ROW_FIELDS
-+                      ", ROW_NUMBER() OVER (PARTITION BY ";
-+    sql += partition_sql;
-+    sql += " ORDER BY ";
-+    sql += order_sql;
-+    sql += ") AS url_visit_rank FROM visits";
++    std::string sql = "WITH filtered_visits AS (SELECT" HISTORY_VISIT_ROW_FIELDS;
++    if (dedupe_per_day) {
++      sql +=
++          ", strftime('%Y-%m-%d', "
++          "visits.visit_time / 1000000 - 11644473600, "
++          "'unixepoch', 'localtime') AS dedupe_day";
++    }
++    sql += " FROM visits";
 +    sql += joins;
 +    sql += where_sql;
-+    sql += ") visits WHERE url_visit_rank = 1 ORDER BY ";
++    sql += "), selected_visit_times AS (SELECT ";
++    sql += dedupe_columns;
++    sql += ", ";
++    sql += visit_time_aggregate;
++    sql +=
++        "(visit_time) AS selected_visit_time FROM filtered_visits GROUP BY ";
++    sql += dedupe_columns;
++    sql += "), selected_visits AS (SELECT filtered_visits.url";
++    if (dedupe_per_day) {
++      sql += ", filtered_visits.dedupe_day";
++    }
++    sql +=
++        ", MAX(filtered_visits.id) AS id FROM filtered_visits JOIN "
++        "selected_visit_times ON selected_visit_times.url = filtered_visits.url ";
++    if (dedupe_per_day) {
++      sql +=
++          "AND selected_visit_times.dedupe_day = filtered_visits.dedupe_day ";
++    }
++    sql +=
++        "AND selected_visit_times.selected_visit_time = "
++        "filtered_visits.visit_time "
++        "GROUP BY filtered_visits.url";
++    if (dedupe_per_day) {
++      sql += ", filtered_visits.dedupe_day";
++    }
++    sql += ") SELECT" HISTORY_VISIT_ROW_FIELDS
++           "FROM filtered_visits visits JOIN selected_visits ON "
++           "selected_visits.id = visits.id ORDER BY ";
 +    sql += order_sql;
 +
 +    if (options.max_count > 0) {

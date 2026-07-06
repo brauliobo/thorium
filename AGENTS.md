@@ -63,6 +63,8 @@ upstream diff report, and stops before building.
   when keys change.
 - Windows-only patches may stay disabled until Linux is green, but keep them
   named clearly as disabled/deferred.
+- History SQL patches must not use SQLite window functions; Chromium builds
+  SQLite with `SQLITE_OMIT_WINDOWFUNC`, and invalid History SQL can raze DBs.
 
 ## Editing Rules
 
