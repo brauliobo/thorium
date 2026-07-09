@@ -47,7 +47,7 @@ upstream diff report, and stops before building.
 
 ## Current Rebase Rules
 
-- Chromium target for this PR is `148.0.7778.215`.
+- Chromium target for this PR is `150.0.7871.114`.
 - Do not restore `thorium-libjxl`; Chromium M147+ has native JPEG XL build
   integration via `enable_jxl_decoder`.
 - Keep Chrome/Chromium source changes reproducible through `src/`, `other/`,
@@ -65,6 +65,23 @@ upstream diff report, and stops before building.
   named clearly as disabled/deferred.
 - History SQL patches must not use SQLite window functions; Chromium builds
   SQLite with `SQLITE_OMIT_WINDOWFUNC`, and invalid History SQL can raze DBs.
+
+## AUR Releases
+
+- The canonical AUR repositories are `aur/thorium-browser-updated` and
+  `aur/thorium-browser-updated-bin`. They are independent Git repositories;
+  do not use `/home/braulio/Projects/aur/`.
+- The source package must pin a Thorium commit that has been pushed to
+  `github.com/brauliobo/thorium`.
+- Build the binary package from the version-matched RPM, then upload
+  `thorium-browser-updated-bin-<version>-<pkgrel>-x86_64.pkg.tar.zst` to the
+  GitHub release tag `M<version>-updated` before publishing the binary AUR
+  package.
+- Update `PKGBUILD` and regenerate `.SRCINFO` with `makepkg --printsrcinfo >
+  .SRCINFO` in each AUR repository. Stage only those files; do not stage build
+  archives, `src/`, `pkg/`, `thorium/`, or `depot_tools/` caches.
+- Verify the binary package SHA-256 and release asset URL before committing or
+  pushing the binary AUR package.
 
 ## Editing Rules
 
