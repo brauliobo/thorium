@@ -84,4 +84,4 @@ enable_rust = true
 use_clang_modules = false
 init_stack_vars_zero = true
 chrome_pgo_phase = 2
-pgo_data_path = "/home/braulio/chromium/src/chrome/build/pgo_profiles/chrome-linux-7871-1782236690-ee033e4bf26c147ed0557fd905d416dc66bc7545-3d4da56162112271e9a86f91f4696c964516a649.profdata"
+pgo_data_path = "/home/braulio/chromium/src/chrome/build/pgo_profiles/chrome-linux-7871-1783963889-bbb4d049c19977811958f3734d097673d5f31865-b6dc7571dbf2ef0c087fb23003ccb39cca880916.profdata"
