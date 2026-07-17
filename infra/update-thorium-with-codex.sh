@@ -3,8 +3,8 @@
 set -euo pipefail
 
 thorium_dir=/home/braulio/Projects/thorium
-aur_src_dir=/home/braulio/Projects/aur/thorium-browser-updated
-aur_bin_dir=/home/braulio/Projects/aur/thorium-browser-updated-bin
+aur_src_dir="${thorium_dir}/aur/thorium-browser-updated"
+aur_bin_dir="${thorium_dir}/aur/thorium-browser-updated-bin"
 state_dir=/home/braulio/.local/state/thorium-updater
 lock_file="${state_dir}/update.lock"
 last_message="${state_dir}/last-message.md"
@@ -32,6 +32,9 @@ if ! flock -n 9; then
   echo "Another Thorium update run is active; exiting."
   exit 0
 fi
+
+git -C "$thorium_dir" switch main
+git -C "$thorium_dir" pull --ff-only origin main
 
 current_version="$(sed -nE 's/^THOR_VER="([^"]+)"/\1/p' "${thorium_dir}/version.sh")"
 latest_version="$(
@@ -69,12 +72,7 @@ if [ "$(printf '%s\n%s\n' "$current_version" "$latest_version" | sort -V | tail 
   exit 0
 fi
 
-codex_args=(codex)
-if codex exec --help 2>&1 | grep -q -- '--search'; then
-  codex_args+=(exec --search)
-else
-  codex_args+=(--search exec)
-fi
+codex_args=(codex exec)
 
 if [ "${THORIUM_UPDATER_DRY_RUN:-}" = 1 ]; then
   printf 'Updater would run:'
@@ -107,12 +105,12 @@ Goal:
 - The wrapper already detected a newer stable Linux release. Use the preflight
   target version above unless official/current sources show a newer stable.
 - If no newer stable exists, make no repo changes and exit clearly.
-- If a newer minor or major stable exists, update Thorium, build/package it with low priority and 6 jobs, install it locally, push the Thorium git branch, update both AUR packages, and push them.
+- If a newer minor or major stable exists, update Thorium, build/package it with low priority and 6 jobs, install it locally, push main, update both AUR packages, and push them.
 
 Local paths:
 - Thorium repo: /home/braulio/Projects/thorium
-- Source AUR repo: /home/braulio/Projects/aur/thorium-browser-updated
-- Binary AUR repo: /home/braulio/Projects/aur/thorium-browser-updated-bin
+- Source AUR repo: /home/braulio/Projects/thorium/aur/thorium-browser-updated
+- Binary AUR repo: /home/braulio/Projects/thorium/aur/thorium-browser-updated-bin
 
 Rules:
 - Use official/current sources to determine the latest stable Chromium version.
@@ -121,12 +119,13 @@ Rules:
 - Do not change unrelated files.
 - Do not push if validation fails.
 - Use git author/committer: Braulio Oliveira <brauliobo@gmail.com>.
-- Use branch names like automation/chromium-<version>.
+- Work only on main. Start from the already fast-forwarded main checkout; do
+  not create or use an automation branch.
 - Use concise commit messages.
 
 Thorium update flow:
 - Fetch origin/upstream/chromium as needed.
-- Update the Thorium repo from the latest origin/main unless doing so would discard local work.
+- Commit the validated update directly to main and push main.
 - Run the existing repo tooling first:
   ./infra/rebase_to.sh <version>
   ./infra/rebase_check.sh --with-upstream
@@ -141,11 +140,11 @@ Local install:
 
 Release and AUR:
 - Upload the new binary package to github.com/brauliobo/thorium as a release asset named for the version.
-- Update /home/braulio/Projects/aur/thorium-browser-updated:
+- Update /home/braulio/Projects/thorium/aur/thorium-browser-updated:
   - pkgver/pkgrel
   - pinned Thorium git commit
   - .SRCINFO
-- Update /home/braulio/Projects/aur/thorium-browser-updated-bin:
+- Update /home/braulio/Projects/thorium/aur/thorium-browser-updated-bin:
   - pkgver/pkgrel
   - pinned Thorium git commit
   - release asset URL
@@ -160,7 +159,7 @@ Validation before pushing:
 - AUR git remotes are reachable using the configured SSH askpass.
 
 Final response:
-- State version checked, whether an update was done, branch/commit pushed, AUR package commits pushed, local install result, and any blocker.
+- State version checked, whether an update was done, main commit pushed, AUR package commits pushed, local install result, and any blocker.
 PROMPT
 } | "${codex_args[@]}" \
   --dangerously-bypass-approvals-and-sandbox \
