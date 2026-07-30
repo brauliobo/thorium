@@ -153,6 +153,7 @@ patchThor () {
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/enable-vaapi-nvidia-default.patch" "Enable NVIDIA VA-API by default patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-query-dedupe.patch" "History duplicate query patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-redirect-chain-cache.patch" "History redirect chain cache patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-sync-redirect-chain-limit.patch" "History sync redirect chain limit patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-delete-directive-startup-guard.patch" "History delete directive startup guard patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
 	# Kept because it is related to Thorium custom flags (not upstreamable).

@@ -1,0 +1,180 @@
+diff --git a/components/history/core/browser/history_backend.cc b/components/history/core/browser/history_backend.cc
+--- a/components/history/core/browser/history_backend.cc
++++ b/components/history/core/browser/history_backend.cc
+@@ -2731,10 +2731,12 @@ VisitRow HistoryBackend::GetRedirectChainStart(
+   return redirect_start;
+ }
+ 
+-VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
++VisitVector HistoryBackend::GetRedirectChain(VisitRow visit,
++                                             size_t max_time_groups) {
+   // Iterate up `visit.referring_visit` while `visit.transition` is a redirect.
+   VisitVector result;
+   result.push_back(visit);
++  size_t time_groups = 1;
+   if (db_) {
+     base::flat_set<VisitID> visit_set;
+     while (visit.referring_visit &&
+@@ -2749,6 +2751,13 @@ VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
+         DLOG(WARNING) << "Loop in visit redirect chain, possible db corruption";
+         break;
+       }
++      if (referring_visit.visit_time != visit.visit_time) {
++        if (max_time_groups && time_groups >= max_time_groups) {
++          break;
++        }
++        ++time_groups;
++      }
++
+       result.push_back(referring_visit);
+       visit = referring_visit;
+     }
+diff --git a/components/history/core/browser/history_backend.h b/components/history/core/browser/history_backend.h
+--- a/components/history/core/browser/history_backend.h
++++ b/components/history/core/browser/history_backend.h
+@@ -610,12 +610,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
+       VisitRow visit,
+       std::map<VisitID, VisitRow>* redirect_chain_start_cache);
+ 
+-  // Returns the redirect chain ending in `visit`. (If `visit` is in the middle
+-  // of a redirect chain, returns the start of the chain until `visit`.)
++  // Returns the redirect chain ending in `visit`. If `visit` is in the middle
++  // of a redirect chain, returns the start of the chain until `visit`.
++  // `max_time_groups` limits the number of contiguous visit-time groups read
++  // from newest to oldest. Zero returns the full chain.
+   // Unlike `GetRedirectsToSpecificVisit()`, this only considers actual
+   // redirects, not referrals.
+   // May return an empty vector if there's something wrong with the DB.
+-  VisitVector GetRedirectChain(VisitRow visit) override;
++  VisitVector GetRedirectChain(VisitRow visit,
++                               size_t max_time_groups = 0) override;
+ 
+   // Observers -----------------------------------------------------------------
+ 
+diff --git a/components/history/core/browser/history_backend_unittest.cc b/components/history/core/browser/history_backend_unittest.cc
+--- a/components/history/core/browser/history_backend_unittest.cc
++++ b/components/history/core/browser/history_backend_unittest.cc
+@@ -5264,7 +5264,31 @@ TEST_F(HistoryBackendTest, GetRedirectChain) {
+   ASSERT_EQ(chain3.size(), 3u);
+   EXPECT_EQ(chain3[0].visit_id, chain3_ids[0]);
+   EXPECT_EQ(chain3[1].visit_id, chain3_ids[1]);
+   EXPECT_EQ(chain3[2].visit_id, chain3_ids[2]);
++
++  // Simulate a client redirect that repeatedly extends the previous chain at
++  // a new timestamp. A bounded query should avoid walking older time groups.
++  VisitRow chain2start;
++  backend_->db_->GetRowForVisit(chain2_ids[0], &chain2start);
++  chain2start.referring_visit = chain1_ids.back();
++  chain2start.transition = ui::PageTransitionFromInt(
++      chain2start.transition & ~ui::PAGE_TRANSITION_CHAIN_START);
++  ASSERT_TRUE(backend_->db_->UpdateVisitRow(chain2start));
++
++  VisitRow chain3start;
++  backend_->db_->GetRowForVisit(chain3_ids[0], &chain3start);
++  chain3start.transition = ui::PageTransitionFromInt(
++      chain3start.transition & ~ui::PAGE_TRANSITION_CHAIN_START);
++  ASSERT_TRUE(backend_->db_->UpdateVisitRow(chain3start));
++
++  VisitVector bounded_chain =
++      backend_->GetRedirectChain(chain3end, /*max_time_groups=*/2);
++  ASSERT_EQ(bounded_chain.size(), 5u);
++  EXPECT_EQ(bounded_chain[0].visit_id, chain2_ids[0]);
++  EXPECT_EQ(bounded_chain[1].visit_id, chain2_ids[1]);
++  EXPECT_EQ(bounded_chain[2].visit_id, chain3_ids[0]);
++  EXPECT_EQ(bounded_chain[3].visit_id, chain3_ids[1]);
++  EXPECT_EQ(bounded_chain[4].visit_id, chain3_ids[2]);
+ }
+ 
+ TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
+diff --git a/components/history/core/browser/sync/history_backend_for_sync.h b/components/history/core/browser/sync/history_backend_for_sync.h
+--- a/components/history/core/browser/sync/history_backend_for_sync.h
++++ b/components/history/core/browser/sync/history_backend_for_sync.h
+@@ -34,7 +34,8 @@ class HistoryBackendForSync {
+       VisitQuery404sPolicy policy_for_404_visits) = 0;
+   virtual bool GetLastVisitByTime(base::Time visit_time,
+                                   VisitRow* visit_row) = 0;
+-  virtual VisitVector GetRedirectChain(VisitRow visit) = 0;
++  virtual VisitVector GetRedirectChain(VisitRow visit,
++                                       size_t max_time_groups = 0) = 0;
+ 
+   virtual std::vector<AnnotatedVisit> ToAnnotatedVisitsFromRows(
+       const VisitVector& visit_rows,
+diff --git a/components/history/core/browser/sync/history_sync_bridge.cc b/components/history/core/browser/sync/history_sync_bridge.cc
+--- a/components/history/core/browser/sync/history_sync_bridge.cc
++++ b/components/history/core/browser/sync/history_sync_bridge.cc
+@@ -1000,16 +1000,6 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
+   std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
+       QueryRedirectChainAndMakeEntityData(visit_row, &included_visit_ids);
+ 
+-  // Special case: If there are more than 2 entities (i.e. sub-chains), there's
+-  // no need to commit more than the last 2. In that case, the last entity is
+-  // the only new one, and the one before that was likely updated (e.g. by
+-  // removing the chain-end marker, and setting a visit duration). All previous
+-  // entities must have been previously committed and must be unchanged.
+-  if (entity_data_list.size() > 2) {
+-    entity_data_list.erase(entity_data_list.begin(),
+-                           entity_data_list.end() - 2);
+-  }
+-
+   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+       CreateMetadataChangeList();
+ 
+@@ -1029,9 +1019,12 @@ std::vector<std::unique_ptr<syncer::EntityData>>
+ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
+     const VisitRow& final_visit,
+     std::vector<VisitID>* included_visit_ids) {
+-  // Query the redirect chain that ended in this visit.
++  // The newest entity is new and the one before it may have changed when a
++  // client redirect extended the chain. Older timestamp groups were already
++  // committed and are unchanged, so do not walk or materialize them. This also
++  // bounds malformed chains that repeatedly client-redirect for days.
+   std::vector<VisitRow> redirect_visits =
+-      history_backend_->GetRedirectChain(final_visit);
++      history_backend_->GetRedirectChain(final_visit, /*max_time_groups=*/2);
+   if (redirect_visits.empty()) {
+     // This can happen if there's invalid data in the DB (e.g. broken referrer
+     // "links").
+diff --git a/components/history/core/browser/sync/test_history_backend_for_sync.cc b/components/history/core/browser/sync/test_history_backend_for_sync.cc
+--- a/components/history/core/browser/sync/test_history_backend_for_sync.cc
++++ b/components/history/core/browser/sync/test_history_backend_for_sync.cc
+@@ -176,15 +176,26 @@ bool TestHistoryBackendForSync::GetLastVisitByTime(base::Time visit_time,
+   return visit_row->visit_id != 0;
+ }
+ 
+-VisitVector TestHistoryBackendForSync::GetRedirectChain(VisitRow visit) {
++VisitVector TestHistoryBackendForSync::GetRedirectChain(
++    VisitRow visit,
++    size_t max_time_groups) {
+   VisitVector result;
+   result.push_back(visit);
++  size_t time_groups = 1;
+   while (!(visit.transition & ui::PAGE_TRANSITION_CHAIN_START)) {
+-    if (!FindVisit(visit.referring_visit, &visit)) {
++    VisitRow referring_visit;
++    if (!FindVisit(visit.referring_visit, &referring_visit)) {
+       ADD_FAILURE() << "Data error: referring_visit " << visit.referring_visit
+                     << " not found";
+       return {};
+     }
++    if (referring_visit.visit_time != visit.visit_time) {
++      if (max_time_groups && time_groups >= max_time_groups) {
++        break;
++      }
++      ++time_groups;
++    }
++    visit = referring_visit;
+     result.push_back(visit);
+   }
+   std::ranges::reverse(result);
+diff --git a/components/history/core/browser/sync/test_history_backend_for_sync.h b/components/history/core/browser/sync/test_history_backend_for_sync.h
+--- a/components/history/core/browser/sync/test_history_backend_for_sync.h
++++ b/components/history/core/browser/sync/test_history_backend_for_sync.h
+@@ -52,6 +52,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
+       VisitQuery404sPolicy policy_for_404_visits) override;
+   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
+-  VisitVector GetRedirectChain(VisitRow visit) override;
++  VisitVector GetRedirectChain(VisitRow visit,
++                               size_t max_time_groups = 0) override;
+   bool GetForeignVisit(const std::string& originator_cache_guid,
+                        VisitID originator_visit_id,
+                        VisitRow* visit_row) override;

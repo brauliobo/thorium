@@ -25,6 +25,19 @@ thorium-browser --remote-debugging-port=9222
 infra/tools/cdp_process_dump.py 9222 /tmp/thorium-cdp-dump
 ```
 
+## History Redirect Chain Repair
+
+Detect repeated self-refresh visits that formed an unbounded client-redirect
+chain. Thorium must be completely closed so the History database can be locked:
+
+```bash
+infra/tools/repair_history_redirect_chains.py ~/.config/thorium/Default/History
+infra/tools/repair_history_redirect_chains.py --apply ~/.config/thorium/Default/History
+```
+
+The first command is a dry run. `--apply` creates a timestamped backup before
+marking the affected visits as redirect-chain starts; it does not delete visits.
+
 ## NVIDIA VP9 Decode Stress
 
 Stress Chromium's VP9 hardware decode path while collecting NVIDIA telemetry:
