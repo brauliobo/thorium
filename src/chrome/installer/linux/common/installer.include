@@ -149,8 +149,18 @@ stage_install_common() {
     install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libffmpeg.so" "${STAGEDIR}/${INSTALLDIR}/lib"
     # install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libblink_test_plugin.so" "${STAGEDIR}/${INSTALLDIR}/lib"
     install -m ${SHLIB_PERMS} "${OUTPUTDIR}/ClearKeyCdm/_platform_specific/linux_x64/libclearkeycdm.so" "${STAGEDIR}/${INSTALLDIR}/lib"
-    install -m 644 "${OUTPUTDIR}/thorium.svg" "${STAGEDIR}/${INSTALLDIR}/"
-    # install -m 644 "${OUTPUTDIR}/thor_ver" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/alacrium.svg" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 755 "${OUTPUTDIR}/alacrium_shell" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 644 "${OUTPUTDIR}/alacrium_shell.png" "${STAGEDIR}/${INSTALLDIR}/"
+    install -m 755 -d "${STAGEDIR}/usr/bin" \
+      "${STAGEDIR}/usr/share/applications" \
+      "${STAGEDIR}/usr/share/icons/hicolor/256x256/apps"
+    install -m 755 "${OUTPUTDIR}/alacrium-shell" "${STAGEDIR}/usr/bin/"
+    install -m 644 "${OUTPUTDIR}/alacrium-shell.desktop" \
+      "${STAGEDIR}/usr/share/applications/"
+    install -m 644 "${OUTPUTDIR}/alacrium_shell.png" \
+      "${STAGEDIR}/usr/share/icons/hicolor/256x256/apps/alacrium-shell.png"
+    # install -m 644 "${OUTPUTDIR}/alacrium_ver" "${STAGEDIR}/${INSTALLDIR}/"
     install -m 755 "${OUTPUTDIR}/chromedriver" "${STAGEDIR}/${INSTALLDIR}/"
     install -m 755 "${OUTPUTDIR}/pak" "${STAGEDIR}/usr/bin/"
     install -m 644 "${OUTPUTDIR}/initial_preferences" "${STAGEDIR}/${INSTALLDIR}/"

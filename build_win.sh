@@ -18,7 +18,7 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to build Thorium for Windows.${c0}\n" &&
+	printf "${bold}${GRE}Script to build Alacrium for Windows.${c0}\n" &&
 	printf "${underline}${YEL}Usage:${c0} build_win.sh # (where # is number of jobs)${c0}\n" &&
 	printf "\n"
 }
@@ -27,32 +27,27 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
-printf "${YEL}Building Thorium for Windows...\n" &&
+printf "${YEL}Building Alacrium for Windows...\n" &&
 printf "${GRE}\n" &&
 
-# Build Thorium and mini_installer
+# Build Alacrium and mini_installer
 export NINJA_SUMMARIZE_BUILD=1 &&
 export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 cd ${CR_SRC_DIR} &&
 # For restoring individual build targets for customization
-#autoninja -C out/thorium thorium chromedriver clear_key_cdm thorium_shell policy_templates pack_policy_templates setup mini_installer -j$@ &&
-autoninja -C out/thorium thorium_all -j$@ &&
+#autoninja -C out/alacrium alacrium chromedriver clear_key_cdm alacrium_shell policy_templates pack_policy_templates setup mini_installer -j$@ &&
+autoninja -C out/alacrium alacrium_all -j$@ &&
 printf "${GRE}\nBuilding mini_installer...\n" &&
-autoninja -C out/thorium thorium_installer -j$@ &&
+autoninja -C out/alacrium alacrium_installer -j$@ &&
 
 printf "\n" &&
-cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 printf "\n" &&
 
-printf "${GRE}${bold}Build Completed. ${YEL}${bold}Installer at \'//out/thorium/thorium_mini_installer.exe\'\n" &&
+printf "${GRE}${bold}Build Completed. ${YEL}${bold}Installer at \'//out/alacrium/mini_installer.exe\'\n" &&
 tput sgr0

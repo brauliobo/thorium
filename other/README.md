@@ -1,6 +1,6 @@
 ## Compiler configs for SSE2, SSE3, SSE4.1, and AVX2
 
-This directory contains compiler configurations files and args.gn files for compiling Thorium with:
+This directory contains compiler configurations files and args.gn files for compiling Alacrium with:
 
 __SSE2__ > See the [the Wiki page](https://en.wikipedia.org/wiki/SSE2) about it. (For very old processors)  
 __SSE3__ > See the [the Wiki page](https://en.wikipedia.org/wiki/SSE3) about it. (This is the normal Chromium baseline default)  
@@ -8,9 +8,9 @@ __SSE4.1__ > See the [the Wiki page](https://en.wikipedia.org/wiki/SSE4#SSE4.1) 
  and  
 __AVX2__ > See the [the Wiki page](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#Advanced_Vector_Extensions_2) about it. (For modern CPUs)
 
-It also contains config files for MacOS and ChromiumOS/ThoriumOS.
+It also contains config files for MacOS and ChromiumOS/AlacriumOS.
 
-([AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) is the normal Thorium baseline default)
+([AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) is the normal Alacrium baseline default)
 
 ### Other info
 

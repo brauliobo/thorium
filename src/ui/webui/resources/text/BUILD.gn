@@ -11,8 +11,8 @@ generate_grd("build_grdp") {
   resource_path_prefix = "text"
 
   input_files = [
-    # chrome://resources/text/thorium_version.txt
-    "thorium_version.txt",
+    # chrome://resources/text/alacrium_version.txt
+    "alacrium_version.txt",
     "AUTHORS.txt",
   ]
 }

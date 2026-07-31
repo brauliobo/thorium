@@ -1,7 +1,7 @@
 ERROR Not a build directory.
 This command requires an existing build directory. I interpreted your input
-"out/thorium" as:
-  /Users/midzer/chromium/src/out/thorium/
+"out/alacrium" as:
+  /Users/midzer/chromium/src/out/alacrium/
 which doesn't seem to contain a previously-generated build.
 WARNING at build arg file (use "gn args <out_dir>" to edit):70:24: Build argument has no effect.
 enable_media_overlay = true
@@ -539,7 +539,7 @@ archive_seed_corpus
 
 arm_arch
     Current value = "armv8.5-a"
-      From //out/thorium/args.gn:12
+      From //out/alacrium/args.gn:12
     Overridden from the default = "armv8.5-a"
       From //build/config/arm.gni:144
 
@@ -563,7 +563,7 @@ arm_float_abi
 
 arm_fpu
     Current value = "neon"
-      From //out/thorium/args.gn:13
+      From //out/alacrium/args.gn:13
     Overridden from the default = "neon"
       From //build/config/arm.gni:153
 
@@ -572,7 +572,7 @@ arm_fpu
 
 arm_optionally_use_neon
     Current value = false
-      From //out/thorium/args.gn:16
+      From //out/alacrium/args.gn:16
     Overridden from the default = false
       From //build/config/arm.gni:159
 
@@ -580,7 +580,7 @@ arm_optionally_use_neon
 
 arm_tune
     Current value = "generic-armv8.5-a"
-      From //out/thorium/args.gn:14
+      From //out/alacrium/args.gn:14
     Overridden from the default = "generic-armv8.5-a"
       From //build/config/arm.gni:149
 
@@ -590,7 +590,7 @@ arm_tune
 
 arm_use_neon
     Current value = true
-      From //out/thorium/args.gn:15
+      From //out/alacrium/args.gn:15
     Overridden from the default = "true"
       From //build/config/arm.gni:156
 
@@ -598,7 +598,7 @@ arm_use_neon
 
 arm_use_thumb
     Current value = true
-      From //out/thorium/args.gn:17
+      From //out/alacrium/args.gn:17
     Overridden from the default = true
       From //build/config/arm.gni:163
 
@@ -607,7 +607,7 @@ arm_use_thumb
 
 arm_version
     Current value = 8
-      From //out/thorium/args.gn:11
+      From //out/alacrium/args.gn:11
     Overridden from the default = 8
       From //build/config/arm.gni:137
 
@@ -665,7 +665,7 @@ blink_gc_plugin_option_warn_unneeded_finalizer
 
 blink_symbol_level
     Current value = 0
-      From //out/thorium/args.gn:44
+      From //out/alacrium/args.gn:44
     Overridden from the default = -1
       From //third_party/blink/renderer/config.gni:40
 
@@ -783,7 +783,7 @@ bundle_pool_depth
 
 bundle_widevine_cdm
     Current value = false
-      From //out/thorium/args.gn:64
+      From //out/alacrium/args.gn:64
     Overridden from the default = false
       From //third_party/widevine/cdm/widevine.gni:57
 
@@ -817,7 +817,7 @@ chrome_enable_logging_by_default
 
 chrome_pgo_phase
     Current value = 2
-      From //out/thorium/args.gn:90
+      From //out/alacrium/args.gn:90
     Overridden from the default = 2
       From //build/config/compiler/pgo/pgo.gni:29
 
@@ -951,7 +951,7 @@ content_shell_major_version
       From //content/shell/BUILD.gn:42
 
 content_shell_product_name
-    Current value (from the default) = "Thorium Shell"
+    Current value (from the default) = "Alacrium Shell"
       From //content/shell/BUILD.gn:40
 
 content_shell_version
@@ -1165,7 +1165,7 @@ dawn_use_swiftshader
 
 dcheck_always_on
     Current value = false
-      From //out/thorium/args.gn:22
+      From //out/alacrium/args.gn:22
     Overridden from the default = false
       From //build/config/dcheck_always_on.gni:25
 
@@ -1261,7 +1261,7 @@ disable_brotli_filter
 
 disable_fieldtrial_testing_config
     Current value = true
-      From //out/thorium/args.gn:26
+      From //out/alacrium/args.gn:26
     Overridden from the default = false
       From //components/variations/service/BUILD.gn:14
 
@@ -1437,7 +1437,7 @@ enable_cast_renderer
 
 enable_cdm_host_verification
     Current value = false
-      From //out/thorium/args.gn:66
+      From //out/alacrium/args.gn:66
     Overridden from the default = false
       From //media/media_options.gni:213
 
@@ -1488,7 +1488,7 @@ enable_cros_libassistant
 
 enable_cros_media_app
     Current value = false
-      From //out/thorium/args.gn:52
+      From //out/alacrium/args.gn:52
     Overridden from the default = false
       From //ash/webui/media_app_ui/media_app_ui.gni:7
 
@@ -1518,7 +1518,7 @@ enable_dav1d_decoder
 
 enable_discovery
     Current value = true
-      From //out/thorium/args.gn:51
+      From //out/alacrium/args.gn:51
     Overridden from the default = false
       From //chrome/browser/sharing/buildflags.gni:6
 
@@ -1582,7 +1582,7 @@ enable_feed_v2_modern
 
 enable_ffmpeg_video_decoders
     Current value = true
-      From //out/thorium/args.gn:56
+      From //out/alacrium/args.gn:56
     Overridden from the default = true
       From //media/media_options.gni:198
 
@@ -1644,7 +1644,7 @@ enable_gwp_asan_partitionalloc
 
 enable_hangout_services_extension
     Current value = true
-      From //out/thorium/args.gn:71
+      From //out/alacrium/args.gn:71
     Overridden from the default = false
       From //chrome/common/features.gni:58
 
@@ -1653,7 +1653,7 @@ enable_hangout_services_extension
 
 enable_hevc_parser_and_hw_decoder
     Current value = true
-      From //out/thorium/args.gn:80
+      From //out/alacrium/args.gn:80
     Overridden from the default = true
       From //media/media_options.gni:98
 
@@ -1667,7 +1667,7 @@ enable_hidpi
 
 enable_hls_demuxer
     Current value = true
-      From //out/thorium/args.gn:49
+      From //out/alacrium/args.gn:49
     Overridden from the default = true
       From //media/media_options.gni:93
 
@@ -1675,7 +1675,7 @@ enable_hls_demuxer
 
 enable_hls_sample_aes
     Current value = true
-      From //out/thorium/args.gn:48
+      From //out/alacrium/args.gn:48
     Overridden from the default = true
       From //media/media_options.gni:79
 
@@ -1683,7 +1683,7 @@ enable_hls_sample_aes
 
 enable_ink
     Current value = false
-      From //out/thorium/args.gn:50
+      From //out/alacrium/args.gn:50
     Overridden from the default = false
       From //pdf/features.gni:18
 
@@ -1709,7 +1709,7 @@ enable_ipc_logging
 
 enable_iterator_debugging
     Current value = false
-      From //out/thorium/args.gn:25
+      From //out/alacrium/args.gn:25
     Overridden from the default = false
       From //build/config/c++/c++.gni:38
 
@@ -1783,7 +1783,7 @@ enable_libaom_decoder
 
 enable_library_cdms
     Current value = true
-      From //out/thorium/args.gn:62
+      From //out/alacrium/args.gn:62
     Overridden from the default = true
       From //media/media_options.gni:206
 
@@ -1834,7 +1834,7 @@ enable_media_control_logging_override
 
 enable_media_drm_storage
     Current value = true
-      From //out/thorium/args.gn:69
+      From //out/alacrium/args.gn:69
     Overridden from the default = true
       From //media/media_options.gni:90
 
@@ -1909,7 +1909,7 @@ enable_mojom_typemapping
 
 enable_mse_mpeg2ts_stream_parser
     Current value = true
-      From //out/thorium/args.gn:86
+      From //out/alacrium/args.gn:86
     Overridden from the default = true
       From //media/media_options.gni:61
 
@@ -1927,7 +1927,7 @@ enable_mutex_priority_inheritance
 
 enable_nacl
     Current value = false
-      From //out/thorium/args.gn:32
+      From //out/alacrium/args.gn:32
     Overridden from the default = false
       From //components/nacl/features.gni:28
 
@@ -2134,7 +2134,7 @@ enable_pkeys
 
 enable_platform_ac3_eac3_audio
     Current value = true
-      From //out/thorium/args.gn:81
+      From //out/alacrium/args.gn:81
     Overridden from the default = true
       From //media/media_options.gni:53
 
@@ -2144,7 +2144,7 @@ enable_platform_ac3_eac3_audio
 
 enable_platform_dolby_vision
     Current value = true
-      From //out/thorium/args.gn:82
+      From //out/alacrium/args.gn:82
     Overridden from the default = true
       From //media/media_options.gni:69
 
@@ -2157,7 +2157,7 @@ enable_platform_dolby_vision
 
 enable_platform_dts_audio
     Current value = true
-      From //out/thorium/args.gn:85
+      From //out/alacrium/args.gn:85
     Overridden from the default = true
       From //media/media_options.gni:59
 
@@ -2166,7 +2166,7 @@ enable_platform_dts_audio
 
 enable_platform_encrypted_dolby_vision
     Current value = true
-      From //out/thorium/args.gn:83
+      From //out/alacrium/args.gn:83
     Overridden from the default = true
       From //media/media_options.gni:76
 
@@ -2178,7 +2178,7 @@ enable_platform_encrypted_dolby_vision
 
 enable_platform_hevc
     Current value = true
-      From //out/thorium/args.gn:79
+      From //out/alacrium/args.gn:79
     Overridden from the default = true
       From //media/media_options.gni:112
 
@@ -2190,7 +2190,7 @@ enable_platform_hevc
 
 enable_platform_mpeg_h_audio
     Current value = true
-      From //out/thorium/args.gn:84
+      From //out/alacrium/args.gn:84
     Overridden from the default = true
       From //media/media_options.gni:55
 
@@ -2223,7 +2223,7 @@ enable_ppapi
 
 enable_precompiled_headers
     Current value = false
-      From //out/thorium/args.gn:45
+      From //out/alacrium/args.gn:45
     Overridden from the default = false
       From //build/config/pch.gni:14
 
@@ -2258,7 +2258,7 @@ enable_printing
 
 enable_profiling
     Current value = false
-      From //out/thorium/args.gn:29
+      From //out/alacrium/args.gn:29
     Overridden from the default = false
       From //build/config/compiler/compiler.gni:70
 
@@ -2307,7 +2307,7 @@ enable_remoting
 
 enable_reporting
     Current value = false
-      From //out/thorium/args.gn:27
+      From //out/alacrium/args.gn:27
     Overridden from the default = true
       From //net/features.gni:29
 
@@ -2315,7 +2315,7 @@ enable_reporting
 
 enable_resource_allowlist_generation
     Current value = false
-      From //out/thorium/args.gn:28
+      From //out/alacrium/args.gn:28
     Overridden from the default = false
       From //build/toolchain/gcc_toolchain.gni:28
 
@@ -2404,7 +2404,7 @@ enable_stack_trace_line_numbers
 
 enable_stripping
     Current value = true
-      From //out/thorium/args.gn:21
+      From //out/alacrium/args.gn:21
     Overridden from the default = true
       From //build/config/apple/symbols.gni:24
 
@@ -2469,7 +2469,7 @@ enable_validating_command_decoder
 
 enable_vr
     Current value = true
-      From //out/thorium/args.gn:77
+      From //out/alacrium/args.gn:77
     Overridden from the default = false
       From //device/vr/buildflags/buildflags.gni:28
 
@@ -2505,7 +2505,7 @@ enable_webui_inline_sourcemaps
 
 enable_webui_tab_strip
     Current value = false
-      From //out/thorium/args.gn:34
+      From //out/alacrium/args.gn:34
     Overridden from the default = false
       From //ui/webui/webui_features.gni:14
 
@@ -2513,7 +2513,7 @@ enable_webui_tab_strip
 
 enable_widevine
     Current value = true
-      From //out/thorium/args.gn:63
+      From //out/alacrium/args.gn:63
     Overridden from the default = true
       From //third_party/widevine/cdm/widevine.gni:15
 
@@ -2524,7 +2524,7 @@ enable_widevine
 
 exclude_unwind_tables
     Current value = true
-      From //out/thorium/args.gn:23
+      From //out/alacrium/args.gn:23
     Overridden from the default = true
       From //build/config/compiler/compiler.gni:125
 
@@ -2563,7 +2563,7 @@ fatal_linker_warnings
 
 ffmpeg_branding
     Current value = "Chrome"
-      From //out/thorium/args.gn:54
+      From //out/alacrium/args.gn:54
     Overridden from the default = "Chrome"
       From //third_party/ffmpeg/ffmpeg_options.gni:42
 
@@ -2796,7 +2796,7 @@ icu_use_stub_data
 
 ignore_missing_widevine_signing_cert
     Current value = true
-      From //out/thorium/args.gn:68
+      From //out/alacrium/args.gn:68
     Overridden from the default = true
       From //third_party/widevine/cdm/widevine.gni:79
 
@@ -2923,7 +2923,7 @@ is_castos
 
 is_cfi
     Current value = true
-      From //out/thorium/args.gn:40
+      From //out/alacrium/args.gn:40
     Overridden from the default = false
       From //build/config/sanitizers/sanitizers.gni:50
 
@@ -2990,7 +2990,7 @@ is_chromeos_with_hw_details
 
 is_clang
     Current value = true
-      From //out/thorium/args.gn:35
+      From //out/alacrium/args.gn:35
     Overridden from the default = true
       From //build/config/BUILDCONFIG.gn:139
 
@@ -2998,7 +2998,7 @@ is_clang
 
 is_component_build
     Current value = false
-      From //out/thorium/args.gn:30
+      From //out/alacrium/args.gn:30
     Overridden from the default = false
       From //build/config/BUILDCONFIG.gn:173
 
@@ -3011,7 +3011,7 @@ is_component_build
 
 is_component_ffmpeg
     Current value = false
-      From //out/thorium/args.gn:57
+      From //out/alacrium/args.gn:57
     Overridden from the default = false
       From //third_party/ffmpeg/ffmpeg_options.gni:49
 
@@ -3038,7 +3038,7 @@ is_ct_supported
 
 is_debug
     Current value = false
-      From //out/thorium/args.gn:20
+      From //out/alacrium/args.gn:20
     Overridden from the default = false
       From //build/config/BUILDCONFIG.gn:163
 
@@ -3089,7 +3089,7 @@ is_nacl_saigo
 
 is_official_build
     Current value = true
-      From //out/thorium/args.gn:19
+      From //out/alacrium/args.gn:19
     Overridden from the default = false
       From //build/config/BUILDCONFIG.gn:136
 
@@ -3370,7 +3370,7 @@ mbi_mode
 
 media_use_ffmpeg
     Current value = true
-      From //out/thorium/args.gn:46
+      From //out/alacrium/args.gn:46
     Overridden from the default = true
       From //media/media_options.gni:28
 
@@ -3380,7 +3380,7 @@ media_use_ffmpeg
 
 media_use_libvpx
     Current value = true
-      From //out/thorium/args.gn:47
+      From //out/alacrium/args.gn:47
     Overridden from the default = true
       From //media/media_options.gni:32
 
@@ -3493,7 +3493,7 @@ optimize_for_size
 
 optimize_webui
     Current value = true
-      From //out/thorium/args.gn:33
+      From //out/alacrium/args.gn:33
     Overridden from the default = true
       From //ui/webui/webui_features.gni:11
 
@@ -3719,7 +3719,7 @@ perfetto_verbose_logs_enabled
 
 pgo_data_path
     Current value = "/Users/midzer/chromium/src/chrome/build/pgo_profiles/chrome-mac-5563-1678034145-2b0924b1d3352ad373c3872468c5d7de6e6311fd.profdata"
-      From //out/thorium/args.gn:91
+      From //out/alacrium/args.gn:91
     Overridden from the default = ""
       From //build/config/compiler/pgo/pgo.gni:33
 
@@ -3737,7 +3737,7 @@ pkg_config
 
 proprietary_codecs
     Current value = true
-      From //out/thorium/args.gn:53
+      From //out/alacrium/args.gn:53
     Overridden from the default = false
       From //build/config/features.gni:31
 
@@ -3824,7 +3824,7 @@ rtc_build_dcsctp
 
 rtc_build_examples
     Current value = false
-      From //out/thorium/args.gn:75
+      From //out/alacrium/args.gn:75
     Overridden from the default = true
       From //third_party/webrtc/webrtc.gni:130
 
@@ -3864,7 +3864,7 @@ rtc_build_tools
 
 rtc_build_with_neon
     Current value = true
-      From //out/thorium/args.gn:74
+      From //out/alacrium/args.gn:74
     Overridden from the default = true
       From //third_party/webrtc/webrtc.gni:169
 
@@ -4045,7 +4045,7 @@ rtc_include_dav1d_in_internal_decoder_factory
 
 rtc_include_ilbc
     Current value = true
-      From //out/thorium/args.gn:73
+      From //out/alacrium/args.gn:73
     Overridden from the default = true
       From //third_party/webrtc/webrtc.gni:95
 
@@ -4155,7 +4155,7 @@ rtc_use_dummy_audio_file_devices
 
 rtc_use_h264
     Current value = true
-      From //out/thorium/args.gn:72
+      From //out/alacrium/args.gn:72
     Overridden from the default = true
       From //third_party/webrtc/webrtc.gni:182
 
@@ -4270,7 +4270,7 @@ save_reproducers_on_lld_crash
     a reproducer file to be saved.
 
 seed_corpus_dir
-    Current value (from the default) = "//out/thorium/gen/components/viz/service/compositor_frame_fuzzer/binary_seed_corpus"
+    Current value (from the default) = "//out/alacrium/gen/components/viz/service/compositor_frame_fuzzer/binary_seed_corpus"
       From //components/viz/service/compositor_frame_fuzzer/BUILD.gn:9
 
 show_includes
@@ -4374,7 +4374,7 @@ swiftshader_startup_dialog
 
 symbol_level
     Current value = 0
-      From //out/thorium/args.gn:31
+      From //out/alacrium/args.gn:31
     Overridden from the default = -1
       From //build/config/compiler/compiler.gni:61
 
@@ -4423,7 +4423,7 @@ system_libdir
 
 target_cpu
     Current value = "arm64"
-      From //out/thorium/args.gn:9
+      From //out/alacrium/args.gn:9
     Overridden from the default = ""
       (Internally set; try `gn help target_cpu`.)
 
@@ -4439,7 +4439,7 @@ target_environment
 
 target_os
     Current value = "mac"
-      From //out/thorium/args.gn:8
+      From //out/alacrium/args.gn:8
     Overridden from the default = ""
       (Internally set; try `gn help target_os`.)
 
@@ -4474,7 +4474,7 @@ tests_have_location_tags
 
 thin_lto_enable_optimizations
     Current value = true
-      From //out/thorium/args.gn:89
+      From //out/alacrium/args.gn:89
     Overridden from the default = true
       From //build/config/compiler/BUILD.gn:130
 
@@ -4510,7 +4510,7 @@ toolkit_views
 
 treat_warnings_as_errors
     Current value = false
-      From //out/thorium/args.gn:36
+      From //out/alacrium/args.gn:36
     Overridden from the default = true
       From //build/config/compiler/compiler.gni:51
 
@@ -4836,7 +4836,7 @@ use_gtk
 
 use_icf
     Current value = true
-      From //out/thorium/args.gn:39
+      From //out/alacrium/args.gn:39
     Overridden from the default = true
       From //build/config/compiler/BUILD.gn:194
 
@@ -4940,7 +4940,7 @@ use_libpci
 
 use_lld
     Current value = true
-      From //out/thorium/args.gn:38
+      From //out/alacrium/args.gn:38
     Overridden from the default = true
       From //build/config/compiler/compiler.gni:38
 
@@ -5236,7 +5236,7 @@ use_system_libpng
 
 use_system_xcode
     Current value = true
-      From //out/thorium/args.gn:18
+      From //out/alacrium/args.gn:18
     Overridden from the default = ""
       From //build_overrides/build.gni:71
 
@@ -5254,7 +5254,7 @@ use_system_zlib
 
 use_text_section_splitting
     Current value = true
-      From //out/thorium/args.gn:87
+      From //out/alacrium/args.gn:87
     Overridden from the default = false
       From //build/config/compiler/BUILD.gn:154
 
@@ -5268,7 +5268,7 @@ use_text_section_splitting
 
 use_thin_lto
     Current value = true
-      From //out/thorium/args.gn:88
+      From //out/alacrium/args.gn:88
     Overridden from the default = true
       From //build/config/compiler/compiler.gni:93
 
@@ -5301,7 +5301,7 @@ use_v4lplugin
 
 use_v8_context_snapshot
     Current value = true
-      From //out/thorium/args.gn:43
+      From //out/alacrium/args.gn:43
     Overridden from the default = true
       From //tools/v8_context_snapshot/v8_context_snapshot.gni:19
 
@@ -5337,7 +5337,7 @@ use_viz_debugger
 
 use_vr_assets_component
     Current value = true
-      From //out/thorium/args.gn:78
+      From //out/alacrium/args.gn:78
     Overridden from the default = false
       From //chrome/browser/vr/features.gni:12
 
@@ -5345,7 +5345,7 @@ use_vr_assets_component
 
 use_webaudio_ffmpeg
     Current value = false
-      From //out/thorium/args.gn:58
+      From //out/alacrium/args.gn:58
     Overridden from the default = false
       From //third_party/blink/renderer/config.gni:46
 
@@ -5353,7 +5353,7 @@ use_webaudio_ffmpeg
 
 use_webaudio_pffft
     Current value = false
-      From //out/thorium/args.gn:59
+      From //out/alacrium/args.gn:59
     Overridden from the default = false
       From //third_party/blink/renderer/config.gni:20
 
@@ -5619,7 +5619,7 @@ v8_enable_fast_mksnapshot
 
 v8_enable_fast_torque
     Current value = true
-      From //out/thorium/args.gn:42
+      From //out/alacrium/args.gn:42
     Overridden from the default = ""
       From //v8/BUILD.gn:98
 
@@ -6089,7 +6089,7 @@ v8_static_library
 
 v8_symbol_level
     Current value = 0
-      From //out/thorium/args.gn:41
+      From //out/alacrium/args.gn:41
     Overridden from the default = 0
       From //v8/gni/v8.gni:56
 
@@ -6097,7 +6097,7 @@ v8_symbol_level
 
 v8_target_cpu
     Current value = "arm64"
-      From //out/thorium/args.gn:10
+      From //out/alacrium/args.gn:10
     Overridden from the default = ""
       From //build/config/v8_target_cpu.gni:33
 

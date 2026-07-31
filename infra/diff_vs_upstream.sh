@@ -1,9 +1,9 @@
 #!/bin/bash
-# Compare Thorium's src/ overlay against an upstream Chromium checkout.
+# Compare Alacrium's src/ overlay against an upstream Chromium checkout.
 #
-# Prereqs: run ./trunk.sh first so $CR_SRC_DIR holds a Chromium checkout
-# (defaults to $HOME/chromium/src). Pass a different tag as $1 to compare
-# the overlay against a target rebase tag instead of the current THOR_VER.
+# Prereqs: run ./trunk.sh first so chromium/src holds a Chromium checkout.
+# Pass a different tag as $1 to compare
+# the overlay against a target rebase tag instead of the current ALACRIUM_VER.
 #
 # Output: out/upstream_diff/
 #   inventory.tsv   status per overlay file (NEW|MOD|SAME|MISSING_UPSTREAM)
@@ -13,14 +13,14 @@
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
-THOR_ROOT="$PWD"
+ALACRIUM_ROOT="$PWD"
 
-CR_SRC_DIR="${CR_DIR:-${CR_SRC_DIR:-$HOME/chromium/src}}"
-TARGET_TAG="${1:-$(awk -F\" '/^THOR_VER=/{print $2}' version.sh)}"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
+TARGET_TAG="${1:-$(awk -F\" '/^ALACRIUM_VER=/{print $2}' version.sh)}"
 
 [ -d "$CR_SRC_DIR/.git" ] || { echo "No chromium checkout at $CR_SRC_DIR — run ./trunk.sh first." >&2; exit 1; }
 
-OUT="$THOR_ROOT/out/upstream_diff"
+OUT="$ALACRIUM_ROOT/out/upstream_diff"
 rm -rf "$OUT" && mkdir -p "$OUT/diffs" "$OUT/patch_status"
 
 echo "Comparing overlay against chromium tag: $TARGET_TAG"
@@ -60,7 +60,7 @@ check_patch() {
   local patch_file="$2"
   local name
   name=$(basename "$patch_file")
-  if ( cd "$patch_dir" && git apply --check --reject --recount "$THOR_ROOT/$patch_file" ) \
+  if ( cd "$patch_dir" && git apply --check --reject --recount "$ALACRIUM_ROOT/$patch_file" ) \
       2> "$OUT/patch_status/$name.err"; then
     echo 0 > "$OUT/patch_status/$name.rc"
   else

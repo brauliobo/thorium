@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for Thorium
+about: Suggest an idea for Alacrium
 title: ''
 labels: ''
 assignees: ''
@@ -14,4 +14,4 @@ A clear and concise description of what the problem is. Ex. I'm always frustrate
 A clear and concise description of what you want to happen.
 
 **Did you read the FAQ?**
-https://thorium.rocks/faq
+https://alacrium.rocks/faq

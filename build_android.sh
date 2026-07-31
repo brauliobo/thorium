@@ -18,7 +18,7 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to build Thorium for Android.${c0}\n" &&
+	printf "${bold}${GRE}Script to build Alacrium for Android.${c0}\n" &&
 	printf "${underline}${YEL}Usage:${c0}${bold} build_android.sh --arm32 | --arm64 | --x86 | --x64 # (where # is number of jobs)${c0}\n" &&
 	printf " Use the --help flag to show this help.${c0}\n" &&
 	printf "\n"
@@ -28,39 +28,34 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 cr_build_jobs="$2"
 export cr_build_jobs
 
 printf "\n" &&
-printf "${bold}${GRE}Script to build Thorium for Android.${c0}\n" &&
+printf "${bold}${GRE}Script to build Alacrium for Android.${c0}\n" &&
 printf "${underline}${YEL}Usage:${c0}${bold} build_android.sh --arm32 | --arm64 | --x86 | --x64 # (where # is number of jobs)${c0}\n" &&
 printf " Use the --help flag to show this help.${c0}\n" &&
 
 buildARM32 () {
 	printf "\n" &&
-	printf "${YEL}Building Thorium for Android arm32...\n" &&
+	printf "${YEL}Building Alacrium for Android arm32...\n" &&
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "${CYA}\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView32
+	# Build Alacrium, Alacrium Shell, and System WebView32
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
+	autoninja -C out/alacrium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
 	printf "\n" &&
-	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+	cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 	printf "\n" &&
 	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can copy the .apk(s) to your device or use ADB to install it.\n" &&
-	printf "${GRE}${bold}They are located in \'//chromium/src/out/thorium/apks/\'\n" &&
+	printf "${GRE}${bold}They are located in \'//chromium/src/out/alacrium/apks/\'\n" &&
 	printf "\n"
 }
 case $1 in
@@ -69,21 +64,21 @@ esac
 
 buildARM64 () {
 	printf "\n" &&
-	printf "${YEL}Building Thorium for Android arm64...\n" &&
+	printf "${YEL}Building Alacrium for Android arm64...\n" &&
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "${CYA}\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView64
+	# Build Alacrium, Alacrium Shell, and System WebView64
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_64_apk -j${cr_build_jobs} &&
+	autoninja -C out/alacrium chrome_public_apk content_shell_apk system_webview_64_apk -j${cr_build_jobs} &&
 	printf "\n" &&
-	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+	cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 	printf "\n" &&
 	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can copy the .apk(s) to your device or use ADB to install it.\n" &&
-	printf "${GRE}${bold}They are located in \'//chromium/src/out/thorium/apks/\'\n" &&
+	printf "${GRE}${bold}They are located in \'//chromium/src/out/alacrium/apks/\'\n" &&
 	printf "\n"
 }
 case $1 in
@@ -92,21 +87,21 @@ esac
 
 buildX86 () {
 	printf "\n" &&
-	printf "${YEL}Building Thorium for Android x86...\n" &&
+	printf "${YEL}Building Alacrium for Android x86...\n" &&
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "${CYA}\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView x86
+	# Build Alacrium, Alacrium Shell, and System WebView x86
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
+	autoninja -C out/alacrium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
 	printf "\n" &&
-	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+	cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 	printf "\n" &&
 	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can copy the .apk(s) to your device or use ADB to install it.\n" &&
-	printf "${GRE}${bold}They are located in \'//chromium/src/out/thorium/apks/\'\n" &&
+	printf "${GRE}${bold}They are located in \'//chromium/src/out/alacrium/apks/\'\n" &&
 	printf "\n"
 }
 case $1 in
@@ -115,21 +110,21 @@ esac
 
 buildX64 () {
 	printf "\n" &&
-	printf "${YEL}Building Thorium for Android x64...\n" &&
+	printf "${YEL}Building Alacrium for Android x64...\n" &&
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "${CYA}\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView x86
+	# Build Alacrium, Alacrium Shell, and System WebView x86
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
+	autoninja -C out/alacrium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
 	printf "\n" &&
-	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+	cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 	printf "\n" &&
 	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can copy the .apk(s) to your device or use ADB to install it.\n" &&
-	printf "${GRE}${bold}They are located in \'//chromium/src/out/thorium/apks/\'\n" &&
+	printf "${GRE}${bold}They are located in \'//chromium/src/out/alacrium/apks/\'\n" &&
 	printf "\n"
 }
 case $1 in

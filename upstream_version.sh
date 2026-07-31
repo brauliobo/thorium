@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Copyright (c) 2026 Alex313031.
 
 YEL='\033[1;33m' # Yellow
@@ -18,25 +20,24 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${YEL}Script to check out Chromium tag of current Thorium version.${c0}\n" &&
+	printf "${bold}${YEL}Script to check out the Chromium tag used by Alacrium.${c0}\n" &&
 	printf "\n"
 	printf "${RED}NOTE: You may need to run ${c0}${bold}./trunk.sh ${RED}before using this script!${c0}\n" &&
 	printf "\n"
 }
-case $1 in
+case ${1:-} in
 	--help) displayHelp; exit 0;;
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
+
+if [ -d "$HOME/depot_tools" ]; then
+  export PATH="$HOME/depot_tools:$PATH"
 fi
 
-CR_VER="150.0.7871.128"
+CR_VER="151.0.7922.71"
 
 export CR_VER &&
 
@@ -62,7 +63,7 @@ printf "${GRE}gclient runhooks${c0}\n" &&
 gclient runhooks &&
 
 # Install sysroots (i.e. for ARM64)
-if [ -n "$MSYSTEM" ]; then
+if [ -n "${MSYSTEM:-}" ]; then
   printf "${GRE}Not Downloading Linux sysroot on Windows\n"
 else
   build/linux/sysroot_scripts/install-sysroot.py --arch=amd64 &&
@@ -87,7 +88,7 @@ printf "${YEL}Downloading PGO Profile for V8 (for when v8_enable_builtins_optimi
 printf "\n" &&
 { tput sgr0 || true; } &&
 
-if [ -n "$MSYSTEM" ]; then
+if [ -n "${MSYSTEM:-}" ]; then
   python3 v8/tools/builtins-pgo/download_profiles.py --depot-tools=/c/src/depot_tools --force download
 else
   python3 v8/tools/builtins-pgo/download_profiles.py --depot-tools=$HOME/depot_tools --force download

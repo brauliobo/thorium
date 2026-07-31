@@ -2,7 +2,7 @@
 
 """
 This file is used to sync commits in Chromium's Tip-of-tree branch and does not
-contain any Thorium-specific files.
+contain any Alacrium-specific files.
 """
 
 
@@ -37,7 +37,9 @@ if "--help" in sys.argv:
 
 
 # Set chromium/src dir from Windows environment variable
-cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chromium", "src"
+    )
 
 
 def main():

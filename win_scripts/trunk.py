@@ -44,8 +44,10 @@ if "--help" in sys.argv:
 
 
 # Set chromium/src dir from Windows environment variable
-cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
-# Thorium-specific directory that need to be deleted
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chromium", "src"
+    )
+# Alacrium-specific directory that need to be deleted
 pak_dir = os.path.normpath(os.path.join(cr_src_dir, "third_party", "pak"))
 
 
@@ -57,7 +59,7 @@ def main():
     # Change directory to cr_src_dir and run commands
     os.chdir(cr_src_dir)
 
-    # Remove Thorium-specific directory if it exists
+    # Remove Alacrium-specific directory if it exists
     safe_rmtree(pak_dir)
 
     # Commands to run

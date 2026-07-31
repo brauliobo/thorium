@@ -34,7 +34,7 @@ cleanBuild () {
 	rm -r -f -v ./build_
 	printf "\n" &&
 	printf "${bold}${GRE}Done.${c0}\n" &&
-	printf "\n" &&
+	printf "\n"
 }
 case $1 in
 	--clean) cleanBuild; exit 0;;

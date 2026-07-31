@@ -54,7 +54,7 @@ declare_args() {
 
   # SSE4.1
   # Normal PrimoBrowser baseline
-  # Normal ThoriumOS baseline because Core 2 Duo is the lowest
+  # Normal AlacriumOS baseline because Core 2 Duo is the lowest
   # hardware that other CrOS subsystems like drivers support.
   # Present since Penryn (2007 45nm Core 2 Duo die shrink), and
   # AMD Jaguar (2013 Athlon CPUs) and Bulldozer (2012 AMD FX).
@@ -71,7 +71,7 @@ declare_args() {
   use_sse42 = false
 
   # AVX
-  # Normal Thorium baseline
+  # Normal Alacrium baseline
   # Present since Sandy Bridge (2011 2nd Gen. Core i series)
   # and AMD Bulldozer (2012 AMD FX).
   # Requires Windows 7 SP1 / Linux 2.6.30 or later to use.

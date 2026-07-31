@@ -2,8 +2,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CHROMIUM_SRC="${CHROMIUM_SRC:-${CR_DIR:-${CR_SRC_DIR:-$HOME/chromium/src}}}"
-OUT_DIR="${OUT_DIR:-out/thorium}"
+CHROMIUM_SRC="${ROOT}/chromium/src"
+OUT_DIR="${OUT_DIR:-out/alacrium}"
 TEST_BIN="$CHROMIUM_SRC/$OUT_DIR/video_decode_accelerator_perf_tests"
 WORK_DIR="${WORK_DIR:-$ROOT/.tmp/nvidia-vp9-decode}"
 BASE_VIDEO="${BASE_VIDEO:-$CHROMIUM_SRC/media/test/data/test-25fps.vp9}"

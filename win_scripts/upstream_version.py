@@ -27,7 +27,7 @@ def try_run(command):
 
 # --help
 def display_help():
-    print(f"\nScript to check out Chromium tag of current Thorium version.\n")
+    print("\nScript to check out the Chromium tag used by Alacrium.\n")
     print(f"\nNOTE: You may need to run trunk.py before using this script\n")
 
 
@@ -37,11 +37,13 @@ if "--help" in sys.argv:
 
 
 # Set chromium/src dir from Windows environment variable
-cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chromium", "src"
+    )
 
 
 # Set cr_ver
-cr_ver = "138.0.7204.306"
+cr_ver = "151.0.7922.71"
 
 
 print(f"\nCurrent Chromium version is: {cr_ver}\n")

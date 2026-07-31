@@ -1,3 +1,3 @@
-## Thorium Changelog
+## Alacrium Changelog
 
 M130

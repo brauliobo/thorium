@@ -27,16 +27,16 @@ declare_args() {
   # WebView providers which declare one of a handful of package names. See
   # https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md#Changing-package-name
   # for details.
-  chrome_public_manifest_package = "org.chromium.thorium"
+  chrome_public_manifest_package = "io.github.brauliobo.alacrium"
   if (use_stable_package_name_for_trichrome) {
     chrome_public_manifest_package += ".stable"
-    # Changed by Alex313031 for Thorium
+    # Use a stable package suffix for Alacrium Trichrome builds.
   } else if (android_channel != "default" && android_channel != "stable") {
     chrome_public_manifest_package += "." + android_channel
   }
 }
 
-chrome_public_test_manifest_package = "org.chromium.thorium.tests"
+chrome_public_test_manifest_package = "io.github.brauliobo.alacrium.tests"
 
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",

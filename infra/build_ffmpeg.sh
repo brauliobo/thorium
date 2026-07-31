@@ -27,24 +27,19 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
 printf "${YEL}Building libffmpeg...\n" &&
 printf "${CYA}\n" &&
 
-# Build Thorium
+# Build Alacrium
 export NINJA_SUMMARIZE_BUILD=1 &&
 export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 cd ${CR_SRC_DIR} &&
-autoninja -C out/thorium/ third_party/ffmpeg:ffmpeg third_party/ffmpeg:ffmpeg_features third_party/ffmpeg:ffmpeg_internal -j$@ &&
+autoninja -C out/alacrium/ third_party/ffmpeg:ffmpeg third_party/ffmpeg:ffmpeg_features third_party/ffmpeg:ffmpeg_internal -j$@ &&
 
 printf "${GRE}${bold}Done!\n" &&
 tput sgr0

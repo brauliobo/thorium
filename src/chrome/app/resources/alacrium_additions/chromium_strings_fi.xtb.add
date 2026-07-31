@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Alacrium käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
+<translation id="469847031616755573">Alacrium on oletusselaimesi.</translation>
+<translation id="9121116283800901015">Tietoja Alacriumista</translation>
+<translation id="7557415942066581350">Kun kirjaudut Googlen palveluihin (esim. Gmailiin tai YouTubeen) tilillä <ph name="USER_EMAIL" />, voit kirjautua Alacriumiin automaattisesti samalla tilillä</translation>
+<translation id="8063674192889594521">Luo uusi Alacrium-profiili</translation>
+<translation id="2813532507332782105">Alacriumin turvallisuustyökalut</translation>
+<translation id="5404516918685923379">Tarkista Alacriumin tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
+<translation id="391022854039785855">Jos haluat poistaa selausdatan vain tältä laitteelta, mutta säilyttää sen Google-tililläsi, <ph name="BEGIN_LINK" />kirjaudu ulos Alacriumista<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Alacriumiin.</translation>
+<translation id="3879276044795274924">Yksilöi Alacriumia</translation>
+<translation id="6349701846617734224"><ph name="BEGIN_LINK" />Alacriumin työkalujen<ph name="END_LINK" /> avulla voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
+<translation id="113825514187113500">Alacriumissa</translation>
+<translation id="2513495859821894442">Kirjaudu sisään Alacriumiin, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
+<translation id="1290370037980749495">Alacrium toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti (suositus)</translation>
+<translation id="3203458745325150724">Oma Alacrium</translation>
+<translation id="3892055234200984404">Tietoja &amp;Alacriumista</translation>
+<translation id="8312332850957380094">Muut Alacrium-profiilit</translation>
+<translation id="2823243626069255310">Muokkaa uusi Alacrium-profiili näköiseksesi</translation>
+<translation id="7057723382073894700">V8 on Alacriumin JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
+<translation id="9073817226409915222">Jätä taustasovellukset käyntiin, kun Alacrium suljetaan</translation>
+<translation id="5737116114768420447">Ylläpidä Alacrium-profiileja</translation>
+<translation id="3390772469177266069">Alacrium ilmoittaa, jos jotain on tarkistettava</translation>
+<translation id="253414695030364725">Alacrium esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
+<translation id="1965458093883218976">Lue, miten Alacrium pitää sinut turvassa</translation>
+<translation id="6097413908033623736">Auta parantamaan Alacriumia ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
+<translation id="7153173282073382515">Alacriumin incognito-tila</translation>
+<translation id="1861871537231630745">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Alacriumin varoitukset.</translation>
+<translation id="8182056223343645142">Kirjaudu ulos Alacriumista</translation>
+<translation id="4860412983011031251">Ohjeita Alacriumin käyttöön</translation>
+<translation id="6079265919870015811">Lisää Alacrium-profiili</translation>
+<translation id="7473833913849364138">Alacrium esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Jos jaat myös Alacriumin käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
+<translation id="9072534646955460921">Kun käytät Alacrium-profiileja, voit pitää kaiken Alacrium-sisällön erillään. Luo profiileja kavereita ja perhettä varten tai tee ero työn ja hauskanpidon välille.</translation>
+<translation id="4308905027810063387">Kirjaudu ulos Alacriumista</translation>
+<translation id="6312135329022974196">Muut Alacrium-profiilit</translation>
+<translation id="8828163608353368128">Salli Alacrium-kirjautuminen</translation>
+<translation id="6497325017313227277">Poista Alacriumista</translation>
+<translation id="8315496929814159292">Aseta Alacrium oletusselaimeksi</translation>
+<translation id="438883585792992435">Alacrium vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Alacrium pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää Muistinsäästöstä<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Alacrium tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
+<translation id="4212981493728012253">Datasi suojaamiseksi salli Alacriumin poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina. Tämä ei estä ilmoituksia.</translation>
+<translation id="3224040524634124542">Jos sallit evästeet, Alacrium voi käyttää niitä esilataamisen aikana</translation>
+<translation id="1967056554017864811">Muokkaa Alacrium-profiiliasi</translation>
+<translation id="682714496634566410">Nimeä Alacrium-profiilisi</translation>
+<translation id="1927215335595997320">Alacrium esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
+<translation id="4344849281720725205">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Alacriumissa ja saada ilmoituksen, kun hinta laskee</translation>
+<translation id="2905944704289173754">Voit synkronoida Alacriumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
+<translation id="7023976647734322618">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Alacrium käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
+<translation id="3124765553592510724">Kun kirjoitat osoitepalkkiin tai hakukenttään, Alacrium lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
+<translation id="5501994443630499490">Laita lisäsuojaus päälle Alacriumin JavaScript- ja WebAssembly-moottorissa</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />Alacrium varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
+<translation id="6539171476340543682">Alacrium voi tarkistaa salasanasi, kun tallennat niitä</translation>
+<translation id="5422284534340886571">Lisää Alacrium-profiili</translation>
+<translation id="5346310914638900016">Ylläpidä Alacrium-profiileja</translation>
+<translation id="2601544977861663592">Kirjaudu sisään Alacriumiin</translation>
+<translation id="4933700843989736491">Kirjaudu Alacriumiin, kun kirjaudut muihin Googlen palveluihin</translation>
+<translation id="7886351526956375471">Kuka käyttää Alacriumia?</translation>
+<translation id="6618835206810857815">Tekijänoikeus <ph name="YEAR" /> Alex313031. Kaikki oikeudet pidätetään.</translation>

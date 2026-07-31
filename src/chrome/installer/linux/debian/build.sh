@@ -20,8 +20,6 @@ gen_changelog() {
   rm -f "${DEB_CHANGELOG}"
   DATE_RFC5322="$(date --rfc-email)"
   process_template "${SCRIPTDIR}/changelog.template" "${DEB_CHANGELOG}"
-  debchange -a --nomultimaint -m --changelog "${DEB_CHANGELOG}" \
-    "Release Notes: ${RELEASENOTES}"
   GZLOG="${STAGEDIR}/usr/share/doc/${PACKAGE}/changelog.gz"
   mkdir -p "$(dirname "${GZLOG}")"
   gzip -9 -c "${DEB_CHANGELOG}" > "${GZLOG}"
@@ -105,7 +103,7 @@ verify_package() {
     exit $BAD_DIFF
   fi
 
-  # Rename package to match Thorium naming scheme
+  # Rename package to match Alacrium naming scheme
   mv -v "${PACKAGE}_${VERSIONFULL}_${ARCHITECTURE}.deb" "${PACKAGE}_${DEBVERSIONNAME}${NAME_SUFFIX}.deb"
 }
 
@@ -161,15 +159,15 @@ verify_channel() {
   case $CHANNEL in
     stable )
       CHANNEL=stable
-      RELEASENOTES="https://github.com/Alex313031/Thorium/releases"
+      RELEASENOTES="https://github.com/brauliobo/alacrium/releases"
       ;;
     beta|testing )
       CHANNEL=beta
-      RELEASENOTES="https://github.com/Alex313031/Thorium/releases"
+      RELEASENOTES="https://github.com/brauliobo/alacrium/releases"
       ;;
     dev|unstable|alpha )
       CHANNEL=unstable
-      RELEASENOTES="https://github.com/Alex313031/Thorium/releases"
+      RELEASENOTES="https://github.com/brauliobo/alacrium/releases"
       ;;
     # Canary is released twice a day automatically, so no release notes
     # attached.
@@ -289,7 +287,7 @@ cd "${OUTPUTDIR}"
 # Allowed configs include optional HTTPS support and explicit multiarch
 # platforms.
 
-# Unset repoconfig for Thorium
+# Unset repoconfig for Alacrium
 #BASEREPOCONFIG="dl.google.com/linux/chrome/deb/ stable main"
 REPOCONFIG=
 REPOCONFIGREGEX="deb (\\[arch=[^]]*\\b${ARCHITECTURE}\\b[^]]*\\]"

@@ -1,0 +1,80 @@
+diff --git a/chrome/browser/ui/webui/BUILD.gn b/chrome/browser/ui/webui/BUILD.gn
+index 70818ce2da0e8..e5c35940f14d8 100644
+--- a/chrome/browser/ui/webui/BUILD.gn
++++ b/chrome/browser/ui/webui/BUILD.gn
+@@ -32,6 +32,7 @@ source_set("configs") {
+     "chrome_untrusted_web_ui_configs.h",
+     "chrome_web_ui_configs.cc",
+     "chrome_web_ui_configs.h",
++    "alacrium_easter_eggs.h",
+   ]
+ 
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+diff --git a/chrome/browser/ui/webui/chrome_web_ui_configs.cc b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
+index bced2aebb3495..56836e1a186b3 100644
+--- a/chrome/browser/ui/webui/chrome_web_ui_configs.cc
++++ b/chrome/browser/ui/webui/chrome_web_ui_configs.cc
+@@ -55,6 +55,7 @@
+ #include "chrome/browser/ui/webui/signin_internals_ui.h"
+ #include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
+ #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
++#include "chrome/browser/ui/webui/alacrium_easter_eggs.h"
+ #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
+ #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
+ #include "chrome/browser/ui/webui/version/version_ui.h"
+@@ -303,6 +304,7 @@ void RegisterChromeWebUIConfigs() {
+                      subresource_filter::SubresourceFilterInternalsUIConfig>());
+   map.AddWebUIConfig(std::make_unique<SiteEngagementUIConfig>());
+   map.AddWebUIConfig(std::make_unique<SyncInternalsUIConfig>());
++  map.AddWebUIConfig(std::make_unique<AlacriumWebUILoadUIConfig>());
+   map.AddWebUIConfig(std::make_unique<TranslateInternalsUIConfig>());
+   map.AddWebUIConfig(std::make_unique<UsbInternalsUIConfig>());
+   map.AddWebUIConfig(std::make_unique<user_actions_ui::UserActionsUIConfig>());
+diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
+index c978f8f218b40..d2c64274d7a17 100644
+--- a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
++++ b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
+@@ -353,6 +353,7 @@ bool ChromeWebUIControllerFactory::IsWebUIAllowedToMakeNetworkRequests(
+       origin.host() == chrome::kChromeUIDownloadsHost ||
+       // https://crbug.com/376417346
+       origin.host() == chrome::kChromeUIExtensionsHost ||
++      origin.host() == chrome::kChromeUIEggsHost ||
+       // https://crbug.com/509216218
+       origin.host() == chrome::kChromeUIDrivePickerHostHost;
+ }
+diff --git a/chrome/common/webui_url_constants.cc b/chrome/common/webui_url_constants.cc
+index 307b2de1bdb81..8641dfe9b805b 100644
+--- a/chrome/common/webui_url_constants.cc
++++ b/chrome/common/webui_url_constants.cc
+@@ -122,6 +122,7 @@ bool IsSystemWebUIHost(std::string_view host) {
+ // These hosts will also be suggested by BuiltinProvider.
+ base::span<const base::cstring_view> ChromeURLHosts() {
+   static constexpr auto kChromeURLHosts = std::to_array<base::cstring_view>({
++      kChromeUIEggsHost,
+       kChromeUIAboutHost,
+       kChromeUIAccessibilityHost,
+       kChromeUIActorInternalsHost,
+diff --git a/chrome/common/webui_url_constants.h b/chrome/common/webui_url_constants.h
+index 8288814da7d14..847afaec0a2b6 100644
+--- a/chrome/common/webui_url_constants.h
++++ b/chrome/common/webui_url_constants.h
+@@ -33,6 +33,8 @@ namespace chrome {
+ // Not all components have corresponding URLs and vice versa. Only add as
+ // needed.
+ // Please keep in alphabetical order, with OS/feature specific sections below.
++inline constexpr char kChromeUIEggsHost[] = "eggs";
++inline constexpr char kChromeUIEggsURL[] = "chrome://eggs/";
+ inline constexpr char kChromeUIAboutHost[] = "about";
+ inline constexpr char kChromeUIAboutURL[] = "chrome://about/";
+ inline constexpr char kChromeUIAccessCodeCastHost[] = "access-code-cast";
+diff --git a/components/webui/about/resources/about_credits_reciprocal.tmpl b/components/webui/about/resources/about_credits_reciprocal.tmpl
+index 5096175e285c1..6d4a41ab2815f 100644
+--- a/components/webui/about/resources/about_credits_reciprocal.tmpl
++++ b/components/webui/about/resources/about_credits_reciprocal.tmpl
+@@ -1,4 +1,4 @@
+ <div class="open-sourced">
+-    {{opensource_project}} software is made available as source code
+-    <a href="{{opensource_link}}">here</a>.
++    <a href="https://github.com/brauliobo/alacrium">Alacrium</a> is based on
++    {{opensource_project}}. Chromium source code is available <a href="{{opensource_link}}">here</a>.
+ </div>

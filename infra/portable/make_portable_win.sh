@@ -17,8 +17,8 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to make a portable Thorium .zip for Windows.${c0}\n" &&
-	printf "${bold}${YEL}Please place the thorium_mini_installer.exe file in this directory before running.${c0}\n" &&
+	printf "${bold}${GRE}Script to make a portable Alacrium .zip for Windows.${c0}\n" &&
+	printf "${bold}${YEL}Please place the alacrium_mini_installer.exe file in this directory before running.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
@@ -26,16 +26,17 @@ case $1 in
 esac
 
 # Detect which installer is present and set output zip name accordingly
-VERSION="138.0.7204.306"
+VERSION="151.0.7922.71"
 INSTALLER_NAME=""
 ZIP_NAME=""
 
 INSTALLER_LIST=(
-	"thorium_AVX2_mini_installer.exe"
-	"thorium_AVX_mini_installer.exe"
-	"thorium_SSE4_mini_installer.exe"
-	"thorium_SSE3_mini_installer.exe"
-	"thorium_mini_installer.exe"
+	"mini_installer.exe"
+	"alacrium_AVX2_mini_installer.exe"
+	"alacrium_AVX_mini_installer.exe"
+	"alacrium_SSE4_mini_installer.exe"
+	"alacrium_SSE3_mini_installer.exe"
+	"alacrium_mini_installer.exe"
 )
 
 for f in "${INSTALLER_LIST[@]}"; do
@@ -46,23 +47,23 @@ for f in "${INSTALLER_LIST[@]}"; do
 done
 
 if [ -z "$INSTALLER_NAME" ]; then
-	die "${RED}No installer file found. Place a thorium_*_mini_installer.exe in this directory."
+	die "${RED}No installer file found. Place an alacrium_*_mini_installer.exe in this directory."
 fi
 
 if [[ "$INSTALLER_NAME" == *"AVX2"* ]]; then
-	ZIP_NAME="Thorium_AVX2_${VERSION}.zip"
+	ZIP_NAME="Alacrium_AVX2_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"AVX"* ]]; then
-	ZIP_NAME="Thorium_AVX_${VERSION}.zip"
+	ZIP_NAME="Alacrium_AVX_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"SSE4"* ]]; then
-	ZIP_NAME="Thorium_SSE4_${VERSION}.zip"
+	ZIP_NAME="Alacrium_SSE4_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"SSE3"* ]]; then
-	ZIP_NAME="Thorium_SSE3_${VERSION}.zip"
+	ZIP_NAME="Alacrium_SSE3_${VERSION}.zip"
 else
-	ZIP_NAME="thorium_portable.zip"
+	ZIP_NAME="Alacrium_Portable.zip"
 fi
 
 printf "\n" &&
-printf "${bold}${RED}NOTE: You must place the Thorium .exe file in this directory before running.${c0}\n" &&
+printf "${bold}${RED}NOTE: You must place the Alacrium .exe file in this directory before running.${c0}\n" &&
 printf "${bold}${RED}   AND you must have 7-Zip installed and in your PATH.${c0}\n" &&
 printf "\n" &&
 printf "${bold}${YEL}Detected installer: ${GRE}${INSTALLER_NAME}${c0}\n" &&
@@ -72,7 +73,7 @@ printf "${YEL}\n" &&
 read -p "Press Enter to continue or Ctrl + C to abort."
 printf "\n" &&
 
-printf "${YEL}Extracting & Copying files from Thorium .exe file...\n" &&
+printf "${YEL}Extracting & Copying files from Alacrium .exe file...\n" &&
 printf "${c0}\n" &&
 
 sleep 2 &&
@@ -84,8 +85,8 @@ mkdir -v -p ./temp/USER_DATA &&
 7z x chrome.7z &&
 mv -v Chrome-bin ./temp/BIN &&
 cp -r -v ./README.win temp/README.txt &&
-cp -r -v ./THORIUM.BAT temp/ &&
-cp -r -v ./THORIUM_SHELL.BAT temp/ &&
+cp -r -v ./ALACRIUM.BAT temp/ &&
+cp -r -v ./ALACRIUM_SHELL.BAT temp/ &&
 
 printf "\n" &&
 printf "${YEL}Zipping up...\n" &&

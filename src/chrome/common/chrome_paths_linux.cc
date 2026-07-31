@@ -66,7 +66,7 @@ bool GetUserMediaDirectory(const std::string& xdg_name,
 //     otherwise $XDG_CONFIG_HOME if set
 //     otherwise ~/.config
 //   and <product> is:
-//     "thorium" for Thorium
+//     "alacrium" for Alacrium
 //     "google-chrome" for stable channel official build
 //     "google-chrome-beta" for beta channel official build
 //     "google-chrome-unstable" for dev channel official build
@@ -95,7 +95,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string data_dir_basename = "google-chrome";
 #else
-  std::string data_dir_basename = "thorium";
+  std::string data_dir_basename = "alacrium";
 #endif
   *result = config_dir.Append(data_dir_basename + GetChannelSuffixForDataDir());
   return true;
@@ -108,7 +108,7 @@ void GetUserCacheDirectory(const base::FilePath& profile_dir,
   // - if the user-data-dir in the standard place,
   //     use same subdirectory of the cache directory.
   //     (this maps ~/.config/google-chrome to ~/.cache/google-chrome as well
-  //      as the same thing for ~/.config/thorium)
+  //      as the same thing for ~/.config/alacrium)
   // - otherwise, use the profile dir directly.
 
   // Default value in cases where any of the following fails.

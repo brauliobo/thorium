@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Cuando un sitio te pregunta si quieres precargar de forma privada los vínculos de su página, Alacrium usa los servidores de Google. De esta manera, se oculta tu identidad del sitio precargado, pero Google aprende qué sitios se precargan.</translation>
+<translation id="469847031616755573">Alacrium es tu navegador predeterminado</translation>
+<translation id="9121116283800901015">Acerca de Alacrium</translation>
+<translation id="7557415942066581350">Cuando accedes a servicios de Google, como Gmail o YouTube, con <ph name="USER_EMAIL" />, puedes ingresar automáticamente a Alacrium con la misma cuenta</translation>
+<translation id="8063674192889594521">Configura tu nuevo perfil de Alacrium</translation>
+<translation id="2813532507332782105">Herramientas de seguridad de Alacrium</translation>
+<translation id="5404516918685923379">Revisa los controles de seguridad y privacidad más importantes en Alacrium</translation>
+<translation id="391022854039785855">Para borrar los datos de navegación solo en este dispositivo y conservarlos en tu Cuenta de Google, <ph name="BEGIN_LINK" />sal de Alacrium<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Alacrium</translation>
+<translation id="3879276044795274924">Personalizar Alacrium</translation>
+<translation id="6349701846617734224">Con las <ph name="BEGIN_LINK" />herramientas de Alacrium<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
+<translation id="113825514187113500">En Alacrium</translation>
+<translation id="2513495859821894442">Para acceder a tus contraseñas y más en todos tus dispositivos, accede a Alacrium</translation>
+<translation id="1290370037980749495">Alacrium se ejecuta más rápido, y las funciones que usan JavaScript deberían funcionar según lo previsto (recomendado)</translation>
+<translation id="3203458745325150724">Tu Alacrium</translation>
+<translation id="3892055234200984404">Acerca de &amp;Alacrium</translation>
+<translation id="8312332850957380094">Otros perfiles de Alacrium</translation>
+<translation id="2823243626069255310">Personaliza tu nuevo perfil de Alacrium.</translation>
+<translation id="7057723382073894700">V8 es el motor de WebAssembly y de JavaScript de Alacrium que se usa para mejorar el rendimiento del sitio</translation>
+<translation id="9073817226409915222">Continuar ejecutando aplicaciones en segundo plano cuando Alacrium esté cerrado.</translation>
+<translation id="5737116114768420447">Administrar perfiles de Alacrium</translation>
+<translation id="3390772469177266069">Alacrium te avisará si hay algo que debas revisar</translation>
+<translation id="253414695030364725">Alacrium precarga las páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
+<translation id="1965458093883218976">Descubre cómo Alacrium te protege</translation>
+<translation id="6097413908033623736">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Alacrium</translation>
+<translation id="7153173282073382515">Incógnito en Alacrium</translation>
+<translation id="1861871537231630745">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Alacrium.</translation>
+<translation id="8182056223343645142">Salir de Alacrium</translation>
+<translation id="4860412983011031251">Obtener ayuda con Alacrium</translation>
+<translation id="6079265919870015811">Agregar perfil de Alacrium</translation>
+<translation id="7473833913849364138">Alacrium precarga páginas, lo que agiliza la navegación y las búsquedas. <ph name="BEGIN_LINK" />Obtén más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Si también compartes los informes de uso de Alacrium, estos incluirán las URLs que visites</translation>
+<translation id="9072534646955460921">Con los perfiles de Alacrium, puedes separar todo lo que tienes en Alacrium. Crea perfiles para amigos y familiares, o diferencia el trabajo de la diversión.</translation>
+<translation id="4308905027810063387">Salir de Alacrium</translation>
+<translation id="6312135329022974196">Otros perfiles de Alacrium</translation>
+<translation id="8828163608353368128">Permitir el acceso a Alacrium</translation>
+<translation id="6497325017313227277">Eliminar de Alacrium</translation>
+<translation id="8315496929814159292">Establecer Alacrium como navegador predeterminado</translation>
+<translation id="438883585792992435">Alacrium libera memoria de las pestañas inactivas. Esto brinda más recursos informáticos a las pestañas activas y a otras apps, y permite que Alacrium siga funcionando rápido. Las pestañas inactivas se vuelven a activar automáticamente cuando regresas a ellas. <ph name="BEGIN_LINK" />Obtén más información sobre el Ahorro de memoria<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Alacrium verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
+<translation id="4212981493728012253">Para proteger tus datos, permite que Alacrium quite permisos de los sitios que no visitaste recientemente. Esto no detiene las notificaciones.</translation>
+<translation id="3224040524634124542">Si permites las cookies, Alacrium puede usarlas cuando realice la precarga</translation>
+<translation id="1967056554017864811">Personalizar tu perfil de Alacrium</translation>
+<translation id="682714496634566410">Asígnale un nombre a tu perfil de Alacrium</translation>
+<translation id="1927215335595997320">Alacrium precarga más páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
+<translation id="4344849281720725205">Si también guardas tus favoritos en tu Cuenta de Google, puedes realizar un seguimiento de precios de productos en Alacrium y recibir notificaciones cuando haya reducciones de los precios</translation>
+<translation id="2905944704289173754">Sincroniza y personaliza Alacrium en todos tus dispositivos</translation>
+<translation id="7023976647734322618">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. Alacrium usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
+<translation id="3124765553592510724">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Alacrium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="5501994443630499490">Activar la protección adicional en el motor de WebAssembly y de JavaScript de Alacrium</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />Alacrium te advierte<ph name="END_LINK" /> sobre descargas y sitios no seguros</translation>
+<translation id="6539171476340543682">Alacrium puede revisar las contraseñas cuando las guardas</translation>
+<translation id="5422284534340886571">Agregar perfil de Alacrium</translation>
+<translation id="5346310914638900016">Administrar perfiles de Alacrium</translation>
+<translation id="2601544977861663592">Iniciar sesión en Alacrium</translation>
+<translation id="4933700843989736491">Ingresa a Alacrium cuando accedas a otros servicios de Google</translation>
+<translation id="7886351526956375471">¿Quién usa Alacrium?</translation>
+<translation id="6618835206810857815">Copyright <ph name="YEAR" /> Alex313031. Todos los derechos reservados.</translation>

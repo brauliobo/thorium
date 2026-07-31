@@ -1,10 +1,10 @@
 ## Copyright (c) 2026 Alex313031
 
 ## Summary
-This is a special program, built on top of content_shell and incorporating a multitude of options for testing, viewing, and debugging UI resources in Thorium.
-Run the thorium_ui_debug_shell.exe (Windows), or Thorium_Debug_Shell.sh (Linux), and you can select from the menu. Some things are interactive, some load internal resources, and some require loading external resources like viewing .icon files. In that case, you can load a file using its full path in the box towards the bottom.
+This is a special program, built on top of content_shell and incorporating a multitude of options for testing, viewing, and debugging UI resources in Alacrium.
+Run the alacrium_ui_debug_shell.exe (Windows), or Alacrium_Debug_Shell.sh (Linux), and you can select from the menu. Some things are interactive, some load internal resources, and some require loading external resources like viewing .icon files. In that case, you can load a file using its full path in the box towards the bottom.
 
-## Use in Thorium
+## Use in Alacrium
 I built this to view and test native Chromium UI icons in the .icon format.
 These files are in:
 //chromium/src/ui/views/vector_icons ## For many subcomponents like native UI views.
@@ -16,7 +16,7 @@ These files are in:
 //chromium/src/chromecast/ui/vector_icons ## For icons specific to ChromeCast.
 
 ## Building
-To build, use: autoninja -C out/thorium chrome chromedriver thorium_shell setup mini_installer thorium_ui_debug_shell or just
-autoninja -C out/thorium thorium_ui_debug_shell to exclude building the rest of Thorium.
+To build, use: autoninja -C out/alacrium alacrium chromedriver alacrium_shell setup mini_installer alacrium_ui_debug_shell or just
+autoninja -C out/alacrium alacrium_ui_debug_shell to exclude building the rest of Alacrium.
 
 More info can be found at > https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/components/vector_icons/README.md

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Copyright (c) 2026 Alex313031, midzer, and gz83.
 
 YEL='\033[1;33m' # Yellow
@@ -23,33 +25,30 @@ displayHelp () {
 	# printf "${bold}${YEL}the Chromium repo with the --no-history flag.${c0}\n" &&
 	printf "\n"
 }
-case $1 in
+case ${1:-} in
 	--help) displayHelp; exit 0;;
 esac
 
 # chromium/src dir env variable
-THORIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 CR_ROOT="$(dirname "${CR_SRC_DIR}")"
 
-printf "\n" &&
-printf "${bold}${GRE}Script to Rebase/Sync the Chromium repo.${c0}\n" &&
-printf "\n" &&
-printf "${YEL}Rebasing/Syncing and running hooks...\n" &&
-tput sgr0 &&
+if [ -d "$HOME/depot_tools" ]; then
+    export PATH="$HOME/depot_tools:$PATH"
+fi
+
+printf "\n"
+printf "${bold}${GRE}Script to Rebase/Sync the Chromium repo.${c0}\n"
+printf "\n"
+printf "${YEL}Rebasing/Syncing and running hooks...\n"
+tput sgr0 2>/dev/null || true
 
 if [ ! -d "${CR_SRC_DIR}/.git" ]; then
     printf "${YEL}Creating Chromium git checkout at ${CR_SRC_DIR}...${c0}\n"
     mkdir -p "${CR_ROOT}"
-    cd "${CR_ROOT}"
     if command -v fetch >/dev/null 2>&1; then
-        fetch --nohooks chromium
+        (cd "${CR_ROOT}" && fetch --nohooks chromium)
     else
         git clone https://chromium.googlesource.com/chromium/src.git "${CR_SRC_DIR}"
         cat > "${CR_ROOT}/.gclient" <<EOF
@@ -63,48 +62,35 @@ solutions = [
   },
 ]
 EOF
+        (cd "${CR_SRC_DIR}" && gclient sync --nohooks)
     fi
 fi
 
-cd ${CR_SRC_DIR}/v8/ &&
+for checkout in \
+    "${CR_SRC_DIR}/v8" \
+    "${CR_SRC_DIR}/third_party/devtools-frontend/src" \
+    "${CR_SRC_DIR}/third_party/ffmpeg"; do
+    if [ -d "${checkout}/.git" ]; then
+        git -C "${checkout}" restore .
+        git -C "${checkout}" clean -ffd
+    fi
+done
 
-git restore . && git clean -ffd &&
+rm -rf "${CR_SRC_DIR}/third_party/pak" "${CR_SRC_DIR}/components/ungoogled"
 
-cd ${CR_SRC_DIR}/third_party/devtools-frontend/src &&
+git -C "${CR_SRC_DIR}" fetch origin --tags
+git -C "${CR_SRC_DIR}" checkout -f origin/main
+git -C "${CR_SRC_DIR}" clean -ffd
 
-git restore . && git clean -ffd &&
+printf "${GRE}gclient sync${c0}\n"
+(cd "${CR_SRC_DIR}" && gclient sync --with_branch_heads --with_tags --force --reset --nohooks --delete_unversioned_trees)
 
-cd ${CR_SRC_DIR}/third_party/ffmpeg &&
+printf "${GRE}gclient runhooks${c0}\n"
+(cd "${CR_SRC_DIR}" && gclient runhooks)
 
-git restore . && git clean -ffd &&
-
-cd ${CR_SRC_DIR} &&
-
-rm -v -r -f ${CR_SRC_DIR}/third_party/pak &&
-
-rm -r -f -v components/ungoogled/ &&
-
-git checkout -f origin/main &&
-
-git clean -ffd &&
-git clean -ffd &&
-
-git rebase-update &&
-
-git fetch --tags &&
-cd ${CR_SRC_DIR} &&
-
-printf "${GRE}gclient sync${c0}\n"  &&
-gclient sync --with_branch_heads --with_tags --force --reset --nohooks --delete_unversioned_trees &&
-
-git clean -ffd &&
-
-printf "${GRE}gclient runhooks${c0}\n" &&
-gclient runhooks &&
-
-printf "\n" &&
-printf "${GRE}Done! ${YEL}You can now run \'./version.sh\'\n" &&
-tput sgr0 &&
+printf "\n"
+printf "${GRE}Done! ${YEL}You can now run \'./version.sh\'\n"
+tput sgr0 2>/dev/null || true
 
 #c0='\033[0m' # Reset Text
 #c1='\033[0m\033[36m\033[1m' # Light Cyan
@@ -138,6 +124,6 @@ tput sgr0 &&
 #printf "${c7}            Long Live Chromium\041\n${c0}\n" &&
 
 printf "\n" &&
-cat "${THORIUM_ROOT}/logos/chromium_logo_ascii_art.txt" &&
+cat "${ALACRIUM_ROOT}/logos/chromium_logo_ascii_art.txt" &&
 printf "\n" &&
 tput sgr0

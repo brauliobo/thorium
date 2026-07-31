@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Remove references to components deleted upstream in M147+ from Thorium's
+"""Remove references to components deleted upstream in M147+ from Alacrium's
 overlay `.gn` files: NaCl (//components/nacl, //native_client_sdk) and
 PPAPI (//ppapi, enable_ppapi).
 
@@ -9,7 +9,7 @@ Deletes:
     (brace-balanced).
   - Lines containing `//components/nacl`, `//native_client_sdk`, `//ppapi`
     inside dep lists (simple scan — safe because dep lists are one entry
-    per line in Thorium's overlay).
+    per line in Alacrium's overlay).
 
 Arg: one or more `.gn`/`.gni` files. Writes back in place.
 """

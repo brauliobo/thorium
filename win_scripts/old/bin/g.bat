@@ -1,1 +1,0 @@
-gn args out\thorium\

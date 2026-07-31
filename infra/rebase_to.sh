@@ -1,11 +1,11 @@
 #!/bin/bash
-# Minimal Thorium rebase helper.
+# Minimal Alacrium rebase helper.
 #
 # Usage:
 #   ./infra/rebase_to.sh 148.0.7778.215 [setup.sh flavour]
 #
 # This updates version.sh and upstream_version.sh, checks script syntax, runs
-# Chromium checkout/sync through version.sh, applies the Thorium overlay through
+# Chromium checkout/sync through version.sh, applies the Alacrium overlay through
 # setup.sh, writes the upstream diff report, and stops before any build.
 
 set -euo pipefail
@@ -58,7 +58,7 @@ shift
 SETUP_FLAVOUR="${1:-}"
 [ $# -le 1 ] || die "too many arguments"
 
-CR_SRC_DIR="${CR_DIR:-${CR_SRC_DIR:-$HOME/chromium/src}}"
+CR_SRC_DIR="${ROOT}/chromium/src"
 export CR_SRC_DIR
 
 case "$TARGET_TAG" in
@@ -69,8 +69,8 @@ esac
 [[ "$TARGET_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || \
   die "expected a Chromium version tag like 148.0.7778.215"
 
-echo "Updating Thorium rebase target to Chromium $TARGET_TAG"
-replace_version version.sh THOR_VER "$TARGET_TAG"
+echo "Updating Alacrium rebase target to Chromium $TARGET_TAG"
+replace_version version.sh ALACRIUM_VER "$TARGET_TAG"
 replace_version upstream_version.sh CR_VER "$TARGET_TAG"
 
 echo "Checking shell syntax"
@@ -79,7 +79,7 @@ bash -n version.sh upstream_version.sh setup.sh infra/*.sh
 echo "Checking out Chromium tag and syncing dependencies"
 ./version.sh
 
-echo "Applying Thorium overlay"
+echo "Applying Alacrium overlay"
 if [ -n "$SETUP_FLAVOUR" ]; then
   ./setup.sh "$SETUP_FLAVOUR"
 else

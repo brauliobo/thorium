@@ -6,7 +6,7 @@
 
 # Fetches a contributor-provided API_KEYS.txt and optionally generates the
 # Chromium defaults patch from it. This script intentionally does not embed a
-# private URL; pass one explicitly or set THORIUM_API_KEYS_URL locally.
+# private URL; pass one explicitly or set ALACRIUM_API_KEYS_URL locally.
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ c0='\033[0m' # Reset Text
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 
-url="${THORIUM_API_KEYS_URL:-}"
+url="${ALACRIUM_API_KEYS_URL:-}"
 output="${repo_root}/API_KEYS.txt"
 generate_patch=false
 
@@ -26,7 +26,7 @@ usage() {
   cat <<EOF
 Usage: ${0##*/} [--url URL] [--output API_KEYS.txt] [--generate-patch]
 
-The URL may also be provided through THORIUM_API_KEYS_URL. The generated patch
+The URL may also be provided through ALACRIUM_API_KEYS_URL. The generated patch
 is written to other/google-api-keys-defaults.patch when --generate-patch is set.
 EOF
 }
@@ -61,7 +61,7 @@ done
 
 if [[ -z "${url}" ]]; then
   printf "${RED}No API key URL configured.${c0}\n" >&2
-  printf "${YEL}Pass --url URL or set THORIUM_API_KEYS_URL locally.${c0}\n" >&2
+  printf "${YEL}Pass --url URL or set ALACRIUM_API_KEYS_URL locally.${c0}\n" >&2
   exit 2
 fi
 

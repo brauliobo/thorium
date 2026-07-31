@@ -43,19 +43,19 @@ printf "\n"
 # There isn't anything malicious here so it's OK
 
 # Cleanup old binaries
-rm -r -v ./THORIUM-PORTABLE &&
-rm -r -v ./THORIUM-SHELL &&
-rm -f -v ./C/THORIUM-PORTABLE.sh.x.c &&
-rm -f -v ./C/THORIUM-SHELL.sh.x.c &&
+rm -r -v ./ALACRIUM-PORTABLE &&
+rm -r -v ./ALACRIUM-SHELL &&
+rm -f -v ./C/ALACRIUM-PORTABLE.sh.x.c &&
+rm -f -v ./C/ALACRIUM-SHELL.sh.x.c &&
 
 sleep 1s &&
 
-shc -r -v -o ./THORIUM-PORTABLE -f ./THORIUM-PORTABLE.sh &&
-shc -r -v -o ./THORIUM-SHELL -f ./THORIUM-SHELL.sh &&
+shc -r -v -o ./ALACRIUM-PORTABLE -f ./ALACRIUM-PORTABLE.sh &&
+shc -r -v -o ./ALACRIUM-SHELL -f ./ALACRIUM-SHELL.sh &&
 
 # Move generated C files for possible future use
-mv -f -v ./THORIUM-PORTABLE.sh.x.c ./C/ &&
-mv -f -v ./THORIUM-SHELL.sh.x.c ./C/ &&
+mv -f -v ./ALACRIUM-PORTABLE.sh.x.c ./C/ &&
+mv -f -v ./ALACRIUM-SHELL.sh.x.c ./C/ &&
 
 printf "\n" &&
 printf "${GRE}Done!\n" &&

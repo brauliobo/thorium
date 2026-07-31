@@ -1,6 +1,6 @@
 # M148+ Rebase Checklist
 
-Use this short gate list before marking a Thorium M148+ update ready for PR
+Use this short gate list before marking a Alacrium M148+ update ready for PR
 review.
 
 - For a version bump, start with:
@@ -22,7 +22,7 @@ review.
 - Build packages:
   `./build_incremental.sh 6 --packages`
 - Smoke check `navigator.globalPrivacyControl` is `true`.
-- Smoke check Chrome sync is available when Thorium API keys are present.
+- Smoke check Chrome sync is available when Alacrium API keys are present.
 - Verify installed `chrome-sandbox` permissions are standard:
   root-owned with mode `4755`.
 - Confirm no scratch files, build output, packages, or Chromium checkout files

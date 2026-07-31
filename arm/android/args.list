@@ -957,7 +957,7 @@ chrome_pgo_phase
     bad compile times.
 
 chrome_public_manifest_package
-    Current value (from the default) = "org.chromium.thorium"
+    Current value (from the default) = "org.chromium.alacrium"
       From //chrome/android/chrome_public_apk_tmpl.gni:30
 
     Android package name to use when compiling the public chrome targets
@@ -1119,7 +1119,7 @@ content_shell_major_version
       From //content/shell/BUILD.gn:44
 
 content_shell_product_name
-    Current value (from the default) = "Thorium Shell"
+    Current value (from the default) = "Alacrium Shell"
       From //content/shell/BUILD.gn:42
 
 content_shell_version

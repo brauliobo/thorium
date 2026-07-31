@@ -1,5 +1,5 @@
 ;!@Install@!UTF-8!
-Title="Thorium Installer"
-BeginPrompt="Do you want to install Thorium?"
+Title="Alacrium Installer"
+BeginPrompt="Do you want to install Alacrium?"
 RunProgram="mini_installer.exe"
 ;!@InstallEnd@!

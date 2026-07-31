@@ -8,7 +8,7 @@
 
   "name": "Google Hangouts Services",
   "description": "Hangout services is an internal Chromium extension that adds extra features to Google Hangouts",
-  "homepage_url": "https://github.com/Alex313031/thorium/tree/main/infra/hangout_services/README.md",
+  "homepage_url": "https://github.com/brauliobo/alacrium/tree/main/infra/hangout_services/README.md",
   // Note: Always update the version number when this file is updated. Chrome
   // triggers extension preferences update on the version increase.
   "version": "1.4.1",

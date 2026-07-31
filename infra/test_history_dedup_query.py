@@ -2,7 +2,7 @@
 """Regression check for pathological Chromium History duplicate scans.
 
 This test intentionally uses a local copy of a real History DB and never stores
-that DB in git. Set THORIUM_HISTORY_DB_COPY to the copied History file.
+that DB in git. Set ALACRIUM_HISTORY_DB_COPY to the copied History file.
 
 The legacy Chromium query streams every visible visit then deduplicates in C++.
 With auto-refresh URLs this can mean hundreds of thousands of rows for a few
@@ -126,7 +126,7 @@ def optimized_query(per_day: bool, select_sql: str, order_results: bool) -> str:
                ROW_NUMBER() OVER (
                  PARTITION BY {partition_sql}
                  ORDER BY visits.visit_time DESC, visits.id DESC
-               ) AS thorium_url_rank
+               ) AS alacrium_url_rank
         FROM visits
         LEFT OUTER JOIN context_annotations
           ON visits.id = context_annotations.visit_id
@@ -136,7 +136,7 @@ def optimized_query(per_day: bool, select_sql: str, order_results: bool) -> str:
           AND visits.visit_time < 9223372036854775807
           AND {VISIBLE_SQL}
       )
-      WHERE thorium_url_rank = 1
+      WHERE alacrium_url_rank = 1
       {order_sql}
     """
     return query
@@ -192,8 +192,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--db",
-        default=os.environ.get("THORIUM_HISTORY_DB_COPY"),
-        help="path to copied Chromium/Thorium History DB",
+        default=os.environ.get("ALACRIUM_HISTORY_DB_COPY"),
+        help="path to copied Chromium/Alacrium History DB",
     )
     parser.add_argument(
         "--legacy",
@@ -202,7 +202,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--profile-dir",
-        help="directory containing Chromium/Thorium profile subdirectories",
+        help="directory containing Chromium/Alacrium profile subdirectories",
     )
     parser.add_argument(
         "--allow-non-pathological",
@@ -219,7 +219,7 @@ def main() -> int:
         db_paths.append(args.db)
 
     if not db_paths:
-        print("Set THORIUM_HISTORY_DB_COPY or pass --db", file=sys.stderr)
+        print("Set ALACRIUM_HISTORY_DB_COPY or pass --db", file=sys.stderr)
         return 2
 
     result = 0

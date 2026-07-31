@@ -1,6 +1,6 @@
-# Cross-Compiling Thorium for Windows on Linux &nbsp;<img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only" width="48"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only" width="48">
+# Cross-Compiling Alacrium for Windows on Linux &nbsp;<img src="https://github.com/brauliobo/alacrium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only" width="48"> <img src="https://github.com/brauliobo/alacrium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only" width="48">
 
-As many Thorium developers are on Linux/Mac, cross-compiling Thorium for
+As many Alacrium developers are on Linux/Mac, cross-compiling Alacrium for
 Windows targets facilitates development for Windows targets on non-Windows
 machines.
 
@@ -16,22 +16,23 @@ What does *not* work:
 * on Mac hosts, 32-bit builds don't work ([bug](https://crbug.com/794838) has
   more information, and this is unlikely to ever change)
 
-All other targets build fine (including `chrome`, `thorium_shell`, etc...).
+All other targets build fine (including `chrome`, `alacrium_shell`, etc...).
 
 Uses of `.asm` files have been stubbed out.  As a result, Crashpad cannot
 report crashes, and NaCl defaults to disabled and cannot be enabled in cross
 builds ([.asm bug](https://crbug.com/762167)).
 
 ## Setup
-First make sure you've followed the instructions for getting the Chromium and Thorium code from [HERE](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#get-the-code).
+First make sure you've followed the instructions for getting the Chromium and Alacrium code from [HERE](https://github.com/brauliobo/alacrium/blob/main/docs/BUILDING.md#get-the-code).
 
 __IMPORTANT__
-Also make sure you have run `./trunk.sh` , `./VERSION.sh` ,and `./setup.sh` to setup and copy the Thorium code over the Chromium tree as per [HERE](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build).
+Also make sure you have run `./trunk.sh` , `./VERSION.sh` ,and `./setup.sh` to setup and copy the Alacrium code over the Chromium tree as per [HERE](https://github.com/brauliobo/alacrium/blob/main/docs/BUILDING.md#setting-up-the-build).
 
 ## *.gclient* setup
 
 1. Tell gclient that you need Windows build dependencies by adding
-   `target_os = ['win']` to the end of your `.gclient` file present in *~/chromium/*.  (If you already
+   `target_os = ['win']` to the end of `.gclient` in the repository-local
+   `chromium/` directory. (If you already
    have a `target_os` line in there, just add `'win'` to the list.) e.g.
 
        solutions = [
@@ -46,7 +47,7 @@ Also make sure you have run `./trunk.sh` , `./VERSION.sh` ,and `./setup.sh` to s
 ### Installing the MSVS Artifacts Archive
 
 Download the latest MSVS Artifacts Archive from [HERE](https://github.com/Alex313031/Snippets/releases/latest). \
-Then, make a subdir in *chromium* called win, i.e. `mkdir ~/chromium/win`, and then place the .zip file in there.
+Then create `chromium/win` in the Alacrium repository and place the `.zip` file there.
 
 Then, to use the
 generated file on a Linux or Mac host, the following environment variables
@@ -55,7 +56,8 @@ need to be set, so add these lines to your `.bashrc` or `.zshrc`.
     export DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL=<base url>
     export GYP_MSVS_HASH_<toolchain hash>=<hash value>
 
-`<base url>` is the full path of the directory containing the .zip file, i.e. */home/alex/chromium/win/80909eccbb.zip*
+`<base url>` is the full path of the repository-local directory containing the
+`.zip` file, for example `<alacrium-repository>/chromium/win/80909eccbb.zip`.
 
 `<toolchain hash>` is hardcoded in `src/build/vs_toolchain.py` and can be found by
 setting `DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL` and running `gclient runhooks`:
@@ -72,7 +74,7 @@ setting `DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL` and running `gclient runhooks`:
 
 ### Generating a MSVS Artifacts Archive yourself
 
-After installing [Microsoft's development tools](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING_WIN.md#visual-studio),
+After installing [Microsoft's development tools](https://github.com/brauliobo/alacrium/blob/main/docs/BUILDING_WIN.md#visual-studio),
 you can package your Windows SDK installation into a zip file by running the following on a Windows machine in cmd.exe:
 
 ```shell
@@ -94,11 +96,11 @@ when it was released, and this is what you would use, e.g. 10.0.20348.0
 These commands create a zip file named `<hash value>.zip`, which can be used with the instructions above ^.
 
 ## Building
-Follow [Setting up the build](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build), except instead of using the `args.gn` from the
-root of the Thorium repo, use the [`win_args.gn`](https://github.com/Alex313031/thorium/blob/main/infra/win_args.gn), from *~/Thorium/infra/*
+Follow [Setting up the build](https://github.com/brauliobo/alacrium/blob/main/docs/BUILDING.md#setting-up-the-build), except instead of using the `args.gn` from the
+root of the Alacrium repo, use the [`win_args.gn`](https://github.com/brauliobo/alacrium/blob/main/infra/win_args.gn), from *~/Alacrium/infra/*
 
-Then, to build, run `./build_win.sh`, instead of `./build.sh`. See > [Here](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#build-thorium-).
+Then, to build, run `./build_win.sh`, instead of `./build.sh`. See > [Here](https://github.com/brauliobo/alacrium/blob/main/docs/BUILDING.md#build-alacrium-).
 
-*Happy Thorium Building!*
+*Happy Alacrium Building!*
 
-<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium90_504.jpg" width="200">
+<img src="https://github.com/brauliobo/alacrium/blob/main/logos/STAGING/Alacrium90_504.jpg" width="200">

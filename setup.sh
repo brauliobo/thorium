@@ -29,11 +29,15 @@ apply_patch_once () {
 	local patch_dir="$1"
 	local patch_file="$2"
 	local label="$3"
+	local marker_file="${4:-}"
+	local marker="${5:-}"
 
 	printf "${YEL}%s...${c0}\n" "${label}"
 	if git -C "${patch_dir}" apply --check "${patch_file}" >/dev/null 2>&1; then
 		git -C "${patch_dir}" apply --reject "${patch_file}"
 	elif git -C "${patch_dir}" apply --check --reverse "${patch_file}" >/dev/null 2>&1; then
+		printf "${GRE}%s already applied; skipping.${c0}\n" "${label}"
+	elif [ -n "${marker}" ] && grep -Fq -- "${marker}" "${patch_dir}/${marker_file}"; then
 		printf "${GRE}%s already applied; skipping.${c0}\n" "${label}"
 	else
 		die "${label} does not apply cleanly in ${patch_dir}"
@@ -51,7 +55,7 @@ prepare_ffmpeg_hevc_autorename_sources () {
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to copy Thorium source files over the Chromium source tree.${c0}\n" &&
+	printf "${bold}${GRE}Script to copy Alacrium source files over the Chromium source tree.${c0}\n" &&
 	printf "${bold}${YEL}  Use the --mac flag for MacOS builds.${c0}\n" &&
 	printf "${bold}${YEL}  Use the --raspi or --arm64 flag for Raspberry Pi builds.${c0}\n" &&
 	printf "${bold}${YEL}  Use the --woa flag for Windows on ARM builds.${c0}\n" &&
@@ -66,8 +70,7 @@ displayHelp () {
 	printf "${bold}${YEL}  IMPORTANT: For Polly builds, first run build_polly.sh in ./infra before building.${c0}\n" &&
 	printf "${bold}${YEL}   This should be done AFTER running this setup.sh script!${c0}\n" &&
 	printf "\n"
-	printf "${bold}${YEL}  NOTE: The \`CR_DIR\` env variable can be used to override the location of \"chromium/src\".${c0}\n" &&
-	printf "${bold}${YEL}   The default is $HOME/chromium/src${c0}\n" &&
+	printf "${bold}${YEL}  Chromium must be checked out at the repository-local chromium/src path.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
@@ -78,29 +81,23 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-THORIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
 printf "${YEL}Creating build output directory...${c0}\n" &&
 
-mkdir -v -p ${CR_SRC_DIR}/out/thorium/ &&
-cp -v args.gn ${CR_SRC_DIR}/out/thorium/ &&
+mkdir -v -p ${CR_SRC_DIR}/out/alacrium/ &&
+cp -v args.gn ${CR_SRC_DIR}/out/alacrium/ &&
 
 printf "\n" &&
-printf "${YEL}Copying Thorium source files over the Chromium tree...${c0}\n" &&
-cd "${THORIUM_ROOT}" &&
+printf "${YEL}Copying Alacrium source files over the Chromium tree...${c0}\n" &&
+cd "${ALACRIUM_ROOT}" &&
 # Note: M147+ ships JPEG XL natively (enable_jxl_decoder declared in
-# third_party/blink/renderer/config.gni). The thorium-libjxl overlay is no
-# longer needed and has been removed.
+# third_party/blink/renderer/config.gni). The separate JPEG XL overlay is no
+# longer needed.
 
-# Copy Thorium sources
+# Copy Alacrium sources
 cp -r -v src/BUILD.gn ${CR_SRC_DIR}/ &&
 cp -r -v src/ash ${CR_SRC_DIR}/ &&
 cp -r -v src/build ${CR_SRC_DIR}/ &&
@@ -120,46 +117,50 @@ cp -r -v src/tools ${CR_SRC_DIR}/ &&
 cp -r -v src/ui ${CR_SRC_DIR}/ &&
 copy_optional_overlay src/v8 &&
 
-cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
-cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
-cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
+cp -r -v alacrium_shell/. ${CR_SRC_DIR}/out/alacrium/ &&
+cp -v logos/alacrium.svg ${CR_SRC_DIR}/out/alacrium/alacrium.svg &&
+cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/alacrium/ &&
+cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/alacrium/ &&
 :
 
-patchThor () {
+patchAlacrium () {
 	printf "\n" &&
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
-	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/add-hevc-ffmpeg-decoder-parser.patch" "HEVC ffmpeg parser patch" &&
-	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${THORIUM_ROOT}/other/change-libavcodec-header.patch" "libavcodec header patch for HEVC" &&
+	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${ALACRIUM_ROOT}/other/add-hevc-ffmpeg-decoder-parser.patch" "HEVC ffmpeg parser patch" &&
+	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${ALACRIUM_ROOT}/other/change-libavcodec-header.patch" "libavcodec header patch for HEVC" &&
 	prepare_ffmpeg_hevc_autorename_sources &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/fix-policy-templates.patch" "Policy templates patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/fix-policy-templates.patch" "Policy templates patch" &&
 
 	printf "\n" &&
 	printf "${YEL}Patching FTP support...${c0}\n" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/ftp-support-thorium.patch" "FTP support patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/ftp-support.patch" "FTP support patch" &&
 
-	printf "${YEL}Injecting Thorium-branded translations into Chromium .xtb bundles...${c0}\n" &&
-	python3 "${THORIUM_ROOT}/infra/merge_thorium_xtb.py" "${CR_SRC_DIR}" &&
+	printf "${YEL}Injecting Alacrium-branded translations into Chromium .xtb bundles...${c0}\n" &&
+	python3 "${ALACRIUM_ROOT}/infra/merge_alacrium_xtb.py" "${CR_SRC_DIR}" &&
 
 	printf "\n" &&
 	printf "${YEL}Applying other Misc. patches...${c0}\n" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/open_in_same_tab.patch" "Open in same tab patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/thorium_webui.patch" "Thorium WebUI patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/keyboard_shortcuts.patch" "Thorium Keyboard Shortcuts patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/GPC.patch" "Global Privacy Control patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/disable-privacy-sandbox.patch" "Disable Privacy Sandbox patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/enable-vaapi-nvidia-default.patch" "Enable NVIDIA VA-API by default patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-query-dedupe.patch" "History duplicate query patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-redirect-chain-cache.patch" "History redirect chain cache patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-sync-redirect-chain-limit.patch" "History sync redirect chain limit patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/history-delete-directive-startup-guard.patch" "History delete directive startup guard patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
-	# Kept because it is related to Thorium custom flags (not upstreamable).
-	apply_patch_once "${CR_SRC_DIR}" "${THORIUM_ROOT}/other/fix_disable_aero_crash.patch" "Disable aero crash fix"
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/open_in_same_tab.patch" "Open in same tab patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/content-shell-branding.patch" "Alacrium content shell branding patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/alacrium_webui.patch" "Alacrium WebUI patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/keyboard_shortcuts.patch" "Alacrium Keyboard Shortcuts patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/GPC.patch" "Global Privacy Control patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/disable-privacy-sandbox.patch" "Disable Privacy Sandbox patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/enable-vaapi-nvidia-default.patch" "Enable NVIDIA VA-API by default patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-query-dedupe.patch" "History duplicate query patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-redirect-chain-cache.patch" "History redirect chain cache patch" \
+		"components/history/core/browser/history_backend.cc" \
+		"std::map<VisitID, VisitRow>* redirect_chain_start_cache" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-sync-redirect-chain-limit.patch" "History sync redirect chain limit patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-delete-directive-startup-guard.patch" "History delete directive startup guard patch" &&
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
+	# Kept because it is related to Alacrium custom flags (not upstreamable).
+	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/fix_disable_aero_crash.patch" "Disable aero crash fix"
 }
-patchThor;
+patchAlacrium;
 
 patchAC3 () {
 	#cp -v other/ffmpeg_hevc_ac3.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
@@ -168,7 +169,7 @@ patchAC3 () {
 	#printf "${YEL}Patching FFMPEG for AC3 & E-AC3...${c0}\n" &&
 	#cd ${CR_SRC_DIR}/third_party/ffmpeg &&
 	#git apply --reject ./ffmpeg_hevc_ac3.patch &&
-	cd "${THORIUM_ROOT}"
+	cd "${ALACRIUM_ROOT}"
 }
 
 patchSSE2 () {
@@ -178,33 +179,33 @@ patchSSE2 () {
 	printf "${YEL}Patching ANGLE for SSE2...${c0}\n" &&
 	cd ${CR_SRC_DIR}/third_party/angle/src &&
 	git apply --reject ./angle-lockfree.patch &&
-	cd "${THORIUM_ROOT}"
+	cd "${ALACRIUM_ROOT}"
 }
 
-cd "${THORIUM_ROOT}" &&
+cd "${ALACRIUM_ROOT}" &&
 
 printf "\n" &&
-echo "Copying other files to \`out/thorium\`" &&
+echo "Copying other files to \`out/alacrium\`" &&
 
 # Add default_apps dir for Google Docs Offline extension.
-mkdir -v -p ${CR_SRC_DIR}/out/thorium/default_apps &&
-cp -r -v infra/default_apps/. ${CR_SRC_DIR}/out/thorium/default_apps/ &&
+mkdir -v -p ${CR_SRC_DIR}/out/alacrium/default_apps &&
+cp -r -v infra/default_apps/. ${CR_SRC_DIR}/out/alacrium/default_apps/ &&
 
-# Add initial preferences file to open Thorium welcome page on first run.
-cp -v infra/initial_preferences ${CR_SRC_DIR}/out/thorium/ &&
-cp -v infra/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
+# Add Alacrium initial preferences.
+cp -v infra/initial_preferences ${CR_SRC_DIR}/out/alacrium/ &&
+cp -v infra/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
 
 # MacOS ARMv8.3-A optimizations
 copyMacOS () {
 	printf "\n" &&
 	printf "${YEL}Copying files for MacOS...${c0}\n" &&
 	cp -v arm/mac_arm.gni ${CR_SRC_DIR}/build/config/arm.gni &&
-	cp -v other/Mac/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/Mac/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=mac update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd "${THORIUM_ROOT}" &&
+	cd "${ALACRIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -222,9 +223,9 @@ copyRaspi () {
 	cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cp -r -v arm/raspi/* ${CR_SRC_DIR}/ &&
-	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-raspi ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
-	cp -v pak_src/binaries/pak_arm64 ${CR_SRC_DIR}/out/thorium/pak &&
+	cp -v arm/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-raspi ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v pak_src/binaries/pak_arm64 ${CR_SRC_DIR}/out/alacrium/pak &&
 	#./infra/fix_libaom.sh &&
 	printf "\n" &&
 	cp -r -v arm/raspi/build/config/* ${CR_SRC_DIR}/build/config/ &&
@@ -244,11 +245,11 @@ copyWOA () {
 	printf "\n" &&
 	printf "${YEL}Copying Windows on ARM build files...${c0}\n" &&
 	cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
-	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v arm/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd "${THORIUM_ROOT}" &&
+	cd "${ALACRIUM_ROOT}" &&
 	# Use regular arm.gni from src, pending further testing
 	# cp -v arm/woa_arm.gni ${CR_SRC_DIR}/build/config/arm.gni &&
 	printf "\n"
@@ -262,9 +263,9 @@ copyAVX512 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX-512 build files...${c0}\n" &&
 	cp -r -v other/AVX2/third_party/* ${CR_SRC_DIR}/third_party/ &&
-	cp -v other/AVX512/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
-	cp -v other/AVX512/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-avx512 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v other/AVX512/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
+	cp -v other/AVX512/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-avx512 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -277,9 +278,9 @@ copyAVX2 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX2 build files...${c0}\n" &&
 	cp -r -v other/AVX2/third_party/* ${CR_SRC_DIR}/third_party/ &&
-	cp -v other/AVX2/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
-	cp -v other/AVX2/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-avx2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v other/AVX2/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
+	cp -v other/AVX2/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-avx2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -291,9 +292,9 @@ esac
 copySSE4 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE4.1 build files...${c0}\n" &&
-	cp -v other/SSE4.1/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
-	cp -v other/SSE4.1/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-sse4 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v other/SSE4.1/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
+	cp -v other/SSE4.1/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-sse4 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -305,12 +306,12 @@ esac
 copySSE3 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE3 build files...${c0}\n" &&
-	cp -v other/SSE3/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
-	cp -v other/SSE3/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-sse3 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v other/SSE3/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
+	cp -v other/SSE3/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-sse3 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd "${THORIUM_ROOT}" &&
+	cd "${ALACRIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -322,12 +323,12 @@ esac
 copySSE2 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE2 (32-bit) build files...${c0}\n" &&
-	cp -v other/SSE2/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
-	cp -v other/SSE2/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -v other/thor_ver_linux/wrapper-sse2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
+	cp -v other/SSE2/alacrium_ver ${CR_SRC_DIR}/out/alacrium/ &&
+	cp -v other/SSE2/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/alacrium_ver_linux/wrapper-sse2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd "${THORIUM_ROOT}" &&
+	cd "${ALACRIUM_ROOT}" &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	[ -f ${CR_SRC_DIR}/third_party/angle/src/angle-lockfree.patch ] || patchSSE2;
 	printf "\n"
@@ -365,7 +366,7 @@ copyAndroid () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=android-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=android-arm32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	cd "${THORIUM_ROOT}" &&
+	cd "${ALACRIUM_ROOT}" &&
 	printf "\n"
 }
 case $1 in
@@ -377,7 +378,7 @@ copyCros () {
 	printf "\n" &&
 	printf "${YEL}Copying ChromiumOS build files...${c0}\n" &&
 	cp -r -v other/CrOS/* ${CR_SRC_DIR}/ &&
-	cp -v other/CrOS/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
+	cp -v other/CrOS/alacrium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
@@ -388,7 +389,7 @@ esac
 printf "\n" &&
 printf "${GRE}Done!${c0}\n" &&
 
-#. "${THORIUM_ROOT}/aliases.txt" &&
+#. "${ALACRIUM_ROOT}/aliases.txt" &&
 
 #printf "\n" &&
 #printf "export ${CYA}NINJA_SUMMARIZE_BUILD=1${c0}\n" &&
@@ -399,8 +400,8 @@ printf "${GRE}Done!${c0}\n" &&
 #printf "alias ${YEL}gfetch${c0} = ${CYA}git fetch --tags${c0}\n" &&
 #printf "alias ${YEL}rebase${c0} = ${CYA}git rebase-update${c0}\n" &&
 #printf "alias ${YEL}gsync${c0} = ${CYA}gclient sync --with_branch_heads --with_tags -f -R -D${c0}\n" &&
-#printf "alias ${YEL}args${c0} = ${CYA}gn args out/thorium${c0}\n" &&
-#printf "alias ${YEL}gnls${c0} = ${CYA}gn ls out/thorium${c0}\n" &&
+#printf "alias ${YEL}args${c0} = ${CYA}gn args out/alacrium${c0}\n" &&
+#printf "alias ${YEL}gnls${c0} = ${CYA}gn ls out/alacrium${c0}\n" &&
 #printf "alias ${YEL}show${c0} = ${CYA}git show-ref${c0}\n" &&
 #printf "alias ${YEL}runhooks${c0} = ${CYA}gclient runhooks${c0}\n" &&
 #printf "alias ${YEL}pgo${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=linux update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
@@ -409,13 +410,13 @@ printf "${GRE}Done!${c0}\n" &&
 #printf "alias ${YEL}pgomac-arm${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
 #printf "\n" &&
 
-cd "${THORIUM_ROOT}" &&
-cat ./logos/thorium_ascii_art.txt &&
+cd "${ALACRIUM_ROOT}" &&
+cat ./logos/alacrium_ascii_art.txt &&
 
 printf "${YEL}Tip: See the ${CYA}aliases.txt${YEL} file for some handy bash aliases.${c0}\n" &&
 printf "\n" &&
 printf "${RED} IMPORTANT: If you ran setup.sh without any flags, you must also run ./patch_ac3.sh for AC3/E-AC3 support.\n" &&
 printf "\n" &&
-printf "${GRE}  Enjoy Thorium!\n" &&
+printf "${GRE}  Enjoy Alacrium!\n" &&
 printf "\n" &&
 tput sgr0 || true

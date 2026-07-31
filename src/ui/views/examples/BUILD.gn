@@ -257,7 +257,7 @@ component("views_examples_with_content_lib") {
   public_deps = [ ":views_examples_lib" ]
 }
 
-executable("thorium_ui_debug_shell") {
+executable("alacrium_ui_debug_shell") {
   testonly = true
 
   sources = [ "examples_with_content_main.cc" ]

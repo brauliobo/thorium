@@ -21,7 +21,7 @@ gen_spec() {
     local PACKAGE="${PACKAGE}"
     local MENUNAME="${MENUNAME}"
   fi
-  process_template "${SCRIPTDIR}/thorium.spec.template" "${SPEC}"
+  process_template "${SCRIPTDIR}/alacrium.spec.template" "${SPEC}"
 }
 
 # Setup the installation directory hierarchy in the package staging area.
@@ -119,7 +119,7 @@ do_package() {
 
   verify_package "$DEPENDS"
   
-  # Rename package to match Thorium naming scheme
+  # Rename package to match Alacrium naming scheme
   mv "${OUTPUTDIR}/${PKGNAME}.${ARCHITECTURE}.rpm" "${OUTPUTDIR}/${PACKAGE}_${VERSION}${NAME_SUFFIX}.rpm"
 }
 
@@ -227,11 +227,11 @@ fi
 eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
-# Unset repoconfig for Thorium
+# Unset repoconfig for Alacrium
 REPOCONFIG=
 REPOCONFIGREGEX=
 
-USR_BIN_SYMLINK_NAME="thorium-browser"
+USR_BIN_SYMLINK_NAME="alacrium-browser"
 
 stage_install_rpm
 do_package

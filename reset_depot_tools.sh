@@ -29,13 +29,8 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
 printf "${YEL}Removing depot_tools, etc...${c0}\n" &&
@@ -66,7 +61,7 @@ cd $HOME &&
 
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git &&
 cd depot_tools &&
-# Newer than DEPOT_TOOLS_REVISION file in thorium-libjxl due to checkout_riscv64 breakage
+# Newer than the former JPEG XL overlay revision due to checkout_riscv64 breakage
 #git checkout -f 68f0a29a64d354aefcdb1f9eb2a636b21fe96d91 &&
 cd .. &&
 

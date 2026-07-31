@@ -52,20 +52,17 @@ if (current_cpu == "x86" || current_cpu == "x64") {
 }
 
 packaging_files_executables = [
-  "$root_out_dir/thorium",
+  "$root_out_dir/alacrium_shell",
+  "$root_out_dir/alacrium",
   "$root_out_dir/chrome_crashpad_handler",
   "$root_out_dir/chrome_management_service",
   "$root_out_dir/chrome_sandbox",
 ]
 
-packaging_files_shlibs = []
-
-if (!use_static_angle) {
-  packaging_files_shlibs += [
-    "$root_out_dir/libEGL.so",
-    "$root_out_dir/libGLESv2.so",
-  ]
-}
+packaging_files_shlibs = [
+  "$root_out_dir/libEGL.so",
+  "$root_out_dir/libGLESv2.so",
+]
 
 if (bundle_widevine_cdm) {
   packaging_files_shlibs +=
@@ -113,6 +110,7 @@ if (use_qt6) {
 }
 
 action_foreach("calculate_deb_dependencies") {
+  testonly = true
   deps = [ ":installer_deps" ]
   script = "debian/calculate_package_deps.py"
   sources = packaging_files_binaries
@@ -135,6 +133,7 @@ action_foreach("calculate_deb_dependencies") {
 }
 
 action("merge_deb_dependencies") {
+  testonly = true
   deps = [ ":calculate_deb_dependencies" ]
   script = "debian/merge_package_versions.py"
   additional_deps = "debian/additional_deps"
@@ -153,6 +152,7 @@ action("merge_deb_dependencies") {
 }
 
 action_foreach("calculate_rpm_dependencies") {
+  testonly = true
   deps = [ ":installer_deps" ]
   script = "rpm/calculate_package_deps.py"
   sources = packaging_files_binaries
@@ -169,6 +169,7 @@ action_foreach("calculate_rpm_dependencies") {
 }
 
 action("merge_rpm_dependencies") {
+  testonly = true
   deps = [ ":calculate_rpm_dependencies" ]
   script = "rpm/merge_package_deps.py"
   additional_deps = "rpm/additional_deps"
@@ -183,7 +184,7 @@ action("merge_rpm_dependencies") {
 }
 
 strip_binary("strip_chrome_binary") {
-  binary_input = "$root_out_dir/thorium"
+  binary_input = "$root_out_dir/alacrium"
   deps = [ "//chrome" ]
 }
 
@@ -204,12 +205,20 @@ strip_binary("strip_chrome_sandbox") {
 
 strip_binary("strip_libEGL_shlib") {
   binary_input = "$root_out_dir/libEGL.so"
-  deps = [ "//third_party/angle:libEGL" ]
+  if (use_static_angle) {
+    deps = [ "//ui/gl:dummy_libEGL" ]
+  } else {
+    deps = [ "//third_party/angle:libEGL" ]
+  }
 }
 
 strip_binary("strip_libGLESv2_shlib") {
   binary_input = "$root_out_dir/libGLESv2.so"
-  deps = [ "//third_party/angle:libGLESv2" ]
+  if (use_static_angle) {
+    deps = [ "//ui/gl:dummy_libGLESv2" ]
+  } else {
+    deps = [ "//third_party/angle:libGLESv2" ]
+  }
 }
 
 if (angle_shared_libvulkan && !is_chromeos) {
@@ -249,9 +258,6 @@ if (use_qt6) {
 # This target builds all "normal" Linux installers.  You must set
 # is_component_build=false before building this target.
 group("linux") {
-  deps = [
-    ":stable",
-  ]
 }
 
 branding_dir = "//chrome/app/theme/$branding_path_component"
@@ -354,7 +360,7 @@ if (!is_chromeos) {
     visibility = [ ":*" ]
     sources = [
       "rpm/build.sh",
-      "rpm/thorium.spec.template",
+      "rpm/alacrium.spec.template",
     ]
     outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
   }
@@ -373,6 +379,7 @@ process_version("save_build_info") {
 
 # Dependencies for all Linux installer targets.
 group("installer_deps") {
+  testonly = true
   # Though many of these things appear in data_deps further down the
   # dependency chain, they must appear here as public_deps so that they can
   # be listed as inputs to the actions that depend on ":installer_deps"
@@ -393,15 +400,23 @@ group("installer_deps") {
     "//chrome/browser/resources/media/mei_preload:component",
     "//components/crash/core/app:chrome_crashpad_handler",
     "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+    "//content/shell:alacrium_shell",
     "//sandbox/linux:chrome_sandbox",
   ]
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
   }
-  if (!use_static_angle) {
+  public_deps += [
+    ":strip_libEGL_shlib",
+    ":strip_libGLESv2_shlib",
+  ]
+  if (use_static_angle) {
     public_deps += [
-      ":strip_libEGL_shlib",
-      ":strip_libGLESv2_shlib",
+      "//ui/gl:dummy_libEGL",
+      "//ui/gl:dummy_libGLESv2",
+    ]
+  } else {
+    public_deps += [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
@@ -451,11 +466,12 @@ template("linux_package") {
   if (is_chrome_branded) {
     package = "google-chrome"
   } else {
-    package = "thorium-browser"
+    package = "alacrium-browser"
   }
 
   deb_target_name = "${target_name}_deb"
   action(deb_target_name) {
+    testonly = true
     visibility = [ ":*" ]
     script = "//build/gn_run_binary.py"
 
@@ -519,6 +535,7 @@ template("linux_package") {
   if (!is_chromeos) {
     rpm_target_name = "${target_name}_rpm"
     action(rpm_target_name) {
+      testonly = true
       visibility = [ ":*" ]
       script = "//build/gn_run_binary.py"
 
@@ -579,6 +596,7 @@ template("linux_package") {
   }
 
   group(target_name) {
+    testonly = true
     deps = [ ":$deb_target_name" ]
     if (!is_chromeos) {
       deps += [ ":$rpm_target_name" ]

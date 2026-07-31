@@ -1,7 +1,7 @@
-# Thorium for Mac
+# Alacrium for Mac
 
-This directory contains build config files for compiling Thorium/Chromium for MacOS.
+This directory contains build config files for compiling Alacrium/Chromium for MacOS.
 
 ### Macintosh
 
-<img src="https://raw.githubusercontent.com/Alex313031/thorium/main/logos/STAGING/Happy_Mac.svg" width="100">
+<img src="https://raw.githubusercontent.com/brauliobo/alacrium/main/logos/STAGING/Happy_Mac.svg" width="100">

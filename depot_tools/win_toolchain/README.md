@@ -1,4 +1,4 @@
-## Windows Cross-Building MSVS Artifacts Python script. <img src="https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/STAGING/Python.svg" width="36">
+## Windows Cross-Building MSVS Artifacts Python script. <img src="https://raw.githubusercontent.com/brauliobo/alacrium/main/logos/STAGING/Python.svg" width="36">
 
 &nbsp;&nbsp;Until Chromium fixes this upstream, this file needs to be copied into `depot_tools\win_toolchain` on your Windows machine to generate a Cross-Building artifacts archive if you are using MSVS 2022
  - See > https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/win_cross.md \

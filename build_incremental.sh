@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Incremental Thorium Linux build wrapper.
-# Keep using the same Chromium checkout and out/thorium directory to avoid
+# Incremental Alacrium Linux build wrapper.
+# Keep using the same Chromium checkout and out/alacrium directory to avoid
 # invalidating the object graph between version update attempts.
 
 set -euo pipefail
 
 if [[ "${1:-}" == "--help" ]]; then
   echo "Usage: $0 [jobs] [--packages]"
-  echo "Runs an incremental low-priority build in the existing out/thorium directory."
+  echo "Runs an incremental low-priority build in the existing out/alacrium directory."
   exit 0
 fi
 
@@ -31,11 +31,11 @@ for arg in "$@"; do
   esac
 done
 
-CR_SRC_DIR="${CR_DIR:-${CR_SRC_DIR:-$HOME/chromium/src}}"
-THORIUM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ALACRIUM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_DIR}/chromium/src"
 
-if [[ ! -f "$CR_SRC_DIR/out/thorium/build.ninja" ]]; then
-  echo "Missing $CR_SRC_DIR/out/thorium/build.ninja; run gn gen once before incremental builds." >&2
+if [[ ! -f "$CR_SRC_DIR/out/alacrium/build.ninja" ]]; then
+  echo "Missing $CR_SRC_DIR/out/alacrium/build.ninja; run gn gen once before incremental builds." >&2
   exit 2
 fi
 
@@ -49,34 +49,32 @@ export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] "
 cd "$CR_SRC_DIR"
 
 run_ninja() {
-  nice -n 10 ionice -c2 -n7 autoninja -C out/thorium "$@" -j"$JOBS"
+  nice -n 10 ionice -c2 -n7 autoninja -C out/alacrium "$@" -j"$JOBS"
 }
 
 if [[ "$BUILD_PACKAGES" == 1 ]]; then
   run_ninja \
     clear_key_cdm \
     chromedriver \
+    alacrium_shell \
     chrome/installer/linux:strip_chrome_binary \
     chrome/installer/linux:strip_chrome_sandbox \
     chrome/installer/linux:strip_chrome_management_service
 
-  if [[ -f out/thorium/chrome.stripped ]]; then
-    ln -f out/thorium/chrome.stripped out/thorium/thorium.stripped
-  elif [[ ! -f out/thorium/thorium.stripped ]]; then
+  if [[ -f out/alacrium/chrome.stripped ]]; then
+    ln -f out/alacrium/chrome.stripped out/alacrium/alacrium.stripped
+  elif [[ ! -f out/alacrium/alacrium.stripped ]]; then
     echo "Missing stripped browser binary." >&2
     exit 1
   fi
 
-  ln -f out/thorium/chrome_sandbox.stripped out/thorium/thorium_sandbox.stripped
-  patchelf --remove-rpath out/thorium/thorium.stripped 2>/dev/null || true
-  patchelf --remove-rpath out/thorium/chrome_management_service.stripped 2>/dev/null || true
+  patchelf --remove-rpath out/alacrium/alacrium.stripped 2>/dev/null || true
+  patchelf --remove-rpath out/alacrium/chrome_management_service.stripped 2>/dev/null || true
 
-  cp -f "$THORIUM_DIR/thorium_shell/thorium.svg" out/thorium/thorium.svg
-  cp -f "$THORIUM_DIR/pak_src/binaries/pak" out/thorium/pak
-  cp -f "$THORIUM_DIR/infra/initial_preferences" out/thorium/initial_preferences
-  rm -f out/thorium/thorium_shell out/thorium/thorium_shell.png \
-    out/thorium/thorium-shell out/thorium/thorium-shell.desktop
-  chmod 755 out/thorium/pak
+  cp -f "$ALACRIUM_DIR/logos/alacrium.svg" out/alacrium/alacrium.svg
+  cp -f "$ALACRIUM_DIR/pak_src/binaries/pak" out/alacrium/pak
+  cp -f "$ALACRIUM_DIR/infra/initial_preferences" out/alacrium/initial_preferences
+  chmod 755 out/alacrium/pak
 
   if [[ ! -x buildtools/third_party/eu-strip/bin/eu-strip ]] &&
      command -v eu-strip >/dev/null; then
@@ -90,5 +88,5 @@ if [[ "$BUILD_PACKAGES" == 1 ]]; then
     run_ninja chrome/installer/linux:stable_deb chrome/installer/linux:stable_rpm
   fi
 else
-  run_ninja thorium
+  run_ninja alacrium
 fi

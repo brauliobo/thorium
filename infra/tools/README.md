@@ -1,38 +1,38 @@
-# Thorium Tools
+# Alacrium Tools
 
 This directory contains optional maintenance and reproduction helpers. The
 canonical rebase/build flow remains documented in the repository root.
 
 ## Profiled Linux Build
 
-Build a symbolized, profiling-friendly Thorium output directory:
+Build a symbolized, profiling-friendly Alacrium output directory:
 
 ```bash
-infra/tools/build_profiled_thorium.sh 6
+infra/tools/build_profiled_alacrium.sh 6
 ```
 
-The script defaults to `$HOME/chromium/src`. Override with `CR_DIR`,
-`CR_SRC_DIR`, or `OUT_DIR` when using another Chromium checkout or output dir.
+The script uses the repository-local `chromium/src` checkout. Set `OUT_DIR` to
+use another output directory.
 
 ## CDP Process Dump
 
 Dump process, target, performance, and `chrome://discards` state from a running
-Thorium instance with remote debugging enabled:
+Alacrium instance with remote debugging enabled:
 
 ```bash
 python -m pip install websockets
-thorium-browser --remote-debugging-port=9222
-infra/tools/cdp_process_dump.py 9222 /tmp/thorium-cdp-dump
+alacrium-browser --remote-debugging-port=9222
+infra/tools/cdp_process_dump.py 9222 /tmp/alacrium-cdp-dump
 ```
 
 ## History Redirect Chain Repair
 
 Detect repeated self-refresh visits that formed an unbounded client-redirect
-chain. Thorium must be completely closed so the History database can be locked:
+chain. Alacrium must be completely closed so the History database can be locked:
 
 ```bash
-infra/tools/repair_history_redirect_chains.py ~/.config/thorium/Default/History
-infra/tools/repair_history_redirect_chains.py --apply ~/.config/thorium/Default/History
+infra/tools/repair_history_redirect_chains.py ~/.config/alacrium/Default/History
+infra/tools/repair_history_redirect_chains.py --apply ~/.config/alacrium/Default/History
 ```
 
 The first command is a dry run. `--apply` creates a timestamped backup before
@@ -43,9 +43,9 @@ marking the affected visits as redirect-chain starts; it does not delete visits.
 Stress Chromium's VP9 hardware decode path while collecting NVIDIA telemetry:
 
 ```bash
-autoninja -C out/thorium media/gpu/test:video_decode_accelerator_perf_tests
+autoninja -C out/alacrium media/gpu/test:video_decode_accelerator_perf_tests
 infra/tools/stress_nvidia_vp9_decode.sh
 ```
 
-The script defaults to `$HOME/chromium/src` and `out/thorium`. Override
-`CHROMIUM_SRC`, `CR_DIR`, `CR_SRC_DIR`, or `OUT_DIR` as needed.
+The script uses the repository-local `chromium/src` checkout and
+`out/alacrium`. Set `OUT_DIR` to use another output directory.

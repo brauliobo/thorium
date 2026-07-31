@@ -17,8 +17,8 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to make a portable Thorium .zip for Linux.${c0}\n" &&
-	printf "${bold}${YEL}Please place the Thorium .deb file in this directory before running.${c0}\n" &&
+	printf "${bold}${GRE}Script to make a portable Alacrium .zip for Linux.${c0}\n" &&
+	printf "${bold}${YEL}Please place the Alacrium .deb file in this directory before running.${c0}\n" &&
 	printf "${bold}${YEL}Use the --arm flag for Raspberry Pi (arm64) builds.${c0}\n" &&
 	printf "\n"
 }
@@ -46,7 +46,7 @@ for pattern in "${DEB_PATTERNS[@]}"; do
 done
 
 if [ -z "$DEB_NAME" ]; then
-	die "${RED}No .deb file found. Place a thorium-browser_*.deb in this directory."
+	die "${RED}No .deb file found. Place a alacrium-browser_*.deb in this directory."
 fi
 
 FILENAME="${DEB_NAME%.deb}"
@@ -54,7 +54,7 @@ ZIP_NAME="${FILENAME}.zip"
 
 makeARM () {
 	printf "\n" &&
-	printf "${bold}${RED}NOTE: You must place the Thorium .deb file in this directory before running.${c0}\n" &&
+	printf "${bold}${RED}NOTE: You must place the Alacrium .deb file in this directory before running.${c0}\n" &&
 	printf "${bold}${RED}   AND you must have p7zip and zip installed.${c0}\n" &&
 	printf "\n" &&
 	printf "${bold}${YEL}Detected package: ${GRE}${DEB_NAME}${c0}\n" &&
@@ -64,7 +64,7 @@ makeARM () {
 	read -p "Press Enter to continue or Ctrl + C to abort."
 	printf "\n" &&
 
-	printf "${YEL}Extracting & Copying files from Thorium .deb package (arm64 version)...\n" &&
+	printf "${YEL}Extracting & Copying files from Alacrium .deb package (arm64 version)...\n" &&
 	printf "${c0}\n" &&
 
 	sleep 2 &&
@@ -73,15 +73,15 @@ makeARM () {
 	mkdir -v -p ./temp &&
 	ar xv "$DEB_NAME" &&
 	tar xvf ./data.tar.xz &&
-	cp -r -v ./opt/chromium.org/thorium/* ./temp/ &&
+	cp -r -v ./opt/alacrium-browser/* ./temp/ &&
 	rm -r -v ./temp/cron &&
-	rm -r -v ./temp/thorium-browser &&
+	rm -r -v ./temp/alacrium-browser &&
 	cp -r -v ./usr/bin/pak temp/ &&
 	cp -r -v ./README.linux temp/README.txt &&
-	cp -r -v ./THORIUM-PORTABLE.sh temp/ &&
-	cp -r -v ./thorium-portable.desktop temp/ &&
-	cp -r -v ./THORIUM-SHELL.sh temp/ &&
-	cp -r -v ./thorium-shell.desktop temp/ &&
+	cp -r -v ./ALACRIUM-PORTABLE.sh temp/ &&
+	cp -r -v ./alacrium-portable.desktop temp/ &&
+	cp -r -v ./ALACRIUM-SHELL.sh temp/ &&
+	cp -r -v ./alacrium-shell.desktop temp/ &&
 
 	printf "\n" &&
 	printf "${YEL}Zipping up...\n" &&
@@ -116,7 +116,7 @@ case $1 in
 esac
 
 printf "\n" &&
-printf "${bold}${RED}NOTE: You must place the Thorium .deb file in this directory before running.${c0}\n" &&
+printf "${bold}${RED}NOTE: You must place the Alacrium .deb file in this directory before running.${c0}\n" &&
 printf "${bold}${RED}   AND you must have p7zip and zip installed.${c0}\n" &&
 printf "\n" &&
 printf "${bold}${YEL}Detected package: ${GRE}${DEB_NAME}${c0}\n" &&
@@ -126,7 +126,7 @@ printf "\n" &&
 read -p "Press Enter to continue or Ctrl + C to abort."
 printf "\n" &&
 
-printf "${YEL}Extracting & Copying files from Thorium .deb package...\n" &&
+printf "${YEL}Extracting & Copying files from Alacrium .deb package...\n" &&
 printf "${c0}\n" &&
 
 sleep 2 &&
@@ -135,15 +135,15 @@ sleep 2 &&
 mkdir -v -p ./temp &&
 ar xv "$DEB_NAME" &&
 tar xvf ./data.tar.xz &&
-cp -r -v ./opt/chromium.org/thorium/* ./temp/ &&
+cp -r -v ./opt/alacrium-browser/* ./temp/ &&
 rm -r -v ./temp/cron &&
-rm -r -v ./temp/thorium-browser &&
+rm -r -v ./temp/alacrium-browser &&
 cp -r -v ./usr/bin/pak temp/ &&
 cp -r -v ./README.linux temp/README.txt &&
-cp -r -v ./THORIUM-PORTABLE temp/ &&
-cp -r -v ./thorium-portable.desktop temp/ &&
-cp -r -v ./THORIUM-SHELL temp/ &&
-cp -r -v ./thorium-shell.desktop temp/ &&
+cp -r -v ./ALACRIUM-PORTABLE.sh temp/ &&
+cp -r -v ./alacrium-portable.desktop temp/ &&
+cp -r -v ./ALACRIUM-SHELL.sh temp/ &&
+cp -r -v ./alacrium-shell.desktop temp/ &&
 
 printf "\n" &&
 printf "${YEL}Zipping up...\n" &&

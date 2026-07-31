@@ -28,4 +28,4 @@ fi
 
 install_key
 
-## Removed repo cron job since this is Thorium.
+## Removed repo cron job since this is Alacrium.

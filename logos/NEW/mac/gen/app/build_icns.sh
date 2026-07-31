@@ -15,26 +15,26 @@ die() { yell "$*"; exit 111; }
 try() { "$@" || die "${RED}Failed $*"; }
 
 printf "\n" &&
-printf "${YEL}Generating Thorium App .icns file for MacOS...\n" &&
+printf "${YEL}Generating Alacrium App .icns file for MacOS...\n" &&
 printf "${GRE}\n" &&
 
 # Copy .pngs
-export output_iconset_name="Thorium.iconset" &&
+export output_iconset_name="Alacrium.iconset" &&
 
 mkdir $output_iconset_name &&
 
-cp -v ./icon_16x16.png ./Thorium.iconset/ &&
-cp -v ./icon_16x16@2x.png ./Thorium.iconset/ &&
-cp -v ./icon_32x32.png ./Thorium.iconset/ &&
-cp -v ./icon_32x32@2x.png ./Thorium.iconset/ &&
-cp -v ./icon_64x64.png ./Thorium.iconset/ &&
-cp -v ./icon_64x64@2x.png ./Thorium.iconset/ &&
-cp -v ./icon_128x128.png ./Thorium.iconset/ &&
-cp -v ./icon_128x128@2x.png ./Thorium.iconset/ &&
-cp -v ./icon_256x256.png ./Thorium.iconset/ &&
-cp -v ./icon_256x256@2x.png ./Thorium.iconset/ &&
-cp -v ./icon_512x512.png ./Thorium.iconset/ &&
-cp -v ./icon_512x512@2x.png ./Thorium.iconset/ &&
+cp -v ./icon_16x16.png ./Alacrium.iconset/ &&
+cp -v ./icon_16x16@2x.png ./Alacrium.iconset/ &&
+cp -v ./icon_32x32.png ./Alacrium.iconset/ &&
+cp -v ./icon_32x32@2x.png ./Alacrium.iconset/ &&
+cp -v ./icon_64x64.png ./Alacrium.iconset/ &&
+cp -v ./icon_64x64@2x.png ./Alacrium.iconset/ &&
+cp -v ./icon_128x128.png ./Alacrium.iconset/ &&
+cp -v ./icon_128x128@2x.png ./Alacrium.iconset/ &&
+cp -v ./icon_256x256.png ./Alacrium.iconset/ &&
+cp -v ./icon_256x256@2x.png ./Alacrium.iconset/ &&
+cp -v ./icon_512x512.png ./Alacrium.iconset/ &&
+cp -v ./icon_512x512@2x.png ./Alacrium.iconset/ &&
 
 # Generate .icns file
 iconutil -c icns $output_iconset_name &&

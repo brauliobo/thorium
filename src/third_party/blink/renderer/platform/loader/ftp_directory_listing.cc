@@ -15,7 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "net/base/directory_listing.h"
+#include "net/base/module/directory_listing.h"
 #include "net/base/net_errors.h"
 #include "net/ftp/ftp_directory_listing_parser.h"
 #include "net/net_buildflags.h"

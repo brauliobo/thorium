@@ -50,7 +50,7 @@ def copy_directory(source_dir, destination_dir):
 
 # --help
 def display_help():
-    print("\nScript to copy Thorium source files over the Chromium source tree\n")
+    print("\nScript to copy Alacrium source files over the Chromium source tree\n")
     print("\nThis should be done AFTER running this setup.py\n")
     print("Use the --woa flag for Windows on ARM builds.")
     print("Use the --avx512 flag for AVX-512 Builds.")
@@ -66,33 +66,27 @@ if "--help" in sys.argv:
     sys.exit(0)
 
 # Set chromium/src dir from Windows environment variable
-cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
-# Set Thorium dir from Windows environment variable
-thor_src_dir = os.path.expandvars(
-    os.getenv("THOR_DIR", r"%USERPROFILE%/thorium"))
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chromium", "src"
+    )
+# Set Alacrium dir from Windows environment variable
+alacrium_src_dir = os.path.expandvars(
+    os.getenv("ALACRIUM_DIR", r"%USERPROFILE%/alacrium"))
 
 
 print("\nCreating build output directory...\n")
-os.makedirs(f"{cr_src_dir}/out/thorium/", exist_ok=True)
+os.makedirs(f"{cr_src_dir}/out/alacrium/", exist_ok=True)
 
-print("\nCopying thorium-libjxl source for JPEG-XL Support\n")
-
-# Copy libjxl src
-copy_directory(
-    os.path.normpath(os.path.join(thor_src_dir, "thorium-libjxl/src/")),
-    os.path.normpath(os.path.join(cr_src_dir)),
-)
-
-print("\nCopying Thorium source files over the Chromium tree\n")
+print("\nCopying Alacrium source files over the Chromium tree\n")
 
 # Copy src/BUILD.gn
 copy(
-    os.path.normpath(os.path.join(thor_src_dir, "src", "BUILD.gn")),
+    os.path.normpath(os.path.join(alacrium_src_dir, "src", "BUILD.gn")),
     os.path.normpath(os.path.join(cr_src_dir)),
 )
 
-# Copy Thorium sources
-thorium_sources = [
+# Copy Alacrium sources
+alacrium_sources = [
     "src/ash",
     "src/build",
     "src/chrome",
@@ -111,36 +105,36 @@ thorium_sources = [
     "src/v8",
 ]
 
-for source in thorium_sources:
+for source in alacrium_sources:
     relative_path = source.replace("src/", "", 1)
     copy_directory(
-        os.path.normpath(os.path.join(thor_src_dir, source)),
+        os.path.normpath(os.path.join(alacrium_src_dir, source)),
         os.path.normpath(os.path.join(cr_src_dir, relative_path)),
     )
 
 copy_directory(
-    os.path.normpath(os.path.join(thor_src_dir, "thorium_shell")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+    os.path.normpath(os.path.join(alacrium_src_dir, "alacrium_shell")),
+    os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
 )
 copy(
-    os.path.normpath(os.path.join(thor_src_dir, "pak_src", "binaries", "pak")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+    os.path.normpath(os.path.join(alacrium_src_dir, "pak_src", "binaries", "pak")),
+    os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
 )
 copy_directory(
     os.path.normpath(os.path.join(
-        thor_src_dir, "pak_src", "binaries", "pak-win")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+        alacrium_src_dir, "pak_src", "binaries", "pak-win")),
+    os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
 )
 
 
 patches = [
     "other/fix-policy-templates.patch",
-    "other/ftp-support-thorium.patch",
-    "other/thorium-2024-ui.patch",
+    "other/ftp-support.patch",
     "other/GPC.patch",
     "other/mini_installer.patch",
     "other/open_in_same_tab.patch",
-    "other/thorium_webui.patch",
+    "other/content-shell-branding.patch",
+    "other/alacrium_webui.patch",
     "other/disable-privacy-sandbox.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
@@ -162,7 +156,7 @@ for patch in patches:
     relative_path = patch.replace("other/", "", 1)
     os.path.normpath(os.path.join(cr_src_dir, os.path.dirname(relative_path)))
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, patch)),
+        os.path.normpath(os.path.join(alacrium_src_dir, patch)),
         os.path.normpath(os.path.join(cr_src_dir, relative_path)),
     )
 
@@ -170,14 +164,14 @@ for patch in patches:
 print("\nPatching FFMPEG for HEVC\n")
 copy(
     os.path.normpath(
-        os.path.join(thor_src_dir, "other",
+        os.path.join(alacrium_src_dir, "other",
                      "add-hevc-ffmpeg-decoder-parser.patch")
     ),
     os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
 )
 copy(
     os.path.normpath(
-        os.path.join(thor_src_dir, "other", "change-libavcodec-header.patch")
+        os.path.join(alacrium_src_dir, "other", "change-libavcodec-header.patch")
     ),
     os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
 )
@@ -197,19 +191,13 @@ try_run(f"git apply --reject fix-policy-templates.patch")
 print("\nPatching FTP support\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
-try_run(f"git apply --reject ftp-support-thorium.patch")
+try_run(f"git apply --reject ftp-support.patch")
 
 
 print("\nPatching in GPC support\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject GPC.patch")
-
-
-print("\nPatching for Thorium 2024 UI\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject thorium-2024-ui.patch")
 
 
 print("\nPatching for mini_installer\n")
@@ -234,7 +222,8 @@ print("\nApplying other Misc. patches...\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject open_in_same_tab.patch")
-try_run(f"git apply --reject thorium_webui.patch")
+try_run(f"git apply --reject content-shell-branding.patch")
+try_run(f"git apply --reject alacrium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject disable-privacy-sandbox.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")
@@ -256,22 +245,22 @@ try_run(f"git apply --reject fix_wayland_scale_crash.patch")
 try_run(f"git apply --reject fix_setting_popover_invoker_crash.patch")
 
 
-print("\nCopying other files to out/thorium\n")
+print("\nCopying other files to out/alacrium\n")
 # Copying additional files
-os.makedirs(f"{cr_src_dir}/out/thorium/default_apps", exist_ok=True)
+os.makedirs(f"{cr_src_dir}/out/alacrium/default_apps", exist_ok=True)
 copy_directory(
-    os.path.normpath(os.path.join(thor_src_dir, "infra", "default_apps")),
+    os.path.normpath(os.path.join(alacrium_src_dir, "infra", "default_apps")),
     os.path.normpath(os.path.join(
-        cr_src_dir, "out", "thorium", "default_apps")),
+        cr_src_dir, "out", "alacrium", "default_apps")),
 )
 copy(
     os.path.normpath(os.path.join(
-        thor_src_dir, "infra", "initial_preferences")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+        alacrium_src_dir, "infra", "initial_preferences")),
+    os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
 )
 copy(
-    os.path.normpath(os.path.join(thor_src_dir, "infra", "thor_ver")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+    os.path.normpath(os.path.join(alacrium_src_dir, "infra", "alacrium_ver")),
+    os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
 )
 
 flags_to_check = ["--woa", "--avx512", "--avx2", "--sse4", "--sse3", "--sse2"]
@@ -297,15 +286,15 @@ else:
 def copy_woa():
     print("\nCopying Windows on Arm build files\n")
     copy_directory(
-        os.path.normpath(os.path.join(thor_src_dir, "arm", "build")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "arm", "build")),
         os.path.normpath(os.path.join(cr_src_dir, "build")),
     )
     copy_directory(
-        os.path.normpath(os.path.join(thor_src_dir, "arm", "third_party")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "arm", "third_party")),
         os.path.normpath(os.path.join(cr_src_dir, "third_party")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "arm", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "arm", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -330,16 +319,16 @@ def copy_avx512():
     print("\nCopying AVX-512 build files\n")
     copy_directory(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX2", "third_party")),
+            alacrium_src_dir, "other", "AVX2", "third_party")),
         os.path.normpath(os.path.join(cr_src_dir, "third_party")),
     )
     copy(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX512", "thor_ver")),
-        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+            alacrium_src_dir, "other", "AVX512", "alacrium_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "other", "AVX512", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "other", "AVX512", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -364,16 +353,16 @@ def copy_avx2():
     print("\nCopying AVX2 build files\n")
     copy_directory(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX2", "third_party")),
+            alacrium_src_dir, "other", "AVX2", "third_party")),
         os.path.normpath(os.path.join(cr_src_dir, "third_party")),
     )
     copy(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX2", "thor_ver")),
-        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+            alacrium_src_dir, "other", "AVX2", "alacrium_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "other", "AVX2", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "other", "AVX2", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -398,11 +387,11 @@ def copy_sse4():
     print("\nCopying SSE4.1 build files\n")
     copy(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "SSE4.1", "thor_ver")),
-        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+            alacrium_src_dir, "other", "SSE4.1", "alacrium_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "other", "SSE4.1", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "other", "SSE4.1", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -427,11 +416,11 @@ def copy_sse3():
     print("\nCopying SSE3 build files\n")
     copy(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "SSE3", "thor_ver")),
-        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+            alacrium_src_dir, "other", "SSE3", "alacrium_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "other", "SSE3", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "other", "SSE3", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -461,11 +450,11 @@ def copy_sse2():
     print("\nCopying SSE2 build files\n")
     copy(
         os.path.normpath(os.path.join(
-            thor_src_dir, "other", "SSE2", "thor_ver")),
-        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+            alacrium_src_dir, "other", "SSE2", "alacrium_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium")),
     )
     copy(
-        os.path.normpath(os.path.join(thor_src_dir, "other", "SSE2", "thorium_version.txt")),
+        os.path.normpath(os.path.join(alacrium_src_dir, "other", "SSE2", "alacrium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )
     os.chdir(cr_src_dir)
@@ -487,7 +476,7 @@ if "--sse2" in sys.argv:
     print("\nPatching ANGLE for SSE2\n")
     copy(
         os.path.normpath(
-            os.path.join(thor_src_dir, "other", "SSE2", "angle-lockfree.patch")
+            os.path.join(alacrium_src_dir, "other", "SSE2", "angle-lockfree.patch")
         ),
         os.path.normpath(os.path.join(
             cr_src_dir, "third_party", "angle", "src")),
@@ -500,4 +489,4 @@ if "--sse2" in sys.argv:
 
 
 print("\nDone!\n")
-print("\nEnjoy Thorium!\n")
+print("\nEnjoy Alacrium!\n")

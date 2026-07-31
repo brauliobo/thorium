@@ -175,8 +175,8 @@ declare_args() {
 }
 
 declare_args() {
-  # True for Thorium overlay builds. This gates Thorium-only generated assets.
-  is_thorium_build = true
+  # True for Alacrium overlay builds. This gates Alacrium-only generated assets.
+  is_alacrium_build = true
 }
 
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
@@ -436,8 +436,8 @@ if (is_debug) {
   default_compiler_configs += [ "//build/config:release" ]
 }
 
-# Make sure Thorium SIMD flags come last
-default_compiler_configs += [ "//build/config/compiler:thorium_simd_optimization", ]
+# Make sure Alacrium SIMD flags come last
+default_compiler_configs += [ "//build/config/compiler:alacrium_simd_optimization", ]
 
 # Static libraries and source sets use only the compiler ones.
 set_defaults("static_library") {

@@ -1,11 +1,11 @@
 ## Security
 
-### Thorium Security Policy
+### Alacrium Security Policy
 
- - If it is a vulnerability in Chromium, please report it upstream [Here](https://bugs.chromium.org/p/chromium/issues/entry).
- - If it is a vulnerability in Thorium, file an issue on GitHub. However, if it is major and/or a zero day, please email me instead at Alex313031@gmail.com
+ - If it is a vulnerability in Chromium, report it through the [Chromium security process](https://www.chromium.org/Home/chromium-security/reporting-security-bugs/).
+ - If it is specific to Alacrium, use [GitHub private vulnerability reporting](https://github.com/brauliobo/alacrium/security/advisories/new).
 
-### List of major vulnerabilities fixed in Thorium
+### Historical fixes inherited from Thorium
 
  &ndash; libwebp WebP bug [CVE-2023-4863](https://nvd.nist.gov/vuln/detail/CVE-2023-4863) - Fixed in M117
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extract every `new file mode` section from a unified patch and write each
 as a standalone file under <out_root>/<patch path>. Used to migrate
-file-creation hunks out of monolithic patches into Thorium's `src/` overlay
+file-creation hunks out of monolithic patches into Alacrium's `src/` overlay
 so they survive Chromium upstream drift.
 
 Usage:

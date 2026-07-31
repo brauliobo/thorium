@@ -16,13 +16,8 @@ die() { yell "$*"; exit 111; }
 try() { "$@" || die "${RED}Failed $*"; }
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
 printf "${YEL}Building .dmg of Chromium...\n" &&
@@ -31,16 +26,16 @@ printf "${CYA}\n" &&
 cd ${CR_SRC_DIR} &&
 
 # Fix file attr
-xattr -csr out/thorium/Chromium.app &&
+xattr -csr out/alacrium/Chromium.app &&
 
 # Sign binary
-codesign --force --deep --sign - out/thorium/Chromium.app &&
+codesign --force --deep --sign - out/alacrium/Chromium.app &&
 
 # Build dmg package
-chrome/installer/mac/pkg-dmg --sourcefile --source out/thorium/Chromium.app --target "out/thorium/Chromium_MacOS.dmg" --volname Chromium --symlink /Applications:/Applications --format UDBZ --verbosity 2 &&
+chrome/installer/mac/pkg-dmg --sourcefile --source out/alacrium/Chromium.app --target "out/alacrium/Chromium_MacOS.dmg" --volname Chromium --symlink /Applications:/Applications --format UDBZ --verbosity 2 &&
 
-cd $HOME/thorium &&
+cd $HOME/alacrium &&
 cat logos/apple_ascii_art.txt &&
 
-printf "${GRE}.DMG Build Completed. ${YEL}Installer at //chromium/src/out/thorium/Chromium*.dmg\n" &&
+printf "${GRE}.DMG Build Completed. ${YEL}Installer at //chromium/src/out/alacrium/Chromium*.dmg\n" &&
 tput sgr0

@@ -2,7 +2,7 @@
 
 """
 This file is the equivalent of clean.sh in the parent directory, but it directly
-deletes //out/thorium and unneeded PGO files.
+deletes //out/alacrium and unneeded PGO files.
 """
 
 import os
@@ -58,11 +58,13 @@ if "--help" in sys.argv:
 
 
 def main():
-    cr_src_dir = os.getenv("CR_DIR", r"C:\src\chromium\src")
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chromium", "src"
+    )
     profiles_dir = os.path.normpath(
         os.path.join(cr_src_dir, "chrome", "build", "pgo_profiles")
     )
-    thorium_dir = os.path.normpath(os.path.join(cr_src_dir, "out", "thorium"))
+    alacrium_dir = os.path.normpath(os.path.join(cr_src_dir, "out", "alacrium"))
 
     cleanup_needed = any(
         [
@@ -73,7 +75,7 @@ def main():
                     for filename in os.listdir(profiles_dir)
                 )
             ),
-            os.path.exists(thorium_dir),
+            os.path.exists(alacrium_dir),
         ]
     )
 
@@ -84,8 +86,8 @@ def main():
             clean_files(profiles_dir) if os.path.isdir(profiles_dir) else False
         )
         dir_deleted = (
-            delete_directory(thorium_dir) if os.path.exists(
-                thorium_dir) else False
+            delete_directory(alacrium_dir) if os.path.exists(
+                alacrium_dir) else False
         )
 
         if files_deleted or dir_deleted:

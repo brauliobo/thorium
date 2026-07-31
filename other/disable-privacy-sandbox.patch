@@ -45,16 +45,11 @@ index c2a7047d75598..b82ad41ebceec 100644
  
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
               base::FEATURE_DISABLED_BY_DEFAULT);
-@@ -72,13 +72,13 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
- #endif  // BUILDFLAG(IS_ANDROID)
- 
+@@ -74,8 +74,8 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
  BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
 -             base::FEATURE_ENABLED_BY_DEFAULT);
 +             base::FEATURE_DISABLED_BY_DEFAULT);
  
- BASE_FEATURE(kPrivacySandboxInternalsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
- 
- BASE_FEATURE(kRelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
  
 -BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 +BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -242,11 +237,11 @@ index 2a49d3a2e90b9..3314c89b9de1e 100644
 -                            // context owns this storage partition.
 -                            base::Unretained(browser_context_)));
 -  }
-+  // Thorium disables Attribution Reporting and Protected Audience storage.
++  // Alacrium disables Attribution Reporting and Protected Audience storage.
  
    // The Topics API is not available in Incognito mode.
    if (!is_in_memory() &&
-@@ -1543,21 +1519,7 @@ void StoragePartitionImpl::Initialize(
+@@ -1560,21 +1536,7 @@ void StoragePartitionImpl::Initialize(
    }
  #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
  
@@ -265,7 +260,7 @@ index 2a49d3a2e90b9..3314c89b9de1e 100644
 -        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
 -                                                        this);
 -  }
-+  // Thorium disables Shared Storage and Private Aggregation storage.
- }
++  // Alacrium disables Shared Storage and Private Aggregation storage.
  
- void StoragePartitionImpl::ResetSessionStorageConnections() {
+   if (base::FeatureList::IsEnabled(
+           blink::features::kDeclarativePerformanceObserver)) {

@@ -20,26 +20,20 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to run \`gn args out\` from within the Thorium repo.${c0}\n" &&
+	printf "${bold}${GRE}Script to run \`gn args out\` from within the Alacrium repo.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
-# chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
-printf "${YEL}Running \`gn args out/thorium\`...\n" &&
+printf "${YEL}Running \`gn args out/alacrium\`...\n" &&
 printf "${c0}\n" &&
 tput sgr0 &&
 
 cd ${CR_SRC_DIR} &&
-gn args out/thorium
+gn args out/alacrium

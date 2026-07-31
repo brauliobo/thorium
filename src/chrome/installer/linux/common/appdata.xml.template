@@ -9,21 +9,21 @@
   <summary>@@SHORTDESC@@</summary>
   <description>
     <p>
-    Thorium is an open-source browser project that aims to build a safer, faster,
-    and more stable way to experience the web.
+    Alacrium is an open-source Chromium browser focused on performance and timely
+    stable Chromium updates.
     </p>
     <p>
     We invite you to join our effort to build a powerful platform for developing a
     new generation of web applications.
     </p>
     <p>
-    Thorium supports Vorbis, Theora, WebM, AAC, H.264, H.265, MP3, and HTML5 audio and video standards.
+    Alacrium supports Vorbis, Theora, WebM, AAC, H.264, H.265, MP3, and HTML5 audio and video standards.
     </p>
   </description>
   <url type="homepage">@@PRODUCTURL@@</url>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium_Screenshot.png</image>
+      <image>https://raw.githubusercontent.com/brauliobo/alacrium/main/docs/imgs/alacrium-browser.png</image>
       <caption/>
     </screenshot>
   </screenshots>

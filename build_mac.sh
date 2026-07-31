@@ -18,33 +18,33 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to build Thorium and Thorium Shell on MacOS.${c0}\n" &&
+	printf "${bold}${GRE}Script to build Alacrium and Alacrium Shell on MacOS.${c0}\n" &&
 	printf "${underline}${YEL}Usage:${c0} build.sh # (where # is number of jobs)${c0}\n" &&
-	printf "${YEL}Use the --build-shell flag to also build the thorium_shell target.${c0}\n" &&
+	printf "${YEL}Use the --build-shell flag to also build the alacrium_shell target.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
-# Build Thorium Shell in addition to the others.
+# Build Alacrium Shell in addition to the others.
 buildShell () {
 	printf "\n" &&
-	printf "${YEL}Building Thorium and Thorium Shell for MacOS...\n" &&
+	printf "${YEL}Building Alacrium and Alacrium Shell for MacOS...\n" &&
 	printf "${CYA}\n" &&
 	
-	# Build Thorium
+	# Build Alacrium
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 	
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium thorium chromedriver thorium_shell policy_templates -j$@ &&
+	autoninja -C out/alacrium alacrium chromedriver alacrium_shell policy_templates -j$@ &&
 
 	printf "\n" &&
-	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+	cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 	printf "\n" &&
 	
-	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can now run \'./create_dmg.sh\', and copy the Thorium Shell.app out.\n" &&
+	printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can now run \'./create_dmg.sh\', and copy the Alacrium Shell.app out.\n" &&
 	tput sgr0
 }
 case $1 in
@@ -52,31 +52,26 @@ case $1 in
 esac
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
 
 printf "\n" &&
-printf "${YEL}Building Thorium for MacOS...\n" &&
+printf "${YEL}Building Alacrium for MacOS...\n" &&
 printf "${CYA}\n" &&
 
-# Build Thorium
+# Build Alacrium
 export NINJA_SUMMARIZE_BUILD=1 &&
 export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 cd ${CR_SRC_DIR} &&
 # For restoring individual build targets for customization
-#autoninja -C out/thorium thorium chromedriver policy_templates -j$@ &&
-autoninja -C out/thorium thorium_all -j$@ &&
+#autoninja -C out/alacrium alacrium chromedriver policy_templates -j$@ &&
+autoninja -C out/alacrium alacrium_all -j$@ &&
 printf "${GRE}\nBuilding installer...\n" &&
-autoninja -C out/thorium chrome/installer/mac minidump_stackwalk -j$@ &&
+autoninja -C out/alacrium chrome/installer/mac minidump_stackwalk -j$@ &&
 
 printf "\n" &&
-cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
+cat "$(dirname "$0")/logos/alacrium_ascii_art.txt" &&
 printf "\n" &&
 
 printf "${GRE}${bold}Build Completed. ${YEL}${bold}You can now run \'./create_dmg.sh\'\n" &&

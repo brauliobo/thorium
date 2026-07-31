@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">Keď nejaký web požiada o súkromné prednačítanie odkazov na svojej stránke, Alacrium použije servery Googlu. Týmto sa pred predinštalovaným webom skryje vaša identita, ale Google sa naučí, ktoré weby sa prednačítavajú.</translation>
+<translation id="469847031616755573">Alacrium je vaším predvoleným prehliadačom</translation>
+<translation id="9121116283800901015">Informácie o prehliadači Alacrium</translation>
+<translation id="7557415942066581350">Keď sa budete účtom <ph name="USER_EMAIL" /> prihlasovať do služieb Googlu, ako je Gmail alebo YouTube, môžete sa ním automaticky prihlásiť aj do prehliadača Alacrium</translation>
+<translation id="8063674192889594521">Nastavte si nový profil prehliadača Alacrium</translation>
+<translation id="2813532507332782105">Bezpečnostné nástroje prehliadača Alacrium</translation>
+<translation id="5404516918685923379">Pozrite si hlavné ovládacie prvky ochrany súkromia a zabezpečenia v prehliadači Alacrium</translation>
+<translation id="391022854039785855">Ak chcete odstrániť dáta prehliadania iba z tohto zariadenia a vo svojom účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Alacrium<ph name="END_LINK" />.</translation>
+<translation id="232337676435179638">Po vypnutí tejto možnosti sa budete môcť prihlásiť do webov Googlu (napríklad do Gmailu) bez prihlásenia do prehliadača Alacrium</translation>
+<translation id="3879276044795274924">Prispôsobiť Alacrium</translation>
+<translation id="6349701846617734224">Pomocou <ph name="BEGIN_LINK" />nástrojov prehliadača Alacrium<ph name="END_LINK" /> môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
+<translation id="113825514187113500">V prehliadači Alacrium</translation>
+<translation id="2513495859821894442">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do prehliadača Alacrium</translation>
+<translation id="1290370037980749495">Prehliadač Alacrium je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní (odporúčané)</translation>
+<translation id="3203458745325150724">Váš prehliadač Alacrium</translation>
+<translation id="3892055234200984404">Informácie o prehliadači &amp;Alacrium</translation>
+<translation id="8312332850957380094">Ďalšie profily prehliadača Alacrium</translation>
+<translation id="2823243626069255310">Prispôsobte svoj nový profil prehliadača Alacrium</translation>
+<translation id="7057723382073894700">V8 je nástroj skriptov JavaScript a WebAssembly prehliadača Alacrium, ktorý zlepšuje výkonnosť webov</translation>
+<translation id="9073817226409915222">Po zatvorení prehliadača Alacrium ponechať spustené aplikácie na pozadí</translation>
+<translation id="5737116114768420447">Spravovať profily prehliadača Alacrium</translation>
+<translation id="3390772469177266069">Ak bude potrebné niečo skontrolovať, Alacrium vás upozorní</translation>
+<translation id="253414695030364725">Alacrium prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
+<translation id="1965458093883218976">Ako vás Alacrium chráni</translation>
+<translation id="6097413908033623736">Nahláste <ph name="BEGIN_LINK" />aktuálne nastavenia<ph name="END_LINK" /> a pomôžte tak zlepšiť prehliadač Alacrium</translation>
+<translation id="7153173282073382515">Režim Inkognito prehliadača Alacrium</translation>
+<translation id="1861871537231630745">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z prehliadača Alacrium môžete preskočiť.</translation>
+<translation id="8182056223343645142">Odhlásiť sa z prehliadača Alacrium</translation>
+<translation id="4860412983011031251">Pomoc s prehliadačom Alacrium</translation>
+<translation id="6079265919870015811">Pridať profil prehliadača Alacrium</translation>
+<translation id="7473833913849364138">Alacrium prednačítava stránky, takže prehliadanie a vyhľadávanie sú rýchlejšie. <ph name="BEGIN_LINK" />Ďalšie informácie o prednačítavaní stránok<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">Ak zdieľate aj prehľady používania prehliadača Alacrium, nachádzajú sa v nich webové adresy, ktoré navštívite</translation>
+<translation id="9072534646955460921">Profilmi prehliadača Alacrium môžete oddeliť všetok svoj obsah v prehliadači Alacrium. Vytvorte profily pre rodinu aj priateľov alebo si rozdeľte obsah na prácu a zábavu.</translation>
+<translation id="4308905027810063387">Odhlásenie sa z prehliadača Alacrium</translation>
+<translation id="6312135329022974196">Ďalšie profily prehliadača Alacrium</translation>
+<translation id="8828163608353368128">Povoliť prihlásenie do prehliadača Alacrium</translation>
+<translation id="6497325017313227277">Odstrániť z prehliadača Alacrium</translation>
+<translation id="8315496929814159292">Nastaviť Alacrium ako predvolený prehliadač</translation>
+<translation id="438883585792992435">Alacrium uvoľňuje pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a prehliadač Alacrium zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. <ph name="BEGIN_LINK" />Ďalšie informácie o šetriči pamäte<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Alacrium vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
+<translation id="4212981493728012253">Povoľte prehliadaču Alacrium odstraňovať povolenia z webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje. Upozornenia sa tým nedeaktivujú.</translation>
+<translation id="3224040524634124542">Keď povolíte súbory cookie, Alacrium ich môže použiť pri prednačítavaní</translation>
+<translation id="1967056554017864811">Prispôsobiť profil prehliadača Alacrium</translation>
+<translation id="682714496634566410">Názov vášho profilu Alacrium</translation>
+<translation id="1927215335595997320">Alacrium prednačítava dokonca viac stránok, ako pravdepodobne navštívite, aby sa v prípade návštevy načítali rýchlejšie</translation>
+<translation id="4344849281720725205">Ak vo svojom účte Google ukladáte aj záložky, môžete sledovať ceny produktov v prehliadači Alacrium a dostávať upozornenia na poklesy ceny</translation>
+<translation id="2905944704289173754">Synchronizujte a prispôsobte si Alacrium v rôznych zariadeniach</translation>
+<translation id="7023976647734322618">Sťažte ľuďom s prístupom k vašej internetovej premávke možnosť zistiť, ktoré weby navštevujete. Alacrium vyhľadá adresu IP webu v systéme doménových názvov (DNS) prostredníctvom zabezpečeného pripojenia.</translation>
+<translation id="3124765553592510724">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, prehliadač Alacrium odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
+<translation id="5501994443630499490">Zapnúť dodatočnú ochranu v nástroji skriptov JavaScript a WebAssembly v prehliadači Alacrium</translation>
+<translation id="3597078885567529815"><ph name="BEGIN_LINK" />Alacrium vás upozorňuje<ph name="END_LINK" /> na nebezpečné weby a súbory na stiahnutie</translation>
+<translation id="6539171476340543682">Alacrium môže skontrolovať heslá, keď ich uložíte</translation>
+<translation id="5422284534340886571">Pridať profil prehliadača Alacrium</translation>
+<translation id="5346310914638900016">Spravovať profily prehliadača Alacrium</translation>
+<translation id="2601544977861663592">Prihlásiť sa do prehliadača Alacrium</translation>
+<translation id="4933700843989736491">Keď sa prihlásite do ďalších služieb Googlu, prihláste sa do prehliadača Alacrium</translation>
+<translation id="7886351526956375471">Kto používa Alacrium?</translation>
+<translation id="6618835206810857815">Copyright <ph name="YEAR" /> Alex313031. Všetky práva vyhradené.</translation>

@@ -1,16 +1,14 @@
-<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium90_504.jpg" width="200">
-
-## List of patches/changes/features included in Thorium <img src="https://raw.githubusercontent.com/Alex313031/thorium/main/logos/NEW/patches.png" width="32">
+## Patches And Features
 
 Compiler modifications include SSE4.2, AVX, AES, and CFLAGS, LTO flags, and import_instr_limit flags set to /03, 3, and 30, respectively. \
 NEW > Added some LLVM LOOP optimizations as -mllvm flags. See here > https://github.com/RobRich999/Chromium_Clang/issues/26#issuecomment-976883814
 
-FTP Support - Thorium is the only current browser that still supports [ftp:// sites](https://github.com/pegvin/w64devkit-extended/blob/13ea4c213e89db20ccd74a32763b31a85052cdb6/.github/workflows/build.yml).
-See [the patch](../patches/ftp-support-thorium.patch) I use. See https://www.vogons.org/viewtopic.php?t=66653 for fun FTP sites.
+FTP Support - Alacrium is the only current browser that still supports [ftp:// sites](https://github.com/pegvin/w64devkit-extended/blob/13ea4c213e89db20ccd74a32763b31a85052cdb6/.github/workflows/build.yml).
+See [the patch](../other/ftp-support.patch). See https://www.vogons.org/viewtopic.php?t=66653 for fun FTP sites.
 
-.desktop files are created for Thorium itself and content-shell (named thorium-shell).
+.desktop files are created for Alacrium itself and content-shell (named alacrium-shell).
 
-There are also additional desktop actions: when right clicking the Thorium launcher it gives three additional desktop actions, one to open thorium-shell, another to open in Safe Mode which disables any flags one has set in chrome://flags until the next launch, and lastly to open in Dark Mode which appends the --force-dark-mode flag.
+There are also additional desktop actions: when right clicking the Alacrium launcher it gives three additional desktop actions, one to open alacrium-shell, another to open in Safe Mode which disables any flags one has set in chrome://flags until the next launch, and lastly to open in Dark Mode which appends the --force-dark-mode flag.
 
 Ink > https://chromium.googlesource.com/chromium/src/third_party/+/c4f7a938fcdc796ad9fead3ab01e0508c129b831/ink NOTE: Disabled for now due to bugs!
   - Implemented with the args.gn flag "enable_ink = true" Adds PDF annotation features present in CrOS.
@@ -258,10 +256,10 @@ Patches for mini_installer and abseil when using AVX on Windows. Credit goes to 
 "Ctrl+Shift+Q" to close all windows (exit) "Ctrl+Shift+K" to open a new tab to the right "Ctrl+Shift+D" to duplicate the current tab "Ctrl+Shift+P" to pop out the current tab into a new window
   - https://github.com/Alex313031/thorium/blob/main/src/chrome/browser/ui/views/accelerator_table.cc
 
-Use Super + Arrow Keys to manage Windows on ThoriumOS > https://github.com/Alex313031/thorium/blob/main/src/ash/public/cpp/accelerators.cc
+Use Super + Arrow Keys to manage Windows on AlacriumOS > https://github.com/Alex313031/thorium/blob/main/src/ash/public/cpp/accelerators.cc
   - Made by me
 
-The Thorium .desktop file and content-shell .desktop file have flags added for experimental and useful features, namely: Disabling the Default Browser check and InfoBar, Experimental web platform features, and Experimental Canvas2D.
+The Alacrium .desktop file and content-shell .desktop file have flags added for experimental and useful features, namely: Disabling the Default Browser check and InfoBar, Experimental web platform features, and Experimental Canvas2D.
   - Modified by me.
 
 Remove discovery module from NTP on Android

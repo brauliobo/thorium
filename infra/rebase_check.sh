@@ -1,5 +1,5 @@
 #!/bin/bash
-# Fast pre-PR checks for Thorium Chromium rebases.
+# Fast pre-PR checks for Alacrium Chromium rebases.
 #
 # Default mode is local-only and cheap. Pass --with-upstream to also run
 # infra/diff_vs_upstream.sh against the pinned/current target Chromium tag.
@@ -57,8 +57,8 @@ bash -n trunk.sh version.sh upstream_version.sh setup.sh build_incremental.sh in
 echo "Checking Python helper syntax..."
 python3 -m py_compile \
   infra/extract_new_files_from_patch.py \
-  infra/extract_thorium_xtb.py \
-  infra/merge_thorium_xtb.py \
+  infra/extract_alacrium_xtb.py \
+  infra/merge_alacrium_xtb.py \
   infra/strip_dead_gn.py \
   infra/trim_hevc_patch.py
 

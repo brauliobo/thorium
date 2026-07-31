@@ -1,6 +1,6 @@
-# Checking out and building Thorium for Mac
+# Checking out and building Alacrium for Mac
 
-There are instructions for other platforms here in the Thorium Docs directory.
+There are instructions for other platforms here in the Alacrium Docs directory.
 
 ## System requirements
 
@@ -31,11 +31,11 @@ There are instructions for other platforms here in the Thorium Docs directory.
     version of the macOS SDK on it.
 *   An APFS-formatted volume (this is the default format for macOS volumes).
 
-##  Downloading the Thorium code <a name="get-the-code"></a>
+##  Downloading the Alacrium code <a name="get-the-code"></a>
 Using Git:
 
 ```shell
-git clone --recursive https://github.com/Alex313031/thorium.git
+git clone --recursive https://github.com/brauliobo/alacrium.git
 ```
 
 ## Install `depot_tools`
@@ -92,38 +92,38 @@ $ cd src
 ```
 
 *Optional:* You can also [build with API keys](https://www.chromium.org/developers/how-tos/api-keys) if you want your
-build to talk to some Google services like Google Sync, Translate, and GeoLocation.&nbsp;<img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/Key_Light.svg#gh-dark-mode-only" width="26"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/Key_Dark.svg#gh-light-mode-only" width="26">&nbsp;Thorium has its own keys in a private repository, if you are a builder or would like access to them, contact me. Otherwise, for personal or development builds, 
+build to talk to some Google services like Google Sync, Translate, and GeoLocation.&nbsp;<img src="https://github.com/brauliobo/alacrium/blob/main/logos/NEW/Key_Light.svg#gh-dark-mode-only" width="26"> <img src="https://github.com/brauliobo/alacrium/blob/main/logos/NEW/Key_Dark.svg#gh-light-mode-only" width="26">&nbsp;Alacrium has its own keys in a private repository, if you are a builder or would like access to them, contact me. Otherwise, for personal or development builds,
 you can create your own keys and add yourself to [google-browser-signin-testaccounts](https://groups.google.com/u/1/a/chromium.org/g/google-browser-signin-testaccounts)
 to enable Sync.
 
 ## Setting up the build
 
 First, we need to make sure we have all the tags/branches and are on Tip of Tree.
-For this, run (from within the Thorium repo):
+For this, run (from within the Alacrium repo):
 
 ```shell
 ./trunk.sh
 ```
 
-Secondly, we need to check out the revision that Thorium is currently using. 
+Secondly, we need to check out the revision that Alacrium is currently using.
 For this, run:
 
 ```shell
 ./version.sh
 ```
 
-At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for Chromium for all platforms. 
-The file for MacOS will be downloaded to */Users/$USERNAME/chromium/src/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 
+At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for Chromium for all platforms.
+The file for MacOS will be downloaded to */Users/$USERNAME/chromium/src/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like
 'chrome-mac-6167-1706032279-25144dc1c87be275c5981becbafed7785e2f39f2.profdata', which should be added to the end of args.gn as per below.
 Take note of this, as we will be using it in the `args.gn` below.
 
-Lastly, we need to copy the Thorium source files over the Chromium tree.
+Lastly, we need to copy the Alacrium source files over the Chromium tree.
 For this, run:
 
 ```shell
 ./setup.sh --mac
 ```
-This will copy all the files and patches to the needed locations.  
+This will copy all the files and patches to the needed locations.
 - NOTE: To build for arm64, use `./setup.sh --mac` as well. Use `./setup.sh --help` to see all options/platforms.
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
@@ -132,11 +132,11 @@ to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. Create the build output directory by running:
 
 ```shell
-$ gn args out/thorium
+$ gn args out/alacrium
 ```
-The contents of '[mac_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/mac_args.gn)' in the root of this repo should be copy/pasted into the editor.
-*and edit the last line to point to the actual path and file name of the '&#42;.profdata' it*  
-Use the '[mac_ARM_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/mac_ARM_args.gn)' for arm64 builds.
+The contents of '[mac_args.gn](https://github.com/brauliobo/alacrium/blob/other/Mac/mac_args.gn)' in the root of this repo should be copy/pasted into the editor.
+*and edit the last line to point to the actual path and file name of the '&#42;.profdata' it*
+Use the '[mac_ARM_args.gn](https://github.com/brauliobo/alacrium/blob/other/Mac/mac_ARM_args.gn)' for arm64 builds.
 
 * For other build arguments, including release settings, see [GN build
   configuration](https://www.chromium.org/developers/gn-build-configuration).
@@ -144,34 +144,34 @@ Use the '[mac_ARM_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
   [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
-* Building Thorium for arm64 Macs requires [additional setup](mac_arm64.md).
+* Building Alacrium for arm64 Macs requires [additional setup](mac_arm64.md).
 
 
-## Build Thorium <a name="build"></a>
+## Build Alacrium <a name="build"></a>
 
-Build Thorium (the "chrome" target) with Ninja using the command:
+Build Alacrium (the "chrome" target) with Ninja using the command:
 
 ```shell
-$ autoninja -C out/thorium thorium chromedriver
+$ autoninja -C out/alacrium alacrium chromedriver
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
 
 You can get a list of all of the other build targets from GN by running `gn ls
-out/thorium` from the command line. To compile one, pass the GN label to Ninja
+out/alacrium` from the command line. To compile one, pass the GN label to Ninja
 with no preceding "//" (so, for `//chrome/test:unit_tests` use `autoninja -C
-out/thorium chrome/test:unit_tests`).
+out/alacrium chrome/test:unit_tests`).
 
-## Run/Install Thorium
+## Run/Install Alacrium
 
 Once it is built, you can simply run the browser:
 
 ```shell
-$ out/thorium/Thorium.app/Contents/MacOS/Thorium
+$ out/alacrium/Alacrium.app/Contents/MacOS/Alacrium
 ```
 
-To generate a *.dmg* installation package, run (from within the Thorium repo):
+To generate a *.dmg* installation package, run (from within the Alacrium repo):
 
 ```shell
 $ ./create_dmg.sh
@@ -180,11 +180,11 @@ $ ./create_dmg.sh
 ### Avoiding repetitive system permissions dialogs after each build
 
 Every time you start a new developer build, you may get two system dialogs:
-`Thorium wants to use your confidential information stored in "Thorium Safe
-Storage" in your keychain.`, and `Do you want the application "Thorium.app" to
+`Alacrium wants to use your confidential information stored in "Alacrium Safe
+Storage" in your keychain.`, and `Do you want the application "Alacrium.app" to
 accept incoming network connections?`.
 
-To avoid them, you can run Thorium with these command-line flags (but of
+To avoid them, you can run Alacrium with these command-line flags (but of
 course beware that they will change the behavior of certain subsystems, like password storage):
 
 ```shell
@@ -195,8 +195,8 @@ course beware that they will change the behavior of certain subsystems, like pas
 
 Good debugging tips can be found [here](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/mac/debugging.md).
 
-If you have problems building, join us in the Thorium IRC Channel at 
-`#thorium` on `irc.libera.chat` and ask there.
+If you have problems building, join us in the Alacrium IRC Channel at
+`#alacrium` on `irc.libera.chat` and ask there.
 
 ## Build and run test targets
 
@@ -205,7 +205,7 @@ exist in the directory structure. To see what target a given unit test or
 browser test file corresponds to, the following command can be used:
 
 ```shell
-$ gn refs out/thorium --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
+$ gn refs out/alacrium --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
 //chrome/test:unit_tests
 ```
 
@@ -213,14 +213,14 @@ In the example above, the target is unit_tests. The unit_tests binary can be
 built by running the following command:
 
 ```shell
-$ autoninja -C out/thorium unit_tests
+$ autoninja -C out/alacrium unit_tests
 ```
 
 You can run the tests by running the unit_tests binary. You can also limit which
 tests are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
-$ out/thorium/unit_tests --gtest_filter="BrowserListUnitTest.*"
+$ out/alacrium/unit_tests --gtest_filter="BrowserListUnitTest.*"
 ```
 
 You can find out more about GoogleTest at its
@@ -228,7 +228,7 @@ You can find out more about GoogleTest at its
 
 ## Update your checkout
 
-To update an existing checkout, you can run (from within the Thorium repo):
+To update an existing checkout, you can run (from within the Alacrium repo):
 
 ```shell
 $ ./trunk.sh

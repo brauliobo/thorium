@@ -18,7 +18,7 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to fix libaom issues when compiling Thorium for arm64.${c0}\n" &&
+	printf "${bold}${GRE}Script to fix libaom issues when compiling Alacrium for arm64.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
@@ -30,13 +30,8 @@ printf "${bold}${GRE}Regenerating build files for libaom...${c0}\n" &&
 printf "\n"
 
 # chromium/src dir env variable
-if [ -z "${CR_DIR}" ]; then 
-    CR_SRC_DIR="$HOME/chromium/src"
-    export CR_SRC_DIR
-else 
-    CR_SRC_DIR="${CR_DIR}"
-    export CR_SRC_DIR
-fi
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
  cd ${CR_SRC_DIR}/third_party/libaom &&
  ./cmake_update.sh &&
 

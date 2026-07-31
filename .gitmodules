@@ -1,3 +1,0 @@
-[submodule "infra/upgrader"]
-	path = infra/upgrader
-	url = https://github.com/hezhizheng/thorium-win-upgrade

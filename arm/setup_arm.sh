@@ -17,30 +17,33 @@ try() { "$@" || die "${RED}Failed $*"; }
 # --help
 displayHelp () {
 	printf "\n" &&
-	printf "${bold}${GRE}Script to copy Thorium ARM BUILD.gn file over the Chromium source tree.${c0}\n" &&
+	printf "${bold}${GRE}Script to copy Alacrium ARM BUILD.gn files over the Chromium source tree.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
+ALACRIUM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CR_SRC_DIR="${ALACRIUM_ROOT}/chromium/src"
+
 printf "\n" &&
 printf "${YEL}Creating build output directory...\n" &&
 tput sgr0 &&
 
-mkdir -v -p $HOME/chromium/src/out/thorium/ &&
+mkdir -v -p "${CR_SRC_DIR}/out/alacrium/" &&
 printf "\n" &&
 
 printf "${YEL}Copying BUILD.gn...\n" &&
 tput sgr0 &&
 
-cp -r -v ./build/* $HOME/chromium/src/build/ &&
-cp -r -v ./media/* $HOME/chromium/src/media/ &&
-cp -r -v ./third_party/* $HOME/chromium/src/third_party/ &&
+cp -r -v ./build/* "${CR_SRC_DIR}/build/" &&
+cp -r -v ./media/* "${CR_SRC_DIR}/media/" &&
+cp -r -v ./third_party/* "${CR_SRC_DIR}/third_party/" &&
 
 printf "${GRE}Done!\n" &&
 printf "\n" &&
 
-printf "${GRE}Enjoy Thorium on ARM!\n" &&
+printf "${GRE}Enjoy Alacrium on ARM!\n" &&
 printf "\n" &&
 tput sgr0

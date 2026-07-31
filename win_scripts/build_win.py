@@ -22,7 +22,7 @@ def try_run(command):
 
 # Help function
 def display_help():
-    print("\nScript to build Thorium for Windows.\n")
+    print("\nScript to build Alacrium for Windows.\n")
     print("Usage: python win_scripts\build_win.py # (where # is number of jobs)\n")
 
 
@@ -31,20 +31,22 @@ if '--help' in sys.argv:
     sys.exit(0)
 
 
-# Set chromium/src dir from Windows environment variable
-cr_src_dir = os.getenv('CR_DIR', r'C:/src/chromium/src')
+# Use the repository-local Chromium checkout.
+cr_src_dir = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'chromium', 'src'
+)
 
-print("\nBuilding Thorium for Windows\n")
+print("\nBuilding Alacrium for Windows\n")
 
 # Change directory and run build commands
 os.chdir(cr_src_dir)
 # Determine the number of threads to use
 jobs = sys.argv[1] if len(sys.argv) > 1 else str(os.cpu_count())
 
-try_run(f'autoninja -C out/thorium thorium_all -j{jobs}')
+try_run(f'autoninja -C out/alacrium alacrium_all -j{jobs}')
 
-try_run(f'autoninja -C out/thorium setup mini_installer -j{jobs}')
+try_run(f'autoninja -C out/alacrium setup mini_installer -j{jobs}')
 
-installer_dest = os.path.normpath(os.path.join(cr_src_dir, 'out', 'thorium'))
+installer_dest = os.path.normpath(os.path.join(cr_src_dir, 'out', 'alacrium'))
 
 print(f"Build Completed. Installer at '{installer_dest}'")

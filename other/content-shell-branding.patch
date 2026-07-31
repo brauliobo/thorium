@@ -1,0 +1,81 @@
+diff --git a/content/shell/BUILD.gn b/content/shell/BUILD.gn
+--- a/content/shell/BUILD.gn
++++ b/content/shell/BUILD.gn
+@@ -46,7 +46,7 @@ shell_use_toolkit_views = toolkit_views && !is_castos
+ 
+ declare_args() {
+-  content_shell_product_name = "Content Shell"
+-  content_shell_version = "999.77.34.5"
++  content_shell_product_name = "Alacrium Shell"
++  content_shell_version = "999.7.3434.555"
+   content_shell_major_version = "999"
+ }
+ 
+@@ -620,7 +620,7 @@ repack("pak") {
+ }
+ 
+ if (is_android) {
+-  group("content_shell") {
++  group("alacrium_shell") {
+     testonly = true
+     deps = [ "//content/shell/android:content_shell_apk" ]
+   }
+@@ -634,7 +634,7 @@ if (is_android) {
+       content_shell_version,
+     ]
+   }
+-  mac_app_bundle("content_shell") {
++  mac_app_bundle("alacrium_shell") {
+     testonly = true
+     output_name = content_shell_product_name
+     sources = [ "app/shell_main_mac.cc" ]
+@@ -752,8 +752,9 @@ if (is_android) {
+     }
+   }
+ } else {
+-  executable("content_shell") {
++  executable("alacrium_shell") {
+     testonly = true
++    output_name = "alacrium_shell"
+ 
+     sources = [ "app/shell_main.cc" ]
+ 
+@@ -814,7 +815,7 @@ if (is_android) {
+     fuchsia_component("content_shell_component") {
+       testonly = true
+       manifest = "fuchsia/content_shell.cml"
+-      data_deps = [ ":content_shell" ]
++      data_deps = [ ":alacrium_shell" ]
+       visibility = [ ":*" ]
+     }
+ 
+@@ -1106,7 +1107,7 @@ if (is_android) {
+       "//content/test/data/media/",
+     ]
+     data_deps = [
+-      ":content_shell",
++      ":alacrium_shell",
+       "//build/android:devil_chromium_py",
+       "//build/android:test_runner_py",
+       "//testing:test_scripts_shared",
+@@ -1118,7 +1119,7 @@ if (is_android) {
+ group("content_shell_crash_test") {
+   testonly = true
+   data_deps = [
+-    ":content_shell",
++    ":alacrium_shell",
+     "//testing:test_scripts_shared",
+     "//third_party/angle:includes",
+   ]
+diff --git a/content/shell/fuchsia/content_shell.cml b/content/shell/fuchsia/content_shell.cml
+--- a/content/shell/fuchsia/content_shell.cml
++++ b/content/shell/fuchsia/content_shell.cml
+@@ -9,7 +9,7 @@
+     "vulkan/client.shard.cml",
+   ],
+   program: {
+-    binary: "content_shell",
++    binary: "alacrium_shell",
+   },
+   use: [
+     {

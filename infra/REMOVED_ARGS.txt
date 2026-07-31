@@ -30,7 +30,7 @@ use_large_pdbs = true # Was used in debug builds to allow larger PDB files.
 
 enable_ink = false # Cannot set to true anyway, without Chrome internal code
 
-enable_cros_media_app = false # Only for ChromiumOS, was removed from most args.gns, but still enabled for ThoriumOS and in cros_args.gn
+enable_cros_media_app = false # Only for ChromiumOS, was removed from most args.gns, but still enabled for AlacriumOS and in cros_args.gn
 
 enable_all_rust_features = true # Removed in M138, no longer part of Chromium, enabled by default now.
 

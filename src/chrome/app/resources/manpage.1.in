@@ -3,16 +3,16 @@
 .TH @@PACKAGE@@ 1 "" "" "USER COMMANDS"
 
 .SH NAME
-@@PACKAGE@@ \- the web browser from Alex313031
+@@PACKAGE@@ \- a performance-focused Chromium browser
 
 .SH SYNOPSIS
 .B @@PACKAGE@@
 [\fIOPTION\fR] [\fIPATH\fR|\fIURL\fR]
 
 .SH DESCRIPTION
-See the Thorium Repository for help on using the browser.
+See the Alacrium repository for help on using the browser.
 .IP
-<https://github.com/Alex313031/thorium/>
+<https://github.com/brauliobo/alacrium/>
 .PP
 This manpage only describes invocation, environment, and arguments.
 
@@ -24,7 +24,7 @@ stable flags.
 \fB\-\-user\-data\-dir\fR=\fIDIR\fR
 Specifies the directory that user data (your "profile") is kept in.
 Defaults to
-.I $HOME/.config/@@PACKAGE@@ .
+.I $HOME/.config/alacrium .
 Separate instances of @@MENUNAME@@ must use separate user data directories;
 repeated invocations of @@PACKAGE@@ will reuse an existing process for
 a given user data directory.
@@ -145,21 +145,21 @@ Comma separated list of hosts or patterns to bypass proxying.
 
 .SH FILES
 .TP
-.I $HOME/.config/@@PACKAGE@@
+.I $HOME/.config/alacrium
 Default directory for configuration data.
 
 .TP
-.I $HOME/.cache/@@PACKAGE@@
+.I $HOME/.cache/alacrium
 Default directory for cache data.  (Why?  See
 <http://standards.freedesktop.org/basedir-spec/latest/> .)
 
 .SH BUGS
 Bug tracker:
 .IP
-http://code.google.com/p/chromium/issues/list & https://github.com/Alex313031/thorium/issues
+https://issues.chromium.org/ & https://github.com/brauliobo/alacrium/issues
 .PP
 Be sure to do your search within "All Issues" before reporting bugs,
 and be sure to pick the "Defect on Linux" template when filing a new one.
 
 .SH AUTHOR
-The Chromium team and Alex313031 \- <http://www.chromium.org>
+The Chromium Authors, Alex313031, and the Alacrium Authors

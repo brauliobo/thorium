@@ -1,0 +1,1590 @@
+diff --git a/android_webview/browser/aw_browser_context.cc b/android_webview/browser/aw_browser_context.cc
+index 5957d99449cb6..1bfef3eb4a93a 100644
+--- a/android_webview/browser/aw_browser_context.cc
++++ b/android_webview/browser/aw_browser_context.cc
+@@ -626,6 +626,9 @@ void AwBrowserContext::ConfigureNetworkContextParams(
+   // policy. (http://crbug.com/921750).
+   context_params->enforce_chrome_ct_policy = false;
+ 
++  // WebView does not support ftp yet.
++  context_params->enable_ftp_url_support = false;
++
+   context_params->enable_brotli = true;
+   context_params->enable_zstd = true;
+   context_params->stale_dns_enabled = enable_stale_dns_;
+diff --git a/chrome/app/app-Info.plist b/chrome/app/app-Info.plist
+index 6fada0a2b1a1f..6b2ec4b67e015 100644
+--- a/chrome/app/app-Info.plist
++++ b/chrome/app/app-Info.plist
+@@ -185,6 +185,14 @@
+ 				<string>https</string>
+ 			</array>
+ 		</dict>
++		<dict>
++			<key>CFBundleURLName</key>
++			<string>FTP site URL</string>
++			<key>CFBundleURLSchemes</key>
++			<array>
++				<string>ftp</string>
++			</array>
++		</dict>
+ 		<dict>
+ 			<key>CFBundleURLName</key>
+ 			<string>Local file URL</string>
+diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
+index b3263e1207486..06fc044b0cd65 100644
+--- a/chrome/app/generated_resources.grd
++++ b/chrome/app/generated_resources.grd
+@@ -15153,6 +15153,9 @@ This can include information about installed software, files, your browser, the
+       <message name="IDS_DIRECTORY_LISTING_DATE_MODIFIED" desc="When viewing a local directory, this is the text for the column above the last modified dates.">
+         Date Modified
+       </message>
++      <message name="IDS_DIRECTORY_LISTING_PARSING_ERROR_BOX_TEXT" desc="Text to show in a box when we failed to parse FTP directory listing.">
++        Oh, no! This server is sending data <ph name="PRODUCT_NAME">$1<ex>Alacrium</ex></ph> can't understand. Please <ph name="BEGIN_LINK">&lt;a href="https://issues.chromium.org/issues/new"&gt;</ph>report a bug<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>, and include the <ph name="BEGIN2_LINK">&lt;a href="LOCATION"&gt;</ph>raw listing<ph name="END2_LINK">&lt;/a&gt;</ph>.
++      </message>
+ 
+       <!-- Saving Page-->
+       <message name="IDS_SAVE_PAGE_DESC_HTML_ONLY" desc="In the Save Page dialog, the description of saving only the HTML of a webpage.">
+diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
+index d4d079b76f25f..80cb6d865d764 100644
+--- a/chrome/browser/about_flags.cc
++++ b/chrome/browser/about_flags.cc
+@@ -8292,6 +8292,12 @@ const FeatureEntry kFeatureEntries[] = {
+      FEATURE_VALUE_TYPE(
+          heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)},
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++    {"enable-ftp", flag_descriptions::kEnableFtpName,
++     flag_descriptions::kEnableFtpDescription, kOsAll,
++     FEATURE_VALUE_TYPE(network::features::kFtpProtocol)},
++#endif
++
+ #if BUILDFLAG(IS_CHROMEOS)
+     {"crostini-container-install",
+      flag_descriptions::kCrostiniContainerInstallName,
+diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
+index 952079767bcac..ecdd9788d0ad0 100644
+--- a/chrome/browser/flag_descriptions.h
++++ b/chrome/browser/flag_descriptions.h
+@@ -774,6 +774,14 @@ inline constexpr char kEnableDrDcDescription[] =
+     "(raster, webgl, video) "
+     " continues using the gpu main thread.";
+ 
++inline constexpr char kEnableFtpName[] =
++    "Enable support for FTP URLs. Enabled by default. Alacrium flag.";
++inline constexpr char kEnableFtpDescription[] =
++    "When enabled, the browser will handle navigations to ftp:// URLs by "
++    "either showing a directory listing or downloading the resource over FTP. "
++    "When disabled, the browser has no special handling for ftp:// URLs and "
++    "by default defers handling of the URL to the underlying platform.";
++
+ inline constexpr char kEnableFullscreenToAnyScreenAndroidName[] =
+     "Enables use of the screen parameter for requestFullscreen.";
+ inline constexpr char kEnableFullscreenToAnyScreenAndroidDescription[] =
+diff --git a/chrome/browser/net/profile_network_context_service.cc b/chrome/browser/net/profile_network_context_service.cc
+index b160dfa936c60..d3f00c4eb26d2 100644
+--- a/chrome/browser/net/profile_network_context_service.cc
++++ b/chrome/browser/net/profile_network_context_service.cc
+@@ -1436,6 +1436,15 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
+     }
+ #endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+ 
++  // NOTE(mmenke): Keep these protocol handlers and
++  // ProfileIOData::SetUpJobFactoryDefaultsForBuilder in sync with
++  // ProfileIOData::IsHandledProtocol().
++  // TODO(mmenke): Find a better way of handling tracking supported schemes.
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  network_context_params->enable_ftp_url_support =
++      base::FeatureList::IsEnabled(network::features::kFtpProtocol);
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+     network_context_params->file_paths->trust_token_database_name =
+         base::FilePath(chrome::kTrustTokenFilename);
+ 
+diff --git a/chrome/browser/net/system_network_context_manager.cc b/chrome/browser/net/system_network_context_manager.cc
+index 089a0078f0606..1cdf59f3b7aec 100644
+--- a/chrome/browser/net/system_network_context_manager.cc
++++ b/chrome/browser/net/system_network_context_manager.cc
+@@ -1144,6 +1144,12 @@ SystemNetworkContextManager::CreateNetworkContextParams() {
+ 
+   network_context_params->http_cache_enabled = false;
+ 
++  // These are needed for PAC scripts that use FTP URLs.
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  network_context_params->enable_ftp_url_support =
++      base::FeatureList::IsEnabled(network::features::kFtpProtocol);
++#endif
++
+   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());
+ 
+   return network_context_params;
+diff --git a/chrome/browser/profiles/profile_io_data.cc b/chrome/browser/profiles/profile_io_data.cc
+index 080e9b0e43c70..985089e9c1caf 100644
+--- a/chrome/browser/profiles/profile_io_data.cc
++++ b/chrome/browser/profiles/profile_io_data.cc
+@@ -14,6 +14,7 @@
+ #include "components/dom_distiller/core/url_constants.h"
+ #include "extensions/buildflags/buildflags.h"
+ #include "net/net_buildflags.h"
++#include "services/network/public/cpp/features.h"
+ #include "url/gurl.h"
+ 
+ #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+@@ -53,6 +54,9 @@ bool ProfileIOData::IsHandledProtocol(std::string_view scheme) {
+       url::kContentScheme,
+ #endif  // BUILDFLAG(IS_ANDROID)
+       url::kAboutScheme,
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++      url::kFtpScheme,
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
+       url::kBlobScheme,
+       url::kFileSystemScheme,
+       chrome::kChromeSearchScheme,
+diff --git a/chrome/browser/ui/login/login_tab_helper.cc b/chrome/browser/ui/login/login_tab_helper.cc
+index 12e2c2c8925a5..f3f23aa8ca317 100644
+--- a/chrome/browser/ui/login/login_tab_helper.cc
++++ b/chrome/browser/ui/login/login_tab_helper.cc
+@@ -77,13 +77,16 @@ void LoginTabHelper::DidFinishNavigation(
+     return;
+   }
+ 
+-  // Show a login prompt with the navigation's AuthChallengeInfo on HTTP 401/407
+-  // responses.
+-  int response_code = navigation_handle->GetResponseHeaders()->response_code();
+-  if (response_code !=
+-          net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED &&
+-      response_code != net::HttpStatusCode::HTTP_UNAUTHORIZED) {
+-    return;
++  // Show a login prompt with the navigation's AuthChallengeInfo on FTP
++  // navigations and on HTTP 401/407 responses.
++  if (!navigation_handle->GetURL().SchemeIs(url::kFtpScheme)) {
++    int response_code =
++        navigation_handle->GetResponseHeaders()->response_code();
++    if (response_code !=
++            net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED &&
++        response_code != net::HttpStatusCode::HTTP_UNAUTHORIZED) {
++      return;
++    }
+   }
+ 
+   challenge_ = navigation_handle->GetAuthChallengeInfo().value();
+diff --git a/chrome/common/net/net_resource_provider.cc b/chrome/common/net/net_resource_provider.cc
+index ed98919e49eb6..761d9e6cb9e87 100644
+--- a/chrome/common/net/net_resource_provider.cc
++++ b/chrome/common/net/net_resource_provider.cc
+@@ -35,6 +35,8 @@ struct LazyDirectoryListerCacher {
+               l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_DATE_MODIFIED));
+     value.Set("language",
+               l10n_util::GetLanguage(base::i18n::GetConfiguredLocale()));
++	value.Set("listingParsingErrorBoxText",
++        l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_PARSING_ERROR_BOX_TEXT));
+     value.Set("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
+     std::string str = webui::GetI18nTemplateHtml(
+         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+diff --git a/chrome/installer/util/shell_util.cc b/chrome/installer/util/shell_util.cc
+index b4c5aa7d39ae3..71437292c0b68 100644
+--- a/chrome/installer/util/shell_util.cc
++++ b/chrome/installer/util/shell_util.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2012 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ //
+@@ -1616,10 +1616,10 @@ const wchar_t* ShellUtil::kAppPathsRegistryPathName = L"Path";
+ 
+ const wchar_t* ShellUtil::kDefaultFileAssociations[] = {
+     L".htm", L".html", L".shtml", L".xht", L".xhtml", nullptr};
+-const wchar_t* ShellUtil::kBrowserProtocolAssociations[] = {L"http", L"https",
++const wchar_t* ShellUtil::kBrowserProtocolAssociations[] = {L"ftp", L"http", L"https",
+                                                             nullptr};
+ const wchar_t* ShellUtil::kPotentialProtocolAssociations[] = {
+-    L"http", L"https", L"irc",   L"mailto", L"mms", L"news",   L"nntp",
++    L"ftp", L"http", L"https", L"irc",   L"mailto", L"mms", L"news",   L"nntp",
+     L"sms",  L"smsto", L"snews", L"tel",    L"urn", L"webcal", nullptr};
+ const wchar_t* ShellUtil::kRegUrlProtocol = L"URL Protocol";
+ const wchar_t* ShellUtil::kRegApplication = L"\\Application";
+diff --git a/components/safe_browsing/content/browser/safe_browsing_network_context.cc b/components/safe_browsing/content/browser/safe_browsing_network_context.cc
+index 2c71195692a74..18dc154e7e26f 100644
+--- a/components/safe_browsing/content/browser/safe_browsing_network_context.cc
++++ b/components/safe_browsing/content/browser/safe_browsing_network_context.cc
+@@ -128,6 +128,10 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
+     network_context_params->file_paths->trigger_migration = trigger_migration_;
+     network_context_params->file_paths->cookie_database_name = base::FilePath(
+         base::FilePath::StringType(kSafeBrowsingBaseFilename) + kCookiesFile);
++    // These are needed for PAC scripts that use FTP URLs.
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++    network_context_params->enable_ftp_url_support = true;
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
+     network_context_params->enable_encrypted_cookies = false;
+ 
+     return network_context_params;
+diff --git a/content/browser/browser_url_handler_impl.cc b/content/browser/browser_url_handler_impl.cc
+index 765c759db3e21..5bec9aeb07a5f 100644
+--- a/content/browser/browser_url_handler_impl.cc
++++ b/content/browser/browser_url_handler_impl.cc
+@@ -34,6 +34,7 @@ static bool HandleViewSource(GURL* url, BrowserContext* browser_context) {
+   std::vector<std::string> all_allowed_sub_schemes({
+       url::kHttpScheme,
+       url::kHttpsScheme,
++      url::kFtpScheme,
+       kChromeUIScheme,
+       url::kFileScheme,
+       url::kFileSystemScheme,
+diff --git a/content/public/common/content_switches.cc b/content/public/common/content_switches.cc
+index a5dd79908643a..cda84f0d14122 100644
+--- a/content/public/common/content_switches.cc
++++ b/content/public/common/content_switches.cc
+@@ -328,6 +328,9 @@ const char kEnableExperimentalWebPlatformFeatures[] =
+ // status:"experimental", which are enabled when running web tests.
+ const char kEnableBlinkTestFeatures[] = "enable-blink-test-features";
+ 
++// Enables support for FTP URLs. See https://crbug.com/333943.
++const char kEnableFtp[] = "enable-ftp";
++
+ // Disables all RuntimeEnabledFeatures that can be enabled via OriginTrials.
+ const char kDisableOriginTrialControlledBlinkFeatures[] =
+     "disable-origin-trial-controlled-blink-features";
+diff --git a/content/public/common/content_switches.h b/content/public/common/content_switches.h
+index 17e834a0e19e6..b36bd2876b1c2 100644
+--- a/content/public/common/content_switches.h
++++ b/content/public/common/content_switches.h
+@@ -104,6 +104,7 @@ CONTENT_EXPORT extern const char kEnableExperimentalCookieFeatures[];
+ CONTENT_EXPORT extern const char kEnableExperimentalWebAssemblyFeatures[];
+ CONTENT_EXPORT extern const char kEnableExperimentalWebPlatformFeatures[];
+ CONTENT_EXPORT extern const char kEnableBlinkTestFeatures[];
++CONTENT_EXPORT extern const char kEnableFtp[];
+ CONTENT_EXPORT extern const char kEnableGpuMemoryBufferVideoFrames[];
+ CONTENT_EXPORT extern const char kEnableIsolatedWebAppsInRenderer[];
+ CONTENT_EXPORT extern const char kEnableLCDText[];
+diff --git a/content/public/renderer/render_frame.h b/content/public/renderer/render_frame.h
+index b2e16f96177be..f789f88377185 100644
+--- a/content/public/renderer/render_frame.h
++++ b/content/public/renderer/render_frame.h
+@@ -162,6 +162,9 @@ class CONTENT_EXPORT RenderFrame :
+   virtual blink::AssociatedInterfaceProvider*
+   GetRemoteAssociatedInterfaces() = 0;
+ 
++  // Returns true if this frame is a FTP directory listing.
++  virtual bool IsFTPDirectoryListing() = 0;
++
+   // Notifies the browser of text selection changes made.
+   virtual void SetSelectedText(const std::u16string& selection_text,
+                                size_t offset,
+diff --git a/content/renderer/render_frame_impl.cc b/content/renderer/render_frame_impl.cc
+index 16b998336897f..12096d273127f 100644
+--- a/content/renderer/render_frame_impl.cc
++++ b/content/renderer/render_frame_impl.cc
+@@ -2391,6 +2391,10 @@ RenderFrameImpl::GetRemoteAssociatedInterfaces() {
+   return remote_associated_interfaces_.get();
+ }
+ 
++bool RenderFrameImpl::IsFTPDirectoryListing() {
++  return frame_->GetDocumentLoader()->IsListingFtpDirectory();
++}
++
+ void RenderFrameImpl::SetSelectedText(const std::u16string& selection_text,
+                                       size_t offset,
+                                       const gfx::Range& range) {
+diff --git a/content/renderer/render_frame_impl.h b/content/renderer/render_frame_impl.h
+index c0961551b19c4..f61352655a932 100644
+--- a/content/renderer/render_frame_impl.h
++++ b/content/renderer/render_frame_impl.h
+@@ -356,6 +356,7 @@ class CONTENT_EXPORT RenderFrameImpl
+       mojo::ScopedMessagePipeHandle interface_pipe) override;
+   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry() override;
+   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
++  bool IsFTPDirectoryListing() override;
+   void SetSelectedText(const std::u16string& selection_text,
+                        size_t offset,
+                        const gfx::Range& range) override;
+diff --git a/ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.mm b/ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.mm
+index d4ae4f54554c0..c69d9d8b069b6 100644
+--- a/ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.mm
++++ b/ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.mm
+@@ -26,6 +26,7 @@
+ #import "ios/web/public/thread/web_thread.h"
+ #import "net/cookies/cookie_store.h"
+ #import "net/disk_cache/disk_cache.h"
++#import "net/ftp/ftp_network_layer.h"
+ #import "net/http/http_cache.h"
+ #import "net/http/http_network_session.h"
+ #import "net/http/http_server_properties.h"
+diff --git a/net/BUILD.gn b/net/BUILD.gn
+index 945bef7d9271a..0cd86dbb9ca1e 100644
+--- a/net/BUILD.gn
++++ b/net/BUILD.gn
+@@ -84,6 +84,7 @@ buildflag_header("buildflags") {
+   header = "net_buildflags.h"
+   flags = [
+     "DISABLE_FILE_SUPPORT=$disable_file_support",
++    "DISABLE_FTP_SUPPORT=$disable_ftp_support",
+     "ENABLE_MDNS=$enable_mdns",
+     "ENABLE_REPORTING=$enable_reporting",
+     "ENABLE_WEBSOCKETS=$enable_websockets",
+@@ -1742,6 +1743,41 @@ component("net") {
+     ]
+   }
+ 
++  if (!disable_ftp_support) {
++    sources += [
++      "ftp/ftp_auth_cache.cc",
++      "ftp/ftp_auth_cache.h",
++      "ftp/ftp_ctrl_response_buffer.cc",
++      "ftp/ftp_ctrl_response_buffer.h",
++      "ftp/ftp_directory_listing_parser.cc",
++      "ftp/ftp_directory_listing_parser.h",
++      "ftp/ftp_directory_listing_parser_ls.cc",
++      "ftp/ftp_directory_listing_parser_ls.h",
++      "ftp/ftp_directory_listing_parser_vms.cc",
++      "ftp/ftp_directory_listing_parser_vms.h",
++      "ftp/ftp_directory_listing_parser_windows.cc",
++      "ftp/ftp_directory_listing_parser_windows.h",
++      "ftp/ftp_network_layer.cc",
++      "ftp/ftp_network_layer.h",
++      "ftp/ftp_network_session.cc",
++      "ftp/ftp_network_session.h",
++      "ftp/ftp_network_transaction.cc",
++      "ftp/ftp_network_transaction.h",
++      "ftp/ftp_request_info.h",
++      "ftp/ftp_response_info.cc",
++      "ftp/ftp_response_info.h",
++      "ftp/ftp_server_type.h",
++      "ftp/ftp_transaction.h",
++      "ftp/ftp_transaction_factory.h",
++      "ftp/ftp_util.cc",
++      "ftp/ftp_util.h",
++      "url_request/ftp_protocol_handler.cc",
++      "url_request/ftp_protocol_handler.h",
++      "url_request/url_request_ftp_job.cc",
++      "url_request/url_request_ftp_job.h",
++    ]
++  }
++
+   if (enable_websockets) {
+     sources += [
+       "server/http_connection.cc",
+@@ -3478,6 +3514,21 @@ target(_test_target_type, "net_unittests") {
+     ]
+   }
+ 
++  if (!disable_ftp_support) {
++    sources += [
++      "ftp/ftp_auth_cache_unittest.cc",
++      "ftp/ftp_ctrl_response_buffer_unittest.cc",
++      "ftp/ftp_directory_listing_parser_ls_unittest.cc",
++      "ftp/ftp_directory_listing_parser_unittest.cc",
++      "ftp/ftp_directory_listing_parser_unittest.h",
++      "ftp/ftp_directory_listing_parser_vms_unittest.cc",
++      "ftp/ftp_directory_listing_parser_windows_unittest.cc",
++      "ftp/ftp_network_transaction_unittest.cc",
++      "ftp/ftp_util_unittest.cc",
++      "url_request/url_request_ftp_job_unittest.cc",
++    ]
++  }
++
+   if (enable_built_in_dns) {
+     sources += [ "url_request/http_with_dns_over_https_unittest.cc" ]
+   }
+@@ -4084,6 +4135,46 @@ fuzzer_test("net_spdy_headers_to_http_response_headers_fuzzer") {
+   libfuzzer_options = [ "max_len = 512" ]
+ }
+ 
++if (!disable_ftp_support) {
++  fuzzer_test("net_ftp_ctrl_response_fuzzer") {
++    sources = [ "ftp/ftp_ctrl_response_fuzzer.cc" ]
++    deps = [
++      ":net_fuzzer_test_support",
++      "//base",
++      "//net",
++    ]
++  }
++
++  fuzzer_test("net_ftp_directory_listing_fuzzer") {
++    sources = [ "ftp/ftp_directory_listing_fuzzer.cc" ]
++    deps = [
++      ":net_fuzzer_test_support",
++      "//base",
++      "//net",
++    ]
++
++    # TODO(https://crbug.com/921297): Re-enable once source of timeout is
++    # understood (probably just needs to restrict maximum input size).
++    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
++  }
++
++  fuzzer_test("net_url_request_ftp_fuzzer") {
++    sources = [ "url_request/url_request_ftp_fuzzer.cc" ]
++    deps = [
++      ":net_fuzzer_test_support",
++      ":test_support",
++      "//base",
++      "//net",
++    ]
++    dict = "data/fuzzer_dictionaries/net_url_request_ftp_fuzzer.dict"
++    seed_corpus = "data/fuzzer_data/net_url_request_ftp_fuzzer/"
++
++    # TODO(https://crbug.com/962087): Re-enable once source of timeout is
++    # understood (probably just needs to restrict maximum input size).
++    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
++  }
++}
++
+ fuzzer_test("net_unescape_url_component_fuzzer") {
+   sources = [ "base/unescape_url_component_fuzzer.cc" ]
+   deps = [
+diff --git a/net/DEPS b/net/DEPS
+index 1a05ec265e938..ad8fb0d882ecd 100644
+--- a/net/DEPS
++++ b/net/DEPS
+@@ -47,6 +47,14 @@ specific_include_rules = {
+     "+base/i18n",
+   ],
+ 
++  "ftp_util\\.cc": [
++    "+base/i18n",
++    "+third_party/icu",
++  ],
++  "ftp_directory_listing_parser\\.cc": [
++    "+base/i18n",
++  ],
++
+   "brotli_source_stream\\.cc": [
+     "+third_party/brotli",
+   ],
+diff --git a/net/base/auth.h b/net/base/auth.h
+index e80006ee9ac79..c5ddb3f652b4e 100644
+--- a/net/base/auth.h
++++ b/net/base/auth.h
+@@ -31,8 +31,8 @@ class NET_EXPORT AuthChallengeInfo {
+   // The service issuing the challenge.
+   url::SchemeHostPort challenger;
+ 
+-  // The authentication scheme used, such as "basic" or "digest". The encoding
+-  // is ASCII.
++  // The authentication scheme used, such as "basic" or "digest". If the
++  // |source| is FTP_SERVER, this is an empty string. The encoding is ASCII.
+   std::string scheme;
+ 
+   // The realm of the challenge. May be empty. The encoding is UTF-8.
+diff --git a/net/base/dir_header.html b/net/base/dir_header.html
+index a2421e94b4465..10539e9ee4a0a 100644
+--- a/net/base/dir_header.html
++++ b/net/base/dir_header.html
+@@ -81,6 +81,13 @@ function onHasParentDirectory() {
+   link.href = root + "..";
+ }
+ 
++function onListingParsingError() {
++  var box = document.getElementById("listingParsingErrorBox");
++  box.innerHTML = box.innerHTML.replace("LOCATION", encodeURI(document.location)
++      + "?raw");
++  box.style.display = "block";
++}
++
+ function sortTable(column) {
+   var theader = document.getElementById("theader");
+   var oldOrder = theader.cells[column].dataset.order || '1';
+@@ -191,6 +198,13 @@ window.addEventListener('DOMContentLoaded', onLoad);
+     margin-bottom: 10px;
+     padding-bottom: 10px;
+   }
++
++  #listingParsingErrorBox {
++    border: 1px solid black;
++    background: #fae691;
++    padding: 10px;
++    display: none;
++  }
+ </style>
+ 
+ <title id="title"></title>
+@@ -199,6 +213,8 @@ window.addEventListener('DOMContentLoaded', onLoad);
+ 
+ <body>
+ 
++<div id="listingParsingErrorBox">$i18nRaw{listingParsingErrorBoxText}</div>
++
+ <h1 id="header">$i18n{header}</h1>
+ 
+ <div id="parentDirLinkBox" style="display:none">
+diff --git a/net/base/net_error_list.h b/net/base/net_error_list.h
+index 52f3b5b7db346..104cf0b077f2a 100644
+--- a/net/base/net_error_list.h
++++ b/net/base/net_error_list.h
+@@ -18,7 +18,7 @@
+ //   300-399 HTTP errors
+ //   400-499 Cache errors
+ //   500-599 ?
+-//   600-699 <Obsolete: FTP errors>
++//   600-699 FTP errors
+ //   700-799 Certificate manager errors
+ //   800-899 DNS resolver errors
+ //   900-999 Blob errors
+@@ -975,14 +975,36 @@ NET_ERROR(HTTPENGINE_PROVIDER_IN_USE, -508)
+ // )
+ // LINT.IfChange
+ 
+-// *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
+-// *** Code -601 is reserved (was FTP_FAILED). ***
+-// *** Code -602 is reserved (was FTP_SERVICE_UNAVAILABLE). ***
+-// *** Code -603 is reserved (was FTP_TRANSFER_ABORTED). ***
+-// *** Code -604 is reserved (was FTP_FILE_BUSY). ***
+-// *** Code -605 is reserved (was FTP_SYNTAX_ERROR). ***
+-// *** Code -606 is reserved (was FTP_COMMAND_NOT_SUPPORTED). ***
+-// *** Code -607 is reserved (was FTP_BAD_COMMAND_SEQUENCE). ***
++// A generic error for failed FTP control connection command.
++// If possible, please use or add a more specific error code.
++NET_ERROR(FTP_FAILED, -601)
++
++// The server cannot fulfill the request at this point. This is a temporary
++// error.
++// FTP response code 421.
++NET_ERROR(FTP_SERVICE_UNAVAILABLE, -602)
++
++// The server has aborted the transfer.
++// FTP response code 426.
++NET_ERROR(FTP_TRANSFER_ABORTED, -603)
++
++// The file is busy, or some other temporary error condition on opening
++// the file.
++// FTP response code 450.
++NET_ERROR(FTP_FILE_BUSY, -604)
++
++// Server rejected our command because of syntax errors.
++// FTP response codes 500, 501.
++NET_ERROR(FTP_SYNTAX_ERROR, -605)
++
++// Server does not support the command we issued.
++// FTP response codes 502, 504.
++NET_ERROR(FTP_COMMAND_NOT_SUPPORTED, -606)
++
++// Server rejected our command because we didn't issue the commands in right
++// order.
++// FTP response code 503.
++NET_ERROR(FTP_BAD_COMMAND_SEQUENCE, -607)
+ 
+ // PKCS #12 import failed due to incorrect password.
+ NET_ERROR(PKCS12_IMPORT_BAD_PASSWORD, -701)
+diff --git a/net/base/port_util.cc b/net/base/port_util.cc
+index 49d0f744cc890..0dd86be37b172 100644
+--- a/net/base/port_util.cc
++++ b/net/base/port_util.cc
+@@ -174,6 +174,11 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
+     return true;
+   }
+ 
++  // FTP requests are permitted to use port 21.
++  if ((base::ToLowerASCII(url_scheme) == url::kFtpScheme) && port == 21) {
++    return true;
++  }
++
+   // Finally check against the generic list of restricted ports for all
+   // schemes.
+   for (int restricted_port : kRestrictedPorts) {
+diff --git a/net/docs/proxy.md b/net/docs/proxy.md
+index 0395e82155a2b..b5c4b68753487 100644
+--- a/net/docs/proxy.md
++++ b/net/docs/proxy.md
+@@ -109,6 +109,7 @@ about an HTTP proxy.
+ 
+ When using an HTTP proxy in Chrome, name resolution is always deferred to the
+ proxy. HTTP proxies can proxy `http://`, `https://`, `ws://` and `wss://` URLs.
++(Chromium's FTP support is deprecated, and HTTP proxies cannot proxy `ftp://` anymore)
+ 
+ Communication to HTTP proxy servers is insecure, meaning proxied `http://`
+ requests are sent in the clear. When proxying `https://` requests through an
+diff --git a/net/features.gni b/net/features.gni
+index 58807c2250c45..f190eef9b7a7c 100644
+--- a/net/features.gni
++++ b/net/features.gni
+@@ -16,6 +16,9 @@ declare_args() {
+   # used; or, Cronet is being built.
+   enable_websockets = use_blink && !is_cronet_build
+ 
++  # Disable FTP support.
++  disable_ftp_support = is_ios
++
+   # Enable Kerberos authentication. It is disabled by default on iOS, Fuchsia
+   # and Chromecast, at least for now. This feature needs configuration
+   # (krb5.conf and so on).
+diff --git a/net/proxy_resolution/pac_file_fetcher_impl.cc b/net/proxy_resolution/pac_file_fetcher_impl.cc
+index ca02480eed58b..a5c1a93d1e3a3 100644
+--- a/net/proxy_resolution/pac_file_fetcher_impl.cc
++++ b/net/proxy_resolution/pac_file_fetcher_impl.cc
+@@ -329,8 +329,8 @@ PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
+ }
+ 
+ bool PacFileFetcherImpl::IsUrlSchemeAllowed(const GURL& url) const {
+-  // Always allow http://, https://, and data:.
+-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("data"))
++  // Always allow http://, https://, data:, and ftp://.
++  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("ftp") || url.SchemeIs("data"))
+     return true;
+ 
+   // Disallow any other URL scheme.
+diff --git a/net/url_request/url_request.h b/net/url_request/url_request.h
+index 2d3a044c324ba..2f231d20d2b71 100644
+--- a/net/url_request/url_request.h
++++ b/net/url_request/url_request.h
+@@ -812,7 +812,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
+   }
+ 
+   // The number of bytes in the raw response body (before any decompression,
+-  // etc.). This is only available after the final Read completes.
++  // etc.). This is only available after the final Read completes. Not available
++  // for FTP responses.
+   int64_t received_response_content_length() const {
+     return received_response_content_length_;
+   }
+diff --git a/net/url_request/url_request_context.h b/net/url_request/url_request_context.h
+index fff6514cad269..137ce87221497 100644
+--- a/net/url_request/url_request_context.h
++++ b/net/url_request/url_request_context.h
+@@ -59,6 +59,10 @@ class URLRequest;
+ class URLRequestJobFactory;
+ class URLRequestContextBuilder;
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++class FtpAuthCache;
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+ #if BUILDFLAG(ENABLE_REPORTING)
+ class NetworkErrorLoggingService;
+ class PersistentReportingAndNelStore;
+@@ -260,6 +264,13 @@ class NET_EXPORT URLRequestContext final {
+   // no longer depend on network-bound URLRequestContexts.
+   handles::NetworkHandle bound_network() const { return bound_network_; }
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  void set_ftp_auth_cache(FtpAuthCache* auth_cache) {
++    ftp_auth_cache_ = auth_cache;
++  }
++  FtpAuthCache* ftp_auth_cache() { return ftp_auth_cache_; }
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+   void AssertCalledOnValidThread() {
+     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+   }
+@@ -393,6 +404,10 @@ class NET_EXPORT URLRequestContext final {
+ 
+   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  raw_ptr<FtpAuthCache> ftp_auth_cache_;
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+   std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
+       url_requests_;
+ 
+diff --git a/net/url_request/url_request_context_builder.cc b/net/url_request/url_request_context_builder.cc
+index ac789cee36945..658632147e350 100644
+--- a/net/url_request/url_request_context_builder.cc
++++ b/net/url_request/url_request_context_builder.cc
+@@ -60,6 +60,12 @@
+ #include "net/url_request/url_request_job_factory.h"
+ #include "url/url_constants.h"
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++#include "net/ftp/ftp_auth_cache.h"                // nogncheck
++#include "net/ftp/ftp_network_layer.h"             // nogncheck
++#include "net/url_request/ftp_protocol_handler.h"  // nogncheck
++#endif
++
+ #if BUILDFLAG(ENABLE_REPORTING)
+ #include "net/network_error_logging/network_error_logging_service.h"
+ #include "net/network_error_logging/persistent_reporting_and_nel_store.h"
+@@ -627,11 +633,23 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
+ 
+   std::unique_ptr<URLRequestJobFactory> job_factory =
+       std::make_unique<URLRequestJobFactory>();
++  // Adds caller-provided protocol handlers first so that these handlers are
++  // used over the ftp handler below.
+   for (auto& scheme_handler : protocol_handlers_) {
+     job_factory->SetProtocolHandler(scheme_handler.first,
+                                     std::move(scheme_handler.second));
+   }
+   protocol_handlers_.clear();
++
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  if (ftp_enabled_) {
++    context->set_ftp_auth_cache(new FtpAuthCache());
++    job_factory->SetProtocolHandler(
++        url::kFtpScheme, FtpProtocolHandler::Create(context->host_resolver(),
++                                                    context->ftp_auth_cache()));
++  }
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+   context->set_job_factory(std::move(job_factory));
+   return context;
+ }
+diff --git a/net/url_request/url_request_context_builder.h b/net/url_request/url_request_context_builder.h
+index d1ff7329e9fcb..36e4379236c1d 100644
+--- a/net/url_request/url_request_context_builder.h
++++ b/net/url_request/url_request_context_builder.h
+@@ -245,6 +245,11 @@ class NET_EXPORT URLRequestContextBuilder {
+   void set_http_user_agent_settings(
+       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  // Control support for ftp:// requests. By default it's disabled.
++  void set_ftp_enabled(bool enable) { ftp_enabled_ = enable; }
++#endif
++
+   // Sets a valid ProtocolHandler for a scheme.
+   // A ProtocolHandler already exists for |scheme| will be overwritten.
+   void SetProtocolHandler(
+@@ -517,6 +522,11 @@ class NET_EXPORT URLRequestContextBuilder {
+   std::string user_agent_;
+   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  // Include support for ftp:// requests.
++  bool ftp_enabled_ = false;
++#endif
++
+   bool http_cache_enabled_ = true;
+   bool cookie_store_set_by_client_ = false;
+   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
+diff --git a/net/url_request/url_request_job_factory.cc b/net/url_request/url_request_job_factory.cc
+index 091a592299eb8..8ba690c1c5f20 100644
+--- a/net/url_request/url_request_job_factory.cc
++++ b/net/url_request/url_request_job_factory.cc
+@@ -19,9 +19,9 @@ namespace {
+ 
+ URLRequestInterceptor* g_interceptor_for_testing = nullptr;
+ 
+-// TODO(mmenke): Look into removing this class and
+-// URLRequestJobFactory::ProtocolHandlers completely. The only other subclass
+-// is iOS-only.
++// TODO(mmenke): Once FTP support is removed, look into removing this class, and
++// URLRequestJobFactory::ProtocolHandlers completely. The only other subclass is
++// iOS-only.
+ class HttpProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
+  public:
+   // URLRequest::is_for_websockets() must match `is_for_websockets`, or requests
+diff --git a/net/url_request/url_request_test_util.h b/net/url_request/url_request_test_util.h
+index f9ce26e040d98..3a0101563c3d4 100644
+--- a/net/url_request/url_request_test_util.h
++++ b/net/url_request/url_request_test_util.h
+@@ -34,6 +34,7 @@
+ #include "net/cookies/cookie_util.h"
+ #include "net/disk_cache/disk_cache.h"
+ #include "net/first_party_sets/first_party_set_metadata.h"
++#include "net/ftp/ftp_network_layer.h"
+ #include "net/http/http_auth_handler_factory.h"
+ #include "net/http/http_cache.h"
+ #include "net/http/http_network_layer.h"
+diff --git a/net/url_request/url_request_unittest.cc b/net/url_request/url_request_unittest.cc
+index 67a31e9f8f029..b05c4659de983 100644
+--- a/net/url_request/url_request_unittest.cc
++++ b/net/url_request/url_request_unittest.cc
+@@ -172,10 +172,15 @@
+ 
+ #include <shlobj.h>
+ #include <wrl/client.h>
+-
+ #include "base/win/scoped_com_initializer.h"
+ #endif
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !BUILDFLAG(IS_ANDROID)
++#include "net/ftp/ftp_auth_cache.h"
++#include "net/ftp/ftp_network_layer.h"
++#include "net/url_request/ftp_protocol_handler.h"
++#endif
++
+ #if BUILDFLAG(IS_APPLE)
+ #include "base/mac/mac_util.h"
+ #endif
+@@ -219,6 +224,12 @@ const std::u16string kUser(u"user");
+ const base::FilePath::CharType kTestFilePath[] =
+     FILE_PATH_LITERAL("net/data/url_request_unittest");
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
++    !defined(OS_FUCHSIA)
++// Test file used in most FTP tests.
++const char kFtpTestFile[] = "BullRunSpeech.txt";
++#endif
++
+ // Tests load timing information in the case a fresh connection was used, with
+ // no proxy.
+ void TestLoadTimingNotReused(const LoadTimingInfo& load_timing_info,
+@@ -320,6 +331,29 @@ void TestLoadTimingCacheHitNoNetwork(const LoadTimingInfo& load_timing_info) {
+   EXPECT_TRUE(load_timing_info.proxy_resolve_end.is_null());
+ }
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
++    !defined(OS_FUCHSIA)
++// Tests load timing in the case that there is no HTTP response.  This can be
++// used to test in the case of errors or non-HTTP requests.
++void TestLoadTimingNoHttpResponse(const LoadTimingInfo& load_timing_info) {
++  EXPECT_FALSE(load_timing_info.socket_reused);
++  EXPECT_EQ(NetLogSource::kInvalidId, load_timing_info.socket_log_id);
++
++  // Only the request times should be non-null.
++  EXPECT_FALSE(load_timing_info.request_start_time.is_null());
++  EXPECT_FALSE(load_timing_info.request_start.is_null());
++
++  ExpectConnectTimingHasNoTimes(load_timing_info.connect_timing);
++
++  EXPECT_TRUE(load_timing_info.proxy_resolve_start.is_null());
++  EXPECT_TRUE(load_timing_info.proxy_resolve_end.is_null());
++  EXPECT_TRUE(load_timing_info.send_start.is_null());
++  EXPECT_TRUE(load_timing_info.send_end.is_null());
++  EXPECT_TRUE(load_timing_info.receive_headers_start.is_null());
++  EXPECT_TRUE(load_timing_info.receive_headers_end.is_null());
++}
++#endif
++
+ // Job that allows monitoring of its priority.
+ class PriorityMonitoringURLRequestJob : public URLRequestTestJob {
+  public:
+@@ -11568,6 +11602,404 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
+ }
+ #endif  // !BUILDFLAG(IS_IOS)
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID) && \
++    !defined(OS_FUCHSIA)
++// FTP uses a second TCP connection with the port number allocated dynamically
++// on the server side, so it would be hard to make RemoteTestServer proxy FTP
++// connections reliably. FTP tests are disabled on platforms that use
++// RemoteTestServer. See http://crbug.com/495220
++class URLRequestTestFTP : public URLRequestTest {
++ public:
++  URLRequestTestFTP()
++      : ftp_test_server_(SpawnedTestServer::TYPE_FTP,
++                         base::FilePath(kTestFilePath)) {
++    // Can't use |default_context_|'s HostResolver to set up the
++    // FTPTransactionFactory because it hasn't been created yet.
++    default_context().set_host_resolver(&host_resolver_);
++  }
++
++  // URLRequestTest interface:
++  void SetUpFactory() override {
++    // Add FTP support to the default URLRequestContext.
++    job_factory_->SetProtocolHandler(
++        "ftp", FtpProtocolHandler::Create(&host_resolver_, &ftp_auth_cache_));
++  }
++
++  std::string GetTestFileContents() {
++    base::FilePath path;
++    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
++    path = path.Append(kTestFilePath);
++    path = path.AppendASCII(kFtpTestFile);
++    std::string contents;
++    EXPECT_TRUE(base::ReadFileToString(path, &contents));
++    return contents;
++  }
++
++ protected:
++  MockHostResolver host_resolver_;
++  FtpAuthCache ftp_auth_cache_;
++
++  SpawnedTestServer ftp_test_server_;
++};
++
++// Make sure an FTP request using an unsafe ports fails.
++TEST_F(URLRequestTestFTP, UnsafePort) {
++  GURL url("ftp://127.0.0.1:7");
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(ERR_UNSAFE_PORT, d.request_status());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPDirectoryListing) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURL("/"), DEFAULT_PRIORITY, &d,
++        TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_LT(0, d.bytes_received());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
++              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
++              r->GetResponseRemoteEndpoint().port());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPGetTestAnonymous) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, &d,
++        TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d.data_received());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
++              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
++              r->GetResponseRemoteEndpoint().port());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPMimeType) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  struct {
++    const char* path;
++    const char* mime;
++  } test_cases[] = {
++      {"/", "text/vnd.chromium.ftp-dir"},
++      {kFtpTestFile, "application/octet-stream"},
++  };
++
++  for (const auto test : test_cases) {
++    TestDelegate d;
++
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURL(test.path), DEFAULT_PRIORITY, &d,
++        TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    std::string mime;
++    r->GetMimeType(&mime);
++    EXPECT_EQ(test.mime, mime);
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPGetTest) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
++                                                   "chrome"),
++        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d.data_received());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().host(),
++              r->GetResponseRemoteEndpoint().ToStringWithoutPort());
++    EXPECT_EQ(ftp_test_server_.host_port_pair().port(),
++              r->GetResponseRemoteEndpoint().port());
++
++    LoadTimingInfo load_timing_info;
++    r->GetLoadTimingInfo(&load_timing_info);
++    TestLoadTimingNoHttpResponse(load_timing_info);
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCheckWrongPassword) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
++                                                   "wrong_password"),
++        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(d.bytes_received(), 0);
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCheckWrongPasswordRestart) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  // Set correct login credentials. The delegate will be asked for them when
++  // the initial login with wrong credentials will fail.
++  d.set_credentials(AuthCredentials(kChrome, kChrome));
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
++                                                   "wrong_password"),
++        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d.data_received());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCheckWrongUser) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "wrong_user",
++                                                   "chrome"),
++        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(0, d.bytes_received());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCheckWrongUserRestart) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  // Set correct login credentials. The delegate will be asked for them when
++  // the initial login with wrong credentials will fail.
++  d.set_credentials(AuthCredentials(kChrome, kChrome));
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "wrong_user",
++                                                   "chrome"),
++        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d.RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d.response_started_count());
++    EXPECT_FALSE(d.received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d.data_received());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCacheURLCredentials) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  std::unique_ptr<TestDelegate> d(new TestDelegate);
++  {
++    // Pass correct login identity in the URL.
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
++                                                   "chrome"),
++        DEFAULT_PRIORITY, d.get(), TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d->RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d->response_started_count());
++    EXPECT_FALSE(d->received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d->data_received());
++  }
++
++  d = std::make_unique<TestDelegate>();
++  {
++    // This request should use cached identity from previous request.
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, d.get(),
++        TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d->RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d->response_started_count());
++    EXPECT_FALSE(d->received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d->data_received());
++  }
++}
++
++TEST_F(URLRequestTestFTP, FTPCacheLoginBoxCredentials) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  std::unique_ptr<TestDelegate> d(new TestDelegate);
++  // Set correct login credentials. The delegate will be asked for them when
++  // the initial login with wrong credentials will fail.
++  d->set_credentials(AuthCredentials(kChrome, kChrome));
++  {
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURLWithUserAndPassword(kFtpTestFile, "chrome",
++                                                   "wrong_password"),
++        DEFAULT_PRIORITY, d.get(), TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d->RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d->response_started_count());
++    EXPECT_FALSE(d->received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d->data_received());
++  }
++
++  // Use a new delegate without explicit credentials. The cached ones should be
++  // used.
++  d = std::make_unique<TestDelegate>();
++  {
++    // Don't pass wrong credentials in the URL, they would override valid cached
++    // ones.
++    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
++        ftp_test_server_.GetURL(kFtpTestFile), DEFAULT_PRIORITY, d.get(),
++        TRAFFIC_ANNOTATION_FOR_TESTS));
++    r->Start();
++    EXPECT_TRUE(r->is_pending());
++
++    d->RunUntilComplete();
++
++    EXPECT_FALSE(r->is_pending());
++    EXPECT_EQ(1, d->response_started_count());
++    EXPECT_FALSE(d->received_data_before_response());
++    EXPECT_EQ(GetTestFileContents(), d->data_received());
++  }
++}
++
++TEST_F(URLRequestTestFTP, RawBodyBytes) {
++  ASSERT_TRUE(ftp_test_server_.Start());
++
++  TestDelegate d;
++  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
++      ftp_test_server_.GetURL("simple.html"), DEFAULT_PRIORITY, &d,
++      TRAFFIC_ANNOTATION_FOR_TESTS));
++  req->Start();
++  d.RunUntilComplete();
++
++  EXPECT_EQ(6, req->GetRawBodyBytes());
++}
++
++TEST_F(URLRequestTestFTP, FtpAuthCancellation) {
++  ftp_test_server_.set_no_anonymous_ftp_user(true);
++  ASSERT_TRUE(ftp_test_server_.Start());
++  TestDelegate d;
++  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
++      ftp_test_server_.GetURL("simple.html"), DEFAULT_PRIORITY, &d,
++      TRAFFIC_ANNOTATION_FOR_TESTS));
++  req->Start();
++  d.RunUntilComplete();
++
++  ASSERT_TRUE(d.auth_required_called());
++  EXPECT_EQ(OK, d.request_status());
++  EXPECT_TRUE(req->auth_challenge_info());
++  std::string mime_type;
++  req->GetMimeType(&mime_type);
++  EXPECT_EQ("text/plain", mime_type);
++  EXPECT_EQ("", d.data_received());
++  EXPECT_EQ(-1, req->GetExpectedContentSize());
++}
++
++class URLRequestTestFTPOverHttpProxy : public URLRequestTestFTP {
++ public:
++  // Test interface:
++  void SetUp() override {
++    proxy_resolution_service_ = ConfiguredProxyResolutionService::CreateFixed(
++        "localhost", TRAFFIC_ANNOTATION_FOR_TESTS);
++    default_context_->set_proxy_resolution_service(
++        proxy_resolution_service_.get());
++    URLRequestTestFTP::SetUp();
++  }
++
++ private:
++  std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
++};
++
++// Check that FTP is not supported over an HTTP proxy.
++TEST_F(URLRequestTestFTPOverHttpProxy, Fails) {
++  TestDelegate delegate;
++  std::unique_ptr<URLRequest> request(
++      default_context_->CreateRequest(GURL("ftp://foo.test/"), DEFAULT_PRIORITY,
++                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
++  request->Start();
++  delegate.RunUntilComplete();
++
++  EXPECT_THAT(delegate.request_status(), IsError(ERR_NO_SUPPORTED_PROXIES));
++}
++
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+ TEST_F(URLRequestTest, NetworkAccessedSetOnHostResolutionFailure) {
+   auto context_builder = CreateTestURLRequestContextBuilder();
+   auto host_resolver = std::make_unique<MockHostResolver>();
+diff --git a/services/network/network_context.cc b/services/network/network_context.cc
+index 92f7d50e82808..b6a2656975adb 100644
+--- a/services/network/network_context.cc
++++ b/services/network/network_context.cc
+@@ -183,6 +183,10 @@
+ #include "services/network/sct_auditing/sct_auditing_handler.h"
+ #endif  // BUILDFLAG(IS_CT_SUPPORTED)
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++#include "net/ftp/ftp_auth_cache.h"
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+ #if BUILDFLAG(ENABLE_WEBSOCKETS)
+ #include "services/network/websocket.h"
+ #include "services/network/websocket_factory.h"
+@@ -2617,6 +2621,14 @@ void NetworkContext::AddAuthCacheEntry(
+     const net::NetworkAnonymizationKey& network_anonymization_key,
+     const net::AuthCredentials& credentials,
+     AddAuthCacheEntryCallback callback) {
++  if (challenge.challenger.scheme() == url::kFtpScheme) {
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++    net::FtpAuthCache* auth_cache = url_request_context_->ftp_auth_cache();
++    auth_cache->Add(challenge.challenger.GetURL(), credentials);
++#else
++    NOTREACHED();
++#endif  // BUILDFLAG(DISABLE_FTP_SUPPORT)
++  } else {
+   net::HttpAuthCache* http_auth_cache =
+       url_request_context_->http_transaction_factory()
+           ->GetSession()
+@@ -2628,6 +2640,7 @@ void NetworkContext::AddAuthCacheEntry(
+                        net::HttpAuth::StringToScheme(challenge.scheme),
+                        network_anonymization_key, challenge.challenge,
+                        credentials, challenge.path);
++  }
+   std::move(callback).Run();
+ }
+ 
+@@ -3023,6 +3036,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
+   }
+   builder.set_hsts_policy_bypass_list(params_->hsts_policy_bypass_list);
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  builder.set_ftp_enabled(params_->enable_ftp_url_support);
++#else  // BUILDFLAG(DISABLE_FTP_SUPPORT)
++  DCHECK(!params_->enable_ftp_url_support);
++#endif
++
+ #if BUILDFLAG(ENABLE_REPORTING)
+   bool reporting_enabled = base::FeatureList::IsEnabled(features::kReporting);
+   if (reporting_enabled) {
+diff --git a/services/network/network_context_unittest.cc b/services/network/network_context_unittest.cc
+index 2294ebc5d7bcc..66ea8b91ff6d6 100644
+--- a/services/network/network_context_unittest.cc
++++ b/services/network/network_context_unittest.cc
+@@ -202,6 +202,10 @@
+ #include "url/scheme_host_port.h"
+ #include "url/url_constants.h"
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++#include "net/ftp/ftp_auth_cache.h"
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+ #if BUILDFLAG(ENABLE_REPORTING)
+ #include "net/network_error_logging/network_error_logging_service.h"
+ #include "net/reporting/reporting_cache.h"
+@@ -1008,7 +1012,8 @@ TEST_F(NetworkContextTest, UnhandedProtocols) {
+       GURL("file:///not/a/path/that/leads/anywhere/but/it/should/not/matter/"
+            "anyways"),
+ 
+-      // FTP is not supported natively by Chrome.
++      // FTP is handled by the network service on some platforms, but support
++      // for it is not enabled by default.
+       GURL("ftp://foo.test/"),
+   };
+ 
+@@ -8386,6 +8391,37 @@ TEST_F(NetworkContextTest, BlockAllCookies) {
+   EXPECT_EQ("None", response_body);
+ }
+ 
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++TEST_F(NetworkContextTest, AddFtpAuthCacheEntry) {
++  GURL url("ftp://example.test/");
++  const char16_t kUsername[] = u"test_user";
++  const char16_t kPassword[] = u"test_pass";
++  mojom::NetworkContextParamsPtr params =
++      CreateNetworkContextParamsForTesting();
++  params->enable_ftp_url_support = true;
++  std::unique_ptr<NetworkContext> network_context =
++      CreateContextWithParams(std::move(params));
++  net::AuthChallengeInfo challenge;
++  challenge.is_proxy = false;
++  challenge.challenger = url::Origin::Create(url);
++
++  ASSERT_TRUE(network_context->url_request_context()->ftp_auth_cache());
++  ASSERT_FALSE(
++      network_context->url_request_context()->ftp_auth_cache()->Lookup(url));
++  base::RunLoop run_loop;
++  network_context->AddAuthCacheEntry(challenge, net::NetworkIsolationKey(),
++                                     net::AuthCredentials(kUsername, kPassword),
++                                     run_loop.QuitClosure());
++  run_loop.Run();
++  net::FtpAuthCache::Entry* entry =
++      network_context->url_request_context()->ftp_auth_cache()->Lookup(url);
++  ASSERT_TRUE(entry);
++  EXPECT_EQ(url, entry->origin);
++  EXPECT_EQ(kUsername, entry->credentials.username());
++  EXPECT_EQ(kPassword, entry->credentials.password());
++}
++#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
++
+ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
+   std::unique_ptr<NetworkContext> network_context =
+       CreateContextWithParams(CreateNetworkContextParamsForTesting());
+diff --git a/services/network/public/cpp/features.cc b/services/network/public/cpp/features.cc
+index a5e8a9f06fd13..1797d045329e2 100644
+--- a/services/network/public/cpp/features.cc
++++ b/services/network/public/cpp/features.cc
+@@ -188,6 +188,12 @@ BASE_FEATURE_PARAM(bool,
+                    "AcceptCHOffloadForSubframe",
+                    false);
+ 
++// Enables support for FTP URLs. When disabled FTP URLs will behave the same as
++// any other URL scheme that's unknown to the UA. See https://crbug.com/333943
++BASE_FEATURE(kFtpProtocol,
++                "FtpProtocol",
++             base::FEATURE_ENABLED_BY_DEFAULT);
++
+ // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
+ BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
+              base::FEATURE_DISABLED_BY_DEFAULT);
+diff --git a/services/network/public/cpp/features.h b/services/network/public/cpp/features.h
+index 3d11d09888642..b387be2374012 100644
+--- a/services/network/public/cpp/features.h
++++ b/services/network/public/cpp/features.h
+@@ -190,6 +190,9 @@ BASE_DECLARE_FEATURE(kFrameTopHeader);
+ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+ BASE_DECLARE_FEATURE(kFrameAncestorsHeader);
+ 
++COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
++BASE_DECLARE_FEATURE(kFtpProtocol);
++
+ // Updates the request body, headers, and referrer policy for CORS
+ // redirects, following 4.4. HTTP-redirect fetch:
+ // https://fetch.spec.whatwg.org/#http-redirect-fetch
+diff --git a/services/network/public/cpp/simple_url_loader.cc b/services/network/public/cpp/simple_url_loader.cc
+index 3cfc70a84e9d0..c7b668c282908 100644
+--- a/services/network/public/cpp/simple_url_loader.cc
++++ b/services/network/public/cpp/simple_url_loader.cc
+@@ -1849,7 +1849,7 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
+ 
+   // Assume a 200 response unless headers were received indicating otherwise.
+   // No headers indicates this was not a real HTTP response (Could be a file
+-  // URL, chrome URL, response could have been provided by something else, etc).
++  // URL, chrome URL, FTP, response could have been provided by something else, etc).
+   int response_code = 200;
+   if (response_head->headers)
+     response_code = response_head->headers->response_code();
+diff --git a/services/network/public/cpp/url_util.cc b/services/network/public/cpp/url_util.cc
+index 999ff62b99a18..77d7d237e79be 100644
+--- a/services/network/public/cpp/url_util.cc
++++ b/services/network/public/cpp/url_util.cc
+@@ -4,12 +4,27 @@
+ 
+ #include "services/network/public/cpp/url_util.h"
+ 
++#include "base/feature_list.h"
++#include "build/build_config.h"
++#include "net/net_buildflags.h"
++#include "services/network/public/cpp/features.h"
++#include "services/network/public/cpp/is_potentially_trustworthy.h"
+ #include "url/gurl.h"
++#include "url/url_constants.h"
+ 
+ namespace network {
+ 
+ bool IsURLHandledByNetworkService(const GURL& url) {
+-  return (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS());
++  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS()) {
++    return true;
++  }
++#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
++  if (url.SchemeIs(url::kFtpScheme) &&
++      base::FeatureList::IsEnabled(features::kFtpProtocol)) {
++    return true;
++  }
++#endif
++  return false;
+ }
+ 
+ GURL SerializeResponseUrlForReporting(const GURL& url) {
+diff --git a/services/network/public/mojom/network_context.mojom b/services/network/public/mojom/network_context.mojom
+index f587cab60a3ab..7b2b6539d96f0 100644
+--- a/services/network/public/mojom/network_context.mojom
++++ b/services/network/public/mojom/network_context.mojom
+@@ -403,6 +403,10 @@ struct NetworkContextParams {
+   // used to fetch PAC scripts. Note that currently data URLs are always enabled
+   // and file URLs are always disabled.
+ 
++  // True if ftp URLs should be supported.
++  // Must be false if built without FTP support.
++  bool enable_ftp_url_support = false;
++
+   // Whether or not to check the Android platform's cleartext policy for
+   // requests. Under some conditions, Android may advise us to block cleartext
+   // traffic.
+@@ -1663,12 +1667,14 @@ interface NetworkContext {
+   LoadHttpAuthCacheProxyEntries(mojo_base.mojom.UnguessableToken cache_key)
+       => ();
+ 
+-  // Adds an entry to the HttpAuthCache. `network_anonymization_key` is the
+-  // NetworkAnonymizationKey to restrict the credentials to, and is only
+-  // respected for server (not proxy) HTTP auth and only when the NetworkService
+-  // was configured to split the auth cache by NetworkAnonymizationKey.
+-  // `challenge` may not necessarily contain a stateful challenge that requires
+-  // a persistent connection, allowing the cache to be pre-populated.
++  // Adds an entry to the HttpAuthCache or FtpAuthCache (determined by whether
++  // the |challenger| field within |challenge| is an ftp:// URL).
++  // |network_isolation_key| is the NetworkIsolationKey to restrict the
++  // credentials to, and is only respected for server (not proxy) HTTP auth
++  // and only when the NetworkService was configured to split the auth cache by
++  // NetworkIsolationKey. |challenge| may not necessarily contain a stateful
++  // challenge that requires a persistent connection, allowing the cache to be
++  // pre-populated.
+   AddAuthCacheEntry(AuthChallengeInfo challenge,
+                     NetworkAnonymizationKey network_anonymization_key,
+                     AuthCredentials credentials) => ();
+diff --git a/third_party/blink/public/web/web_document_loader.h b/third_party/blink/public/web/web_document_loader.h
+index b6da61a76551f..2012846a800d7 100644
+--- a/third_party/blink/public/web/web_document_loader.h
++++ b/third_party/blink/public/web/web_document_loader.h
+@@ -134,6 +134,9 @@ class BLINK_EXPORT WebDocumentLoader {
+   // committed in this WebDocumentLoader had transient activation.
+   virtual bool LastNavigationHadTransientUserActivation() const = 0;
+ 
++  // Returns true when the document is a FTP directory.
++  virtual bool IsListingFtpDirectory() const = 0;
++
+   // Sets the CodeCacheHosts for this loader.
+   virtual void SetCodeCacheHost(
+       CrossVariantMojoRemote<mojom::CodeCacheHostInterfaceBase> code_cache_host,
+diff --git a/third_party/blink/renderer/core/loader/document_loader.cc b/third_party/blink/renderer/core/loader/document_loader.cc
+index 3ccc9c3fdc66a..20fba35991591 100644
+--- a/third_party/blink/renderer/core/loader/document_loader.cc
++++ b/third_party/blink/renderer/core/loader/document_loader.cc
+@@ -167,6 +167,7 @@
+ #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
+ #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+ #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
++#include "third_party/blink/renderer/platform/loader/ftp_directory_listing.h"
+ #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+ #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
+ #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
+@@ -410,6 +411,7 @@ struct SameSizeAsDocumentLoader
+   bool has_text_fragment_token;
+   std::optional<String> internal_scroll_to_text_fragment;
+   bool was_discarded;
++  bool listing_ftp_directory;
+   bool loading_main_document_from_mhtml_archive;
+   bool loading_srcdoc;
+   KURL fallback_base_url;
+@@ -1324,7 +1326,7 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
+   DCHECK(!frame_->GetPage()->Paused());
+   time_of_last_data_received_ = clock_->NowTicks();
+ 
+-  if (loading_main_document_from_mhtml_archive_) {
++  if (listing_ftp_directory_ || loading_main_document_from_mhtml_archive_) {
+     // 1) Ftp directory listings accumulate data buffer and transform it later
+     //    to the actual document content.
+     // 2) Mhtml archives accumulate data buffer and parse it as mhtml later
+@@ -1445,6 +1447,12 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
+          MainThreadDebugger::Instance(frame_->DomWindow()->GetIsolate())
+              ->IsPaused());
+ 
++  if (listing_ftp_directory_) {
++    data_buffer_ = GenerateFtpDirectoryListingHtml(
++        response_.CurrentRequestUrl(), data_buffer_.get());
++    ProcessDataBuffer();
++  }
++
+   if (loading_main_document_from_mhtml_archive_ && state_ < kCommitted) {
+     // The browser process should block any navigation to an MHTML archive
+     // inside iframes. See NavigationRequest::OnResponseStarted().
+@@ -1585,6 +1593,17 @@ DocumentPolicy::ParsedDocumentPolicy DocumentLoader::CreateDocumentPolicy() {
+ void DocumentLoader::HandleResponse() {
+   DCHECK(frame_);
+ 
++  if (response_.CurrentRequestUrl().ProtocolIs("ftp") &&
++      response_.MimeType() == "text/vnd.chromium.ftp-dir") {
++    if (response_.CurrentRequestUrl().Query() == "raw") {
++      // Interpret the FTP LIST command result as text.
++      response_.SetMimeType(AtomicString("text/plain"));
++    } else {
++      // FTP directory listing: Make up an HTML for the entries.
++      listing_ftp_directory_ = true;
++      response_.SetMimeType(AtomicString("text/html"));
++    }
++  }
+   if (response_.IsHTTP() &&
+       !network::IsSuccessfulStatus(response_.HttpStatusCode())) {
+     DCHECK(!IsA<HTMLObjectElement>(frame_->Owner()));
+diff --git a/third_party/blink/renderer/core/loader/document_loader.h b/third_party/blink/renderer/core/loader/document_loader.h
+index ee90152234391..84d438a503657 100644
+--- a/third_party/blink/renderer/core/loader/document_loader.h
++++ b/third_party/blink/renderer/core/loader/document_loader.h
+@@ -366,6 +366,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
+     return devtools_navigation_token_;
+   }
+ 
++  bool IsListingFtpDirectory() const override { return listing_ftp_directory_; }
++
+   UseCounterImpl& GetUseCounter() { return use_counter_; }
+ 
+   PrefetchedSignedExchangeManager* GetPrefetchedSignedExchangeManager() const;
+@@ -784,6 +786,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
+   // See WebNavigationParams for definition.
+   const bool was_discarded_ = false;
+ 
++  bool listing_ftp_directory_ = false;
++
+   // True when loading the main document from the MHTML archive. It implies an
+   // |archive_| to be created. Nested documents will also inherit from the same
+   // |archive_|, but won't have |loading_main_document_from_mhtml_archive_| set.
+diff --git a/third_party/blink/renderer/platform/loader/BUILD.gn b/third_party/blink/renderer/platform/loader/BUILD.gn
+index 31a834fa1ec36..14d61f73ea0e6 100644
+--- a/third_party/blink/renderer/platform/loader/BUILD.gn
++++ b/third_party/blink/renderer/platform/loader/BUILD.gn
+@@ -176,6 +176,8 @@ blink_platform_sources("loader") {
+     "fetch/worker_resource_timing_notifier.h",
+     "integrity_report.cc",
+     "integrity_report.h",
++    "ftp_directory_listing.cc",
++    "ftp_directory_listing.h",
+     "link_header.cc",
+     "link_header.h",
+     "mixed_content.cc",
+@@ -261,6 +263,7 @@ source_set("unit_tests") {
+     "fetch/url_loader/sync_load_context_unittest.cc",
+     "fetch/url_loader/url_loader_unittest.cc",
+     "fetch/url_loader/worker_main_script_loader_unittest.cc",
++    "ftp_directory_listing_test.cc",
+     "link_header_test.cc",
+     "static_data_navigation_body_loader_test.cc",
+     "subresource_integrity_test.cc",

@@ -25,6 +25,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/parse_number.h"
 #include "net/base/port_util.h"
@@ -666,7 +667,9 @@ int FtpNetworkTransaction::DoCtrlResolveHost() {
 
   resolve_request_ =
       resolver_->CreateRequest(url::SchemeHostPort(request_->url),
-                               NetworkAnonymizationKey(), net_log_, std::nullopt);
+                               NetworkAnonymizationKey(),
+                               handles::kInvalidNetworkHandle, net_log_,
+                               std::nullopt);
   return resolve_request_->Start(base::BindOnce(
       &FtpNetworkTransaction::OnIOComplete, base::Unretained(this)));
 }
@@ -684,8 +687,9 @@ int FtpNetworkTransaction::DoCtrlConnect() {
 
   DCHECK(resolve_request_ && !resolve_request_->GetAddressResults().empty());
   ctrl_socket_ = socket_factory_->CreateTransportClientSocket(
-      AddressList(resolve_request_->GetAddressResults()), nullptr,
-      network_quality_estimator, net_log_.net_log(), net_log_.source());
+      AddressList(resolve_request_->GetAddressResults()),
+      handles::kInvalidNetworkHandle, nullptr, network_quality_estimator,
+      net_log_.net_log(), net_log_.source());
   net_log_.AddEventReferencingSource(NetLogEventType::FTP_CONTROL_CONNECTION,
                                      ctrl_socket_->NetLog().source());
   return ctrl_socket_->Connect(io_callback_);
@@ -1240,8 +1244,8 @@ int FtpNetworkTransaction::DoDataConnect() {
   NetworkQualityEstimator* network_quality_estimator = nullptr;
 
   data_socket_ = socket_factory_->CreateTransportClientSocket(
-      data_address, nullptr, network_quality_estimator, net_log_.net_log(),
-      net_log_.source());
+      data_address, handles::kInvalidNetworkHandle, nullptr,
+      network_quality_estimator, net_log_.net_log(), net_log_.source());
   net_log_.AddEventReferencingSource(NetLogEventType::FTP_DATA_CONNECTION,
                                      data_socket_->NetLog().source());
   return data_socket_->Connect(io_callback_);

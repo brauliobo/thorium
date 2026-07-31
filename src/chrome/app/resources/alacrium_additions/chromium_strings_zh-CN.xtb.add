@@ -1,0 +1,58 @@
+<translation id="6170145535196286635">当某个网站请求以私密方式预加载其网页上的链接时，Alacrium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
+<translation id="469847031616755573">Alacrium 是您的默认浏览器</translation>
+<translation id="9121116283800901015">关于 Alacrium</translation>
+<translation id="7557415942066581350">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Alacrium</translation>
+<translation id="8063674192889594521">设置您的新 Alacrium 个人资料</translation>
+<translation id="2813532507332782105">Alacrium 的安全工具</translation>
+<translation id="5404516918685923379">检查 Alacrium 中重要的隐私控制设置和安全控件</translation>
+<translation id="391022854039785855">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Alacrium 中退出账号<ph name="END_LINK" />。</translation>
+<translation id="232337676435179638">关闭此功能后，您无需登录 Alacrium 即可登录 Gmail 等 Google 网站</translation>
+<translation id="3879276044795274924">自定义 Alacrium</translation>
+<translation id="6349701846617734224">借助 <ph name="BEGIN_LINK" />Alacrium 中的工具<ph name="END_LINK" />，您可以安全地浏览并掌控个人数据的安全</translation>
+<translation id="113825514187113500">在 Alacrium 中</translation>
+<translation id="2513495859821894442">如需获取您所有设备上的密码等信息，请登录 Alacrium</translation>
+<translation id="1290370037980749495">提高 Alacrium 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
+<translation id="3203458745325150724">您的 Alacrium</translation>
+<translation id="3892055234200984404">关于 Alacrium(&amp;T)</translation>
+<translation id="8312332850957380094">其他 Alacrium 个人资料</translation>
+<translation id="2823243626069255310">自定义您的新 Alacrium 个人资料</translation>
+<translation id="7057723382073894700">V8 是 Alacrium 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
+<translation id="9073817226409915222">关闭 Alacrium 后继续运行后台应用</translation>
+<translation id="5737116114768420447">管理 Alacrium 个人资料</translation>
+<translation id="3390772469177266069">如有任何事项需要您审核，Alacrium 会通知您</translation>
+<translation id="253414695030364725">Alacrium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
+<translation id="1965458093883218976">了解 Alacrium 如何保障您的安全</translation>
+<translation id="6097413908033623736">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Alacrium</translation>
+<translation id="7153173282073382515">Alacrium 无痕模式</translation>
+<translation id="1861871537231630745">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Alacrium 警告。</translation>
+<translation id="8182056223343645142">退出 Alacrium</translation>
+<translation id="4860412983011031251">获取有关 Alacrium 的帮助</translation>
+<translation id="6079265919870015811">添加 Alacrium 个人资料</translation>
+<translation id="7473833913849364138">Alacrium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
+<translation id="898934820356659708">如果您还分享 Alacrium 使用情况报告，这些报告会包含您访问过的网址</translation>
+<translation id="9072534646955460921">借助 Alacrium 个人资料，您可将所有 Alacrium 内容分门别类。您可为朋友和家人创建专属资料，或者将工作和娱乐用资料分开。</translation>
+<translation id="4308905027810063387">退出 Alacrium</translation>
+<translation id="6312135329022974196">其他 Alacrium 个人资料</translation>
+<translation id="8828163608353368128">允许登录 Alacrium</translation>
+<translation id="6497325017313227277">从Alacrium中移除</translation>
+<translation id="8315496929814159292">将Alacrium设为默认浏览器</translation>
+<translation id="438883585792992435">Alacrium 会释放闲置标签页占用的内存。这可让活跃标签页和其他应用获得更多计算机资源，并让 Alacrium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。<ph name="BEGIN_LINK" />详细了解省内存模式<ph name="END_LINK" /></translation>
+<translation id="1318664233874758685">Alacrium 会定期进行检查，以确保您的浏览器使用了最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
+<translation id="4212981493728012253">为保护您的数据，对于您近期未访问的网站，请允许 Alacrium 移除网站权限。此操作不会停用通知功能。</translation>
+<translation id="3224040524634124542">如果您允许使用 Cookie，Alacrium 便可能会使用 Cookie 进行预加载</translation>
+<translation id="1967056554017864811">自定义您的 Alacrium 个人资料</translation>
+<translation id="682714496634566410">请为您的 Alacrium 个人资料命名</translation>
+<translation id="1927215335595997320">Alacrium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
+<translation id="4344849281720725205">如果您还将书签保存在 Google 账号中，则可在 Alacrium 中跟踪商品价格，并在降价时收到通知</translation>
+<translation id="2905944704289173754">在您的所有设备上同步并个性化设置 Alacrium</translation>
+<translation id="7023976647734322618">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Alacrium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
+<translation id="3124765553592510724">当您在地址栏或搜索框中输入内容时，Alacrium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
+<translation id="5501994443630499490">开启 Alacrium 的 JavaScript 和 WebAssembly 引擎额外保护功能</translation>
+<translation id="3597078885567529815">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Alacrium 会向您发出警告<ph name="END_LINK" /></translation>
+<translation id="6539171476340543682">您需要先保存密码，然后才能使用 Alacrium 的密码检查功能</translation>
+<translation id="5422284534340886571">添加 Alacrium 个人资料</translation>
+<translation id="5346310914638900016">管理 Alacrium 个人资料</translation>
+<translation id="2601544977861663592">登录 Alacrium</translation>
+<translation id="4933700843989736491">登录其他 Google 服务时登录 Alacrium</translation>
+<translation id="7886351526956375471">谁在使用 Alacrium？</translation>
+<translation id="6618835206810857815">版权所有 <ph name="YEAR" /> Alex313031。保留所有权利。</translation>

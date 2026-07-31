@@ -411,7 +411,7 @@ config("compiler") {
       }
     }
 
-    # ADDED BY ALEX313031 FOR THORIUM
+    # ADDED BY ALEX313031 FOR ALACRIUM
     if (is_clang && is_android && !is_ubsan && !is_ubsan_security) {
       cflags += [ "-fwrapv" ]
     }
@@ -1209,11 +1209,9 @@ config("thinlto_optimize_default") {
 
     if (is_win) {
       ldflags = [ "/opt:lldlto=" + lto_opt_level ]
-      ldflags += [ "-mllvm:-enable-pre=false", ]
       ldflags += [ "-opt:lldltocgo=" + lto_opt_level ]
     } else {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
-      ldflags += [ "-Wl,-mllvm,-enable-pre=false", ]
       ldflags += [ "-Wl,--lto-CGO" + lto_opt_level ]
     }
 
@@ -1248,11 +1246,9 @@ config("thinlto_optimize_max") {
 
     if (is_win) {
       ldflags = [ "/opt:lldlto=" + lto_opt_level ]
-      ldflags += [ "-mllvm:-enable-pre=false", ]
       ldflags += [ "-opt:lldltocgo=" + lto_opt_level ]
     } else {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
-      ldflags += [ "-Wl,-mllvm,-enable-pre=false", ]
       ldflags += [ "-Wl,--lto-CGO" + lto_opt_level ]
     }
 
@@ -2627,8 +2623,8 @@ config("no_incompatible_pointer_warnings") {
   }
 }
 
-# Thorium SIMD optimizations
-config("thorium_simd_optimization") {
+# Alacrium SIMD optimizations
+config("alacrium_simd_optimization") {
   cflags = []
   ldflags = []
   if (current_cpu == "x86") {

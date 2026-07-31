@@ -22,7 +22,7 @@ def try_run(command):
 
 
 def display_help():
-    print("\nScript to make a portable Thorium .zip for Windows.\n")
+    print("\nScript to make a portable Alacrium .zip for Windows.\n")
 
 
 if "--help" in sys.argv:
@@ -31,13 +31,18 @@ if "--help" in sys.argv:
 
 
 def copy_installer():
-    cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
+    cr_src_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "chromium",
+        "src",
+    )
     installer_files = [
-        "thorium_mini_installer.exe",
-        "thorium_AVX_mini_installer.exe",
-        "thorium_AVX2_mini_installer.exe",
-        "thorium_SSE3_mini_installer.exe",
-        "thorium_SSE4_mini_installer.exe",
+        "mini_installer.exe",
+        "alacrium_mini_installer.exe",
+        "alacrium_AVX_mini_installer.exe",
+        "alacrium_AVX2_mini_installer.exe",
+        "alacrium_SSE3_mini_installer.exe",
+        "alacrium_SSE4_mini_installer.exe",
     ]
 
     existing_files = [
@@ -54,7 +59,7 @@ def copy_installer():
 
     for installer_file in installer_files:
         src_path = os.path.normpath(
-            os.path.join(cr_src_dir, "out", "thorium", installer_file)
+            os.path.join(cr_src_dir, "out", "alacrium", installer_file)
         )
         dest_path = os.path.normpath(os.path.join(os.getcwd(), installer_file))
 
@@ -73,23 +78,23 @@ def extract_and_copy_files(installer_name):
     try_run("7z x chrome.7z")
     shutil.move("Chrome-bin", "./temp/BIN")
     shutil.copy("./README.win", "./temp/README.txt")
-    shutil.copy("./THORIUM.BAT", "./temp/")
-    shutil.copy("./THORIUM_SHELL.BAT", "./temp/")
+    shutil.copy("./ALACRIUM.BAT", "./temp/")
+    shutil.copy("./ALACRIUM_SHELL.BAT", "./temp/")
 
 
 def zip_files(installer_name):
-    version = "138.0.7204.306"
+    version = "151.0.7922.71"
 
     if "AVX2" in installer_name:
-        zip_filename = f"Thorium_AVX2_{version}.zip"
+        zip_filename = f"Alacrium_AVX2_{version}.zip"
     elif "AVX" in installer_name:
-        zip_filename = f"Thorium_AVX_{version}.zip"
+        zip_filename = f"Alacrium_AVX_{version}.zip"
     elif "SSE3" in installer_name:
-        zip_filename = f"Thorium_SSE3_{version}.zip"
+        zip_filename = f"Alacrium_SSE3_{version}.zip"
     elif "SSE4" in installer_name:
-        zip_filename = f"Thorium_SSE4_{version}.zip"
+        zip_filename = f"Alacrium_SSE4_{version}.zip"
     else:
-        zip_filename = f"thorium_portable.zip"
+        zip_filename = "Alacrium_Portable.zip"
 
     with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk("./temp"):
@@ -112,7 +117,7 @@ def clean_up():
 
 def main():
     print(
-        "\nNOTE: Place the Thorium .exe in this directory and ensure 7-Zip is in PATH.\n"
+        "\nNOTE: Place the Alacrium .exe in this directory and ensure 7-Zip is in PATH.\n"
     )
 
     installer_name = copy_installer()

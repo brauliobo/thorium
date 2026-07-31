@@ -75,6 +75,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "brush_filled.icon",
     "cast.icon",
     "cast_chrome_refresh_old.icon",
+    "check.icon",
     "check_old.icon",
     "check_small.icon",
     "chevron_right.icon",
@@ -344,9 +345,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_group_sharing_old.icon",
     "tab_groups_sync_old.icon",
     "tab_old.icon",
-    "tab_search.icon",
     "tab_search_tab_strip_old.icon",
-    "tab_search_toolbar_old.icon",
     "tab_usb_connected_old.icon",
     "table_chart.icon",
     "tablet_filled.icon",
@@ -421,21 +420,21 @@ aggregate_vector_icons("chrome_vector_icons") {
     # go/keep-sorted end
   ]
 
-  if (is_thorium_build) {
+  if (is_alacrium_build) {
     sources += [
-      "thorium/browser_tools_thorium.icon",
-      "thorium/browser_tools_chrome_refresh_thorium.icon",
-      "thorium/chrome_labs_thorium.icon",
-      "thorium/chrome_labs_chrome_refresh_thorium.icon",
-      "thorium/navigate_home_thorium.icon",
-      "thorium/navigate_home_chrome_refresh_thorium.icon",
-      "thorium/science_thorium.icon",
-      "thorium/side_panel_left_thorium.icon",
-      "thorium/side_panel_left_chrome_refresh_thorium.icon",
-      "thorium/side_panel_left_touch_thorium.icon",
-      "thorium/side_panel_thorium.icon",
-      "thorium/side_panel_chrome_refresh_thorium.icon",
-      "thorium/side_panel_touch_thorium.icon",
+      "alacrium/browser_tools_alacrium.icon",
+      "alacrium/browser_tools_chrome_refresh_alacrium.icon",
+      "alacrium/chrome_labs_alacrium.icon",
+      "alacrium/chrome_labs_chrome_refresh_alacrium.icon",
+      "alacrium/navigate_home_alacrium.icon",
+      "alacrium/navigate_home_chrome_refresh_alacrium.icon",
+      "alacrium/science_alacrium.icon",
+      "alacrium/side_panel_left_alacrium.icon",
+      "alacrium/side_panel_left_chrome_refresh_alacrium.icon",
+      "alacrium/side_panel_left_touch_alacrium.icon",
+      "alacrium/side_panel_alacrium.icon",
+      "alacrium/side_panel_chrome_refresh_alacrium.icon",
+      "alacrium/side_panel_touch_alacrium.icon",
     ]
   }
 

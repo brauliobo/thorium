@@ -210,7 +210,7 @@ template("content_shell_apk_tmpl") {
 
 content_shell_apk_tmpl("content_shell_apk") {
   target_type = "android_apk"
-  apk_name = "Thorium_Shell"
+  apk_name = "Alacrium_Shell"
   android_manifest = content_shell_manifest
   android_manifest_dep = ":content_shell_manifest"
   shared_libraries = [ ":libcontent_shell_content_view" ]
@@ -220,7 +220,7 @@ content_shell_apk_tmpl("content_shell_apk") {
 
 content_shell_apk_tmpl("content_shell_test_apk") {
   target_type = "instrumentation_test_apk"
-  apk_name = "Thorium_Shell_Test"
+  apk_name = "Alacrium_Shell_Test"
   android_manifest = content_shell_test_manifest
   android_manifest_dep = ":content_shell_test_manifest"
   shared_libraries = [ ":libcontent_native_test" ]

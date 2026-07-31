@@ -65,41 +65,41 @@ index 283ea725c5..86bd75c692 100755
    else:
 -    raise Exception('Unknown build')
 +    config = {
-+        'build': 'thorium',
-+        'app_name': 'Thorium',
++        'build': 'alacrium',
++        'app_name': 'Alacrium',
 +        'doc_url': 'https://chromeenterprise.google/policies/',
-+        'frame_name': 'Thorium Frame',
-+        'os_name': 'ThoriumOS',
-+        'webview_name': 'Thorium WebView',
++        'frame_name': 'Alacrium Frame',
++        'os_name': 'AlacriumOS',
++        'webview_name': 'Alacrium WebView',
 +        'win_config': {
 +            'win': {
-+                'reg_mandatory_key_name': 'Software\\Policies\\Thorium',
++                'reg_mandatory_key_name': 'Software\\Policies\\Alacrium',
 +                'reg_recommended_key_name':
-+                'Software\\Policies\\Thorium\\Recommended',
++                'Software\\Policies\\Alacrium\\Recommended',
 +                'mandatory_category_path': ['chromium'],
 +                'recommended_category_path': ['chromium_recommended'],
 +                'category_path_strings': {
-+                    'chromium': 'Thorium',
-+                    'chromium_recommended': 'Thorium - {doc_recommended}',
++                    'chromium': 'Alacrium',
++                    'chromium_recommended': 'Alacrium - {doc_recommended}',
 +                },
-+                'namespace': 'Chromium.Policies.Thorium',
++                'namespace': 'Chromium.Policies.Alacrium',
 +            },
 +            'chrome_os': {
-+                'reg_mandatory_key_name': 'Software\\Policies\\ThoriumOS',
++                'reg_mandatory_key_name': 'Software\\Policies\\AlacriumOS',
 +                'reg_recommended_key_name':
-+                'Software\\Policies\\ThoriumOS\\Recommended',
++                'Software\\Policies\\AlacriumOS\\Recommended',
 +                'mandatory_category_path': ['chromium_os'],
 +                'recommended_category_path': ['chromium_os_recommended'],
 +                'category_path_strings': {
-+                    'chromium_os': 'ThoriumOS',
-+                    'chromium_os_recommended': 'ThoriumOS - {doc_recommended}',
++                    'chromium_os': 'AlacriumOS',
++                    'chromium_os_recommended': 'AlacriumOS - {doc_recommended}',
 +                },
-+                'namespace': 'Chromium.Policies.ThoriumOS'
++                'namespace': 'Chromium.Policies.AlacriumOS'
 +            },
 +        },
-+        'admx_prefix': 'thorium',
-+        'linux_policy_path': '/etc/thorium/policies/',
-+        'bundle_id': 'org.chromium.Thorium',
++        'admx_prefix': 'alacrium',
++        'linux_policy_path': '/etc/alacrium/policies/',
++        'bundle_id': 'io.github.brauliobo.alacrium',
 +    }
    if 'version' in defines:
      config['version'] = defines['version']

@@ -1,1 +1,0 @@
-gclient sync --with_branch_heads --with_tags -f -R -D

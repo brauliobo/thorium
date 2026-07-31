@@ -6,41 +6,41 @@
 # chromium-browser packages for various platforms.
 
 # Base name of the package.
-PACKAGE="thorium-browser"
+PACKAGE="alacrium-browser"
 
 # Filename of the main executable (for generating launcher scripts, etc.)
-PROGNAME=thorium
+PROGNAME=alacrium
 
 # Filename of the sandbox executable.
 SANDNAME=chrome
 
 # Base directory for package installation.
-INSTALLDIR=/opt/chromium.org/thorium
+INSTALLDIR=/opt/alacrium-browser
 
 # Directory for device policy enrollments.
 ENROLLMENTDIR=/etc/chromium/policies/enrollment
 
 # Display string for desktop menu/icon.
-MENUNAME="Thorium Browser"
+MENUNAME="Alacrium Browser"
 
 # Brief package description.
-SHORTDESC="The web browser from Alex313031"
+SHORTDESC="A performance-focused Chromium browser that tracks stable releases"
 
 # Detailed package description.
-FULLDESC="Thorium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
+FULLDESC="Alacrium is a Chromium browser derived from Thorium and maintained close to stable Chromium releases."
 
 # Package maintainer information.
 
-MAINTNAME="Thorium Linux Maintainers"
-MAINTMAIL="alex313031@gmail.com"
-PRODUCTURL="https://thorium.rocks/"
+MAINTNAME="Alacrium Linux Maintainers"
+MAINTMAIL="brauliobo@gmail.com"
+PRODUCTURL="https://github.com/brauliobo/alacrium"
 
 PROJECT_LICENSE="BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)"
 
-DEVELOPER_NAME="The Chromium Authors and Alex313031"
+DEVELOPER_NAME="The Chromium Authors, Alex313031, and the Alacrium Authors"
 
-BUGTRACKERURL="https://github.com/Alex313031/thorium/issues"
+BUGTRACKERURL="https://github.com/brauliobo/alacrium/issues"
 
 HELPURL="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md"
 
-RDN="org.chromium.Thorium"
+RDN="io.github.brauliobo.alacrium"

@@ -1,18 +1,18 @@
 # AGENTS.md
 
-Essential instructions for coding agents working on this Thorium repo.
+Essential instructions for coding agents working on this Alacrium repo.
 
 ## Repo Model
 
-This is not a full Chromium checkout. It is a Thorium overlay and patch set
-applied onto Chromium at `$CR_SRC_DIR` (`$HOME/chromium/src` by default).
+This is not a full Chromium checkout. It is an Alacrium overlay and patch set
+applied onto Chromium at the repository-local `chromium/src` checkout.
 Chromium is expected to be a git/gclient checkout from
 `https://chromium.googlesource.com/chromium/src.git`, not a release tarball.
 
 - `src/<path>` overlays `$CR_SRC_DIR/<path>`.
 - `other/*.patch` contains replayable Chromium/V8/FFmpeg patches.
 - `infra/*` contains tooling, packaging helpers, and generated-input helpers.
-- Chromium version is pinned by `THOR_VER` in `version.sh` and `CR_VER` in
+- Chromium version is pinned by `ALACRIUM_VER` in `version.sh` and `CR_VER` in
   `upstream_version.sh`.
 
 ## Canonical Workflow
@@ -24,8 +24,6 @@ Chromium is expected to be a git/gclient checkout from
 ./build.sh <jobs>
 ```
 
-Use `CR_DIR=/path/to/chromium/src` to override the Chromium checkout.
-
 For local incremental Linux rebuilds, prefer:
 
 ```bash
@@ -33,7 +31,7 @@ For local incremental Linux rebuilds, prefer:
 ./build_incremental.sh 6 --packages
 ```
 
-It keeps `out/thorium`, uses `nice`/`ionice`, disables unnecessary full rebuilds,
+It keeps `out/alacrium`, uses `nice`/`ionice`, disables unnecessary full rebuilds,
 and limits builds to 6 jobs by default.
 
 For a version bump, use:
@@ -47,16 +45,16 @@ upstream diff report, and stops before building.
 
 ## Current Rebase Rules
 
-- Chromium target for this PR is `150.0.7871.114`.
-- Do not restore `thorium-libjxl`; Chromium M147+ has native JPEG XL build
+- Chromium target for this PR is `151.0.7922.71`.
+- Do not restore the old JPEG XL overlay; Chromium M147+ has native JPEG XL build
   integration via `enable_jxl_decoder`.
 - Keep Chrome/Chromium source changes reproducible through `src/`, `other/`,
   or `infra/` tooling. Do not rely on manual edits inside `$CR_SRC_DIR`.
 - `setup.sh` patching must stay idempotent. Per-patch apply/check/skip logic is
   required; do not reintroduce one global sentinel file for all patches.
-- Generated translation additions live under
-  `src/chrome/app/resources/thorium_additions/` and are merged by
-  `infra/merge_thorium_xtb.py`, replacing the old huge translate patch.
+- Generated Alacrium translation additions live under the inherited
+  `src/chrome/app/resources/alacrium_additions/` source path and are merged by
+  `infra/merge_alacrium_xtb.py`, replacing the old huge translate patch.
 - API keys stay outside git in `API_KEYS.txt`; regenerate
   `other/google-api-keys-defaults.patch` with
   `infra/generate_google_api_keys_patch.sh --input API_KEYS.txt --output other/google-api-keys-defaults.patch`
@@ -68,18 +66,18 @@ upstream diff report, and stops before building.
 
 ## AUR Releases
 
-- The canonical AUR repositories are `aur/thorium-browser-updated` and
-  `aur/thorium-browser-updated-bin`. They are independent Git repositories;
+- The canonical AUR repositories are `aur/alacrium-browser` and
+  `aur/alacrium-browser-bin`. They are independent Git repositories;
   do not use `/home/braulio/Projects/aur/`.
-- The source package must pin a Thorium commit that has been pushed to
-  `github.com/brauliobo/thorium`.
+- The source package must pin an Alacrium commit that has been pushed to
+  `github.com/brauliobo/alacrium`.
 - Build the binary package from the version-matched RPM, then upload
-  `thorium-browser-updated-bin-<version>-<pkgrel>-x86_64.pkg.tar.zst` to the
-  GitHub release tag `M<version>-updated` before publishing the binary AUR
+  `alacrium-browser-bin-<version>-<pkgrel>-x86_64.pkg.tar.zst` to the
+  GitHub release tag `M<version>` before publishing the binary AUR
   package.
 - Update `PKGBUILD` and regenerate `.SRCINFO` with `makepkg --printsrcinfo >
   .SRCINFO` in each AUR repository. Stage only those files; do not stage build
-  archives, `src/`, `pkg/`, `thorium/`, or `depot_tools/` caches.
+  archives, `src/`, `pkg/`, `alacrium/`, or `depot_tools/` caches.
 - Verify the binary package SHA-256 and release asset URL before committing or
   pushing the binary AUR package.
 
@@ -91,8 +89,8 @@ upstream diff report, and stops before building.
   out of git.
 - Prefer deleting obsolete overlays/patches when upstream already carries the
   behavior.
-- Keep `args.gn` host-neutral where possible. If staging it locally, rewrite the
-  `/home/alex/chromium/src` PGO path for the local checkout.
+- Keep `args.gn` host-neutral and resolve checkout-relative paths from
+  `chromium/src`.
 
 ## Validation
 
@@ -108,8 +106,8 @@ find "$CR_SRC_DIR" -name '*.rej' -print
 
 Smoke checks:
 
-- `thorium-browser --version` reports the pinned Thorium version.
+- `alacrium-browser --version` reports the pinned Alacrium version.
 - `navigator.globalPrivacyControl` is `true`.
-- Chrome sync is available when Thorium API keys are present.
+- Chrome sync is available when Alacrium API keys are present.
 - Installed package permissions are standard, especially `chrome-sandbox`
   owned by root with mode `4755`.

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Version=1.0
-Name=Thorium Browser
+Name=Alacrium Browser
 # Only KDE 4 seems to use GenericName, so we reuse the KDE strings.
 # From Ubuntu's language-pack-kde-XX-base packages, version 9.04-20090413.
 GenericName=Web Browser
@@ -106,7 +106,7 @@ Comment[zh_CN]=访问互联网
 Comment[zh_HK]=連線到網際網路
 Comment[zh_TW]=連線到網際網路
 Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ %U
-StartupWMClass=thorium
+StartupWMClass=alacrium
 Keywords=browser
 StartupNotify=true
 Terminal=false
@@ -262,8 +262,8 @@ Name[zh_TW]=以暫時性個人身分開啟新視窗
 Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --temp-profile %U
 
 [Desktop Action content-shell]
-Name=Open Thorium Shell
-Exec=/usr/bin/thorium-shell %U
+Name=Open Alacrium Shell
+Exec=/usr/bin/alacrium-shell %U
 
 [Desktop Action safe-mode]
 Name=Open in Safe Mode

@@ -6,12 +6,12 @@
 #
 # Chrome Application dir entries, sorted alphabetically.
 #
-thorium.exe: %(ChromeDir)s\
+alacrium.exe: %(ChromeDir)s\
 chrome_proxy.exe: %(ChromeDir)s\
-# initial_preferences file, to show Thorium welcome page on first start
+# Alacrium initial preferences
 initial_preferences: %(ChromeDir)s\
-# thor_ver for Thorium-WinUpdater
-thor_ver: %(ChromeDir)s\
+# Version marker used by the inherited Windows updater
+alacrium_ver: %(ChromeDir)s\
 #
 # Chrome version dir assembly manifest.
 # The name of this file must match the name of the version dir, so we cannot
@@ -40,8 +40,8 @@ notification_helper.exe: %(VersionDir)s\
 optimization_guide_internal.dll: %(VersionDir)s\
 resources.pak: %(VersionDir)s\
 shell_resources.pak: %(VersionDir)s\
-thorium_shell.exe: %(VersionDir)s\
-thorium_shell.ico: %(VersionDir)s\
+alacrium_shell.exe: %(VersionDir)s\
+alacrium_shell.ico: %(VersionDir)s\
 ui_resources_100_percent.pak: %(VersionDir)s\
 resources\inspector_overlay\*.*: %(VersionDir)s\resources\inspector_overlay\
 vk_swiftshader.dll: %(VersionDir)s\
@@ -49,7 +49,7 @@ vk_swiftshader_icd.json: %(VersionDir)s\
 vulkan-1.dll: %(VersionDir)s\
 v8_context_snapshot.bin: %(VersionDir)s\
 #
-# Add pak to Thorium.
+# Add pak to Alacrium.
 #
 pack.bat: %(VersionDir)s\
 unpack.bat: %(VersionDir)s\
@@ -111,10 +111,10 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
 
 [HIDPI]
 chrome_200_percent.pak: %(VersionDir)s\
-thorium.ico: %(VersionDir)s\
-thorium.svg: %(VersionDir)s\
+alacrium.ico: %(VersionDir)s\
+alacrium.svg: %(VersionDir)s\
 
-# Add component ffmpeg to Thorium.
+# Add component ffmpeg to Alacrium.
 [FFMPEG]
 ffmpeg.dll: %(VersionDir)s\
 

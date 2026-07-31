@@ -1,4 +1,4 @@
-# Tips for debugging Thorium on Linux
+# Tips for debugging Alacrium on Linux
 
 This page is for Chromium-specific debugging tips; learning how to run gdb is
 out of scope.
@@ -15,21 +15,21 @@ needed. Talk to security@chromium.org.
 ## GDB
 
 *** promo
-GDB-7.7 is required in order to debug Thorium on Linux.
+GDB-7.7 is required in order to debug Alacrium on Linux.
 ***
 
 Any prior version will fail to resolve symbols or segfault.
 
 ### Basic browser process debugging
 
-    gdb -tui -ex=r --args out/thorium/thorium --disable-seccomp-sandbox \
+    gdb -tui -ex=r --args out/alacrium/alacrium --disable-seccomp-sandbox \
         http://google.com
 
 ### Allowing attaching to foreign processes
 
 On distributions that use the
 [Yama LSM](https://www.kernel.org/doc/Documentation/security/Yama.txt) (that
-includes Ubuntu and ChromiumOS/ThoriumOS), process A can attach to process B only if A is
+includes Ubuntu and ChromiumOS/AlacriumOS), process A can attach to process B only if A is
 an ancestor of B.
 
 You will probably want to disable this feature by using
@@ -44,11 +44,11 @@ Note that you'll also probably want to use `--no-sandbox`, as explained below.
 
 #### Getting renderer subprocesses into gdb
 
-Since Thorium itself spawns the renderers, it can be tricky to grab a
+Since Alacrium itself spawns the renderers, it can be tricky to grab a
 particular with gdb. This command does the trick:
 
 ```
-thorium --no-sandbox --renderer-cmd-prefix='xterm -title renderer -e gdb --args'
+alacrium --no-sandbox --renderer-cmd-prefix='xterm -title renderer -e gdb --args'
 ```
 
 The `--no-sandbox` flag is needed because otherwise the seccomp sandbox will
@@ -59,12 +59,12 @@ if you're also running the main process in gdb, won't work at all (the two
 instances will fight over the terminal). To auto-start the renderers in the
 debugger, send the "run" command to the debugger:
 
-    thorium --no-sandbox --renderer-cmd-prefix='xterm -title renderer -e gdb \
+    alacrium --no-sandbox --renderer-cmd-prefix='xterm -title renderer -e gdb \
         -ex run --args'
 
 If you're using Emacs and `M-x gdb`, you can do
 
-    thorium "--renderer-cmd-prefix=gdb --args"
+    alacrium "--renderer-cmd-prefix=gdb --args"
 
 *** note
 Note: using the `--renderer-cmd-prefix` option bypasses the zygote launcher, so
@@ -111,7 +111,7 @@ accomplish this by putting breakpoints in separate files and instructing gdb to
 load them.
 
 ```
-gdb -x ~/debug/browser --args thorium --no-sandbox --disable-hang-monitor \
+gdb -x ~/debug/browser --args alacrium --no-sandbox --disable-hang-monitor \
     --renderer-cmd-prefix='xterm -title renderer -e gdb -x ~/debug/renderer \
     --args '
 ```
@@ -122,28 +122,28 @@ path to the script and avoid `$HOME` or `~/.`
 
 #### Connecting to a running renderer
 
-Usually `ps aux | grep thorium` will not give very helpful output. Try
-`pstree -p | grep thorium` to get something like
+Usually `ps aux | grep alacrium` will not give very helpful output. Try
+`pstree -p | grep alacrium` to get something like
 
 ```
-        |                      |-bash(21969)---thorium(672)-+-thorium(694)
-        |                      |                           |-thorium(695)---thorium(696)-+-{thorium}(697)
-        |                      |                           |                           \-{thorium}(709)
-        |                      |                           |-{thorium}(675)
-        |                      |                           |-{thorium}(678)
-        |                      |                           |-{thorium}(679)
-        |                      |                           |-{thorium}(680)
-        |                      |                           |-{thorium}(681)
-        |                      |                           |-{thorium}(682)
-        |                      |                           |-{thorium}(684)
-        |                      |                           |-{thorium}(685)
-        |                      |                           |-{thorium}(705)
-        |                      |                           \-{thorium}(717)
+        |                      |-bash(21969)---alacrium(672)-+-alacrium(694)
+        |                      |                           |-alacrium(695)---alacrium(696)-+-{alacrium}(697)
+        |                      |                           |                           \-{alacrium}(709)
+        |                      |                           |-{alacrium}(675)
+        |                      |                           |-{alacrium}(678)
+        |                      |                           |-{alacrium}(679)
+        |                      |                           |-{alacrium}(680)
+        |                      |                           |-{alacrium}(681)
+        |                      |                           |-{alacrium}(682)
+        |                      |                           |-{alacrium}(684)
+        |                      |                           |-{alacrium}(685)
+        |                      |                           |-{alacrium}(705)
+        |                      |                           \-{alacrium}(717)
 ```
 
 Most of those are threads. In this case the browser process would be 672 and the
 (sole) renderer process is 696. You can use `gdb -p 696` to attach.
-Alternatively, you might find out the process ID from thorium's built-in Task
+Alternatively, you might find out the process ID from alacrium's built-in Task
 Manager (under the Tools menu). Right-click on the Task Manager, and enable
 "Process ID" in the list of columns.
 
@@ -181,7 +181,7 @@ BROWSER_WRAPPER='xterm -title renderer -e gdb --eval-command=run \
 
 Same strategies as renderers above, but the flag is called `--plugin-launcher`:
 
-    thorium --plugin-launcher='xterm -e gdb --args'
+    alacrium --plugin-launcher='xterm -e gdb --args'
 
 *** note
 Note: For now, this does not currently apply to PPAPI plugins because they
@@ -194,7 +194,7 @@ Depending on whether it's relevant to the problem, it's often easier to just run
 in "single process" mode where the renderer threads are in-process. Then you can
 just run gdb on the main process.
 
-    gdb --args thorium --single-process
+    gdb --args alacrium --single-process
 
 Currently, the `--disable-gpu` flag is also required, as there are known crashes
 that occur under TextureImageTransportSurface without it. The crash described in
@@ -278,7 +278,7 @@ rr replay
 (rr) reverse-fin # run to where this function was called from
 ```
 
-You can debug multi-process thorium using `rr -f [PID]`
+You can debug multi-process alacrium using `rr -f [PID]`
 for processes `fork()`ed from a [zygote process](zygote.md) without exec,
 which includes renderer processes,
 or `rr -p [PID]` for other processes.
@@ -350,7 +350,7 @@ to configure gdb to be able to find debug files.
 
 ## Core files
 
-`ulimit -c unlimited` should cause all Thorium processes (run from that shell) to
+`ulimit -c unlimited` should cause all Alacrium processes (run from that shell) to
 dump cores, with the possible exception of some sandboxed processes.
 
 Some sandboxed subprocesses might not dump cores unless you pass the
@@ -467,14 +467,14 @@ locally now - and often nearly 100% of the time.
 Default log level hides `LOG(INFO)`. Run with `--log-level=0` and
 `--enable-logging=stderr` flags.
 
-Newer versions of Thorium with VLOG may need --v=1 too. For more VLOG tips, see
+Newer versions of Alacrium with VLOG may need --v=1 too. For more VLOG tips, see
 [the chromium-dev thread](https://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/dcd0cd7752b35de6?pli=1).
 
 ### Seeing IPC debug messages
 
 Run with `CHROME_IPC_LOGGING=1` eg.
 
-    CHROME_IPC_LOGGING=1 out/thorium/thorium
+    CHROME_IPC_LOGGING=1 out/alacrium/alacrium
 
 or within gdb:
 
@@ -495,18 +495,18 @@ and [Linux Profiling](profiling.md).
 
 We obey your system locale. Try something like:
 
-    LANG=ja_JP.UTF-8 out/thorium/thorium
+    LANG=ja_JP.UTF-8 out/alacrium/alacrium
 
 If this doesn't work, make sure that the `LANGUAGE`, `LC_ALL` and `LC_MESSAGE`
 environment variables aren't set -- they have higher priority than LANG in the
 order listed. Alternatively, just do this:
 
-    LANGUAGE=fr out/thorium/thorium
+    LANGUAGE=fr out/alacrium/alacrium
 
 Note that because we use GTK, some locale data comes from the system -- for
 example, file save boxes and whether the current language is considered RTL.
-Without all the language data available, Thorium will use a mixture of your
-system language and the language you run Thorium in.
+Without all the language data available, Alacrium will use a mixture of your
+system language and the language you run Alacrium in.
 
 Here's how to install the Arabic (ar) and Hebrew (he) language packs:
 
@@ -524,7 +524,7 @@ See the last section of [Linux Crash Dumping](crash_dumping.md).
 
 ## Drag and Drop
 
-If you break in a debugger during a drag, Thorium will have grabbed your mouse
+If you break in a debugger during a drag, Alacrium will have grabbed your mouse
 and keyboard so you won't be able to interact with the debugger!  To work around
 this, run via `Xephyr`. Instructions for how to use `Xephyr` are on the
 [Running web tests on Linux](../testing/web_tests_linux.md) page.
@@ -568,7 +568,7 @@ https://fedoraproject.org/wiki/TomCallaway/Chromium_Debug
 If you're trying to track down X errors like:
 
 ```
-The program 'thorium' received an X Window System error.
+The program 'alacrium' received an X Window System error.
 This probably reflects a bug in the program.
 The error was 'BadDrawable (invalid Pixmap or Window parameter)'.
 ```
@@ -576,7 +576,7 @@ The error was 'BadDrawable (invalid Pixmap or Window parameter)'.
 Some strategies are:
 
 *   pass `--sync` on the command line to make all X calls synchronous
-*   run thorium via [xtrace](http://xtrace.alioth.debian.org/)
+*   run alacrium via [xtrace](http://xtrace.alioth.debian.org/)
 *   turn on IPC debugging (see above section)
 
 ### Window Managers

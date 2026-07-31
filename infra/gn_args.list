@@ -1,4 +1,4 @@
-## LIST OF POSSIBLE GN ARGUMENTS WITH THORIUM FLAGS INCLUDED
+## LIST OF POSSIBLE GN ARGUMENTS WITH ALACRIUM FLAGS INCLUDED
 
 absl_build_tests
     Current value (from the default) = true
@@ -1035,7 +1035,7 @@ content_shell_major_version
       From //content/shell/BUILD.gn:48
 
 content_shell_product_name
-    Current value (from the default) = "Thorium Shell"
+    Current value (from the default) = "Alacrium Shell"
       From //content/shell/BUILD.gn:46
 
 content_shell_version
@@ -3639,11 +3639,11 @@ is_skylab
 
     Determines if we run the test in skylab, aka the CrOS labs.
 
-is_thorium_build
+is_alacrium_build
     Current value (from the default) = true
       From //third_party/blink/public/public_features.gni:12
 
-    Thorium internal flag
+    Alacrium internal flag
 
 is_tsan
     Current value (from the default) = false
@@ -5196,11 +5196,11 @@ thin_lto_enable_optimizations
     Overridden from the default = true
       From //build/config/compiler/BUILD.gn:129
 
-thorium_debug
+alacrium_debug
     Current value (from the default) = false
       From //base/debug/debug.gni:35
 
-    A special build flag for the Thorium debug builds.
+    A special build flag for the Alacrium debug builds.
    
     This enables stack traces in logs and non-fatalizes DCHECKs.
     Ultimately, it should help users collect necessary data for browser issues
@@ -5371,7 +5371,7 @@ use_avx
       From //build/config/compiler_opt.gni:71
 
     AVX
-    Normal Thorium baseline
+    Normal Alacrium baseline
     Present since Sandy Bridge (2011 2nd Gen. Core i series)
     and AMD Bulldozer (2012 AMD FX).
     Requires Windows 7 SP1 / Linux 2.6.30 or later to use.
@@ -6158,7 +6158,7 @@ use_sse41
 
     SSE4.1
     Normal PrimoBrowser baseline
-    Normal ThoriumOS baseline because Core 2 Duo is the lowest
+    Normal AlacriumOS baseline because Core 2 Duo is the lowest
     hardware that other CrOS subsystems like drivers support.
     Present since Penryn (2007 45nm Core 2 Duo die shrink), and
     AMD Jaguar (2013 Athlon CPUs) and Bulldozer (2012 AMD FX).

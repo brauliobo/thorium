@@ -106,7 +106,7 @@ def main() -> int:
             db.execute("BEGIN EXCLUSIVE")
         except sqlite3.OperationalError as error:
             raise RuntimeError(
-                "database is in use; close Thorium completely before running this tool"
+                "database is in use; close Alacrium completely before running this tool"
             ) from error
 
         check_database(db)
