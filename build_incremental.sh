@@ -82,11 +82,7 @@ if [[ "$BUILD_PACKAGES" == 1 ]]; then
     ln -sf "$(command -v eu-strip)" buildtools/third_party/eu-strip/bin/eu-strip
   fi
 
-  if [[ -f /etc/arch-release ]]; then
-    run_ninja chrome/installer/linux:stable_rpm
-  else
-    run_ninja chrome/installer/linux:stable_deb chrome/installer/linux:stable_rpm
-  fi
+  run_ninja chrome/installer/linux:stable_deb chrome/installer/linux:stable_rpm
 else
   run_ninja alacrium
 fi
