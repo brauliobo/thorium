@@ -37,7 +37,7 @@ if [ -d "$HOME/depot_tools" ]; then
   export PATH="$HOME/depot_tools:$PATH"
 fi
 
-ALACRIUM_VER="151.0.7922.108"
+ALACRIUM_VER="151.0.7922.138"
 
 export ALACRIUM_VER &&
 
