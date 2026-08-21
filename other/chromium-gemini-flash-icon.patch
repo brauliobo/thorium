@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/ui/omnibox/omnibox_context_menu_controller.cc b/chrome/browser/ui/omnibox/omnibox_context_menu_controller.cc
+index ec3e9c9822f00..aed3d5a9a5a8f 100644
+--- a/chrome/browser/ui/omnibox/omnibox_context_menu_controller.cc
++++ b/chrome/browser/ui/omnibox/omnibox_context_menu_controller.cc
+@@ -1234,7 +1234,7 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
+           ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+     case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
+       return ui::ImageModel::FromVectorIcon(
+-          kAcuteIcon, ui::kColorMenuIcon,
++          kBoltIcon, ui::kColorMenuIcon,
+           ui::SimpleMenuModel::kDefaultIconSize);
+     default:
+       return ui::ImageModel();

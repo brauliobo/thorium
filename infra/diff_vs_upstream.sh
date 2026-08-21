@@ -97,6 +97,7 @@ check_patch_group "$CR_SRC_DIR" \
   other/history-sync-redirect-chain-limit.patch \
   other/history-delete-directive-startup-guard.patch \
   other/google-api-keys-defaults.patch \
+  other/chromium-gemini-flash-icon.patch \
   other/fix_disable_aero_crash.patch
 
 {
