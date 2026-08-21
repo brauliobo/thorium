@@ -25,9 +25,8 @@ rm -rf "$OUT" && mkdir -p "$OUT/diffs" "$OUT/patch_status"
 
 echo "Comparing overlay against chromium tag: $TARGET_TAG"
 if ! ( cd "$CR_SRC_DIR" && git rev-parse -q --verify "refs/tags/$TARGET_TAG" >/dev/null ); then
-  ( cd "$CR_SRC_DIR" && git fetch --tags --depth=1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG" 2>/dev/null || true )
+  ( cd "$CR_SRC_DIR" && git fetch --depth=1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG" )
 fi
-( cd "$CR_SRC_DIR" && git checkout -q "tags/$TARGET_TAG" ) || { echo "tag not found locally; pre-fetch $TARGET_TAG" >&2; exit 1; }
 
 list_overlay_files() {
   if command -v rg >/dev/null 2>&1; then
@@ -40,64 +39,65 @@ list_overlay_files() {
 : > "$OUT/inventory.tsv"
 while IFS= read -r rel; do
   sub="${rel#src/}"
-  up="$CR_SRC_DIR/$sub"
-  if [ ! -e "$up" ]; then
+  if ! git -C "$CR_SRC_DIR" cat-file -e "refs/tags/$TARGET_TAG:$sub" 2>/dev/null; then
     status=NEW
-  elif cmp -s "$rel" "$up"; then
+  elif git -C "$CR_SRC_DIR" show "refs/tags/$TARGET_TAG:$sub" | cmp -s "$rel" -; then
     status=SAME
   else
     status=MOD
     mkdir -p "$OUT/diffs/$(dirname "$sub")"
-    diff -u "$up" "$rel" > "$OUT/diffs/$sub.diff" || true
+    diff -u <(git -C "$CR_SRC_DIR" show "refs/tags/$TARGET_TAG:$sub") "$rel" \
+      > "$OUT/diffs/$sub.diff" || true
   fi
   printf '%s\t%s\n' "$status" "$sub" >> "$OUT/inventory.tsv"
 done < <(list_overlay_files | sort)
 
 awk -F'\t' '{n[$1]++} END{for (k in n) print k, n[k]}' "$OUT/inventory.tsv" > "$OUT/summary.counts"
 
-check_patch() {
+check_patch_group() {
   local patch_dir="$1"
-  local patch_file="$2"
-  local name
-  name=$(basename "$patch_file")
-  if ( cd "$patch_dir" && git apply --check --reject --recount "$ALACRIUM_ROOT/$patch_file" ) \
-      2> "$OUT/patch_status/$name.err"; then
-    echo 0 > "$OUT/patch_status/$name.rc"
-  else
-    local rc=$?
-    echo "$rc" > "$OUT/patch_status/$name.rc"
-  fi
+  shift
+
+  local patch_index
+  patch_index=$(mktemp)
+  GIT_INDEX_FILE="$patch_index" git -C "$patch_dir" read-tree HEAD
+
+  local patch_file name rc
+  for patch_file in "$@"; do
+    name=$(basename "$patch_file")
+    if GIT_INDEX_FILE="$patch_index" git -C "$patch_dir" apply --cached --recount \
+        "$ALACRIUM_ROOT/$patch_file" 2> "$OUT/patch_status/$name.err"; then
+      echo 0 > "$OUT/patch_status/$name.rc"
+    else
+      rc=$?
+      echo "$rc" > "$OUT/patch_status/$name.rc"
+    fi
+  done
+
+  rm -f "$patch_index"
 }
 
-is_special_patch() {
-  case "$1" in
-    other/add-hevc-ffmpeg-decoder-parser.patch|\
-    other/change-libavcodec-header.patch|\
-    other/ffmpeg_hevc_ac3.patch|\
-    other/v8-simd-buildflags.patch)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
-  esac
-}
+# Check the active patches in setup.sh order so later patches see earlier changes.
+check_patch_group "$CR_SRC_DIR/third_party/ffmpeg" \
+  other/add-hevc-ffmpeg-decoder-parser.patch \
+  other/change-libavcodec-header.patch
 
-# Patch applicability against the target tag.
-for p in other/*.patch; do
-  [ -f "$p" ] || continue
-  is_special_patch "$p" && continue
-  check_patch "$CR_SRC_DIR" "$p"
-done
-
-# ffmpeg patches apply inside third_party/ffmpeg.
-for p in other/add-hevc-ffmpeg-decoder-parser.patch other/change-libavcodec-header.patch other/ffmpeg_hevc_ac3.patch; do
-  [ -f "$p" ] || continue
-  check_patch "$CR_SRC_DIR/third_party/ffmpeg" "$p"
-done
-
-# V8 is a nested checkout.
-[ -f other/v8-simd-buildflags.patch ] && check_patch "$CR_SRC_DIR/v8" "other/v8-simd-buildflags.patch"
+check_patch_group "$CR_SRC_DIR" \
+  other/fix-policy-templates.patch \
+  other/ftp-support.patch \
+  other/open_in_same_tab.patch \
+  other/content-shell-branding.patch \
+  other/alacrium_webui.patch \
+  other/keyboard_shortcuts.patch \
+  other/GPC.patch \
+  other/disable-privacy-sandbox.patch \
+  other/enable-vaapi-nvidia-default.patch \
+  other/history-query-dedupe.patch \
+  other/history-redirect-chain-cache.patch \
+  other/history-sync-redirect-chain-limit.patch \
+  other/history-delete-directive-startup-guard.patch \
+  other/google-api-keys-defaults.patch \
+  other/fix_disable_aero_crash.patch
 
 {
   echo "# Upstream diff summary — $TARGET_TAG"

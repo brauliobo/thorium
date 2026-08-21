@@ -37,7 +37,7 @@ if [ -d "$HOME/depot_tools" ]; then
   export PATH="$HOME/depot_tools:$PATH"
 fi
 
-CR_VER="151.0.7922.138"
+CR_VER="151.0.7922.173"
 
 export CR_VER &&
 
@@ -47,12 +47,17 @@ printf "\n"
 printf "${RED}NOTE: ${YEL}Checking out${CYA} tags/$CR_VER ${YEL}in ${CR_SRC_DIR}...${c0}\n"
 printf "\n"
 
-cd ${CR_SRC_DIR} &&
+cd "${CR_SRC_DIR}"
 
-git checkout -f tags/$CR_VER &&
+if ! git rev-parse -q --verify "refs/tags/${CR_VER}" >/dev/null; then
+  git fetch --depth=1 origin \
+    "refs/tags/${CR_VER}:refs/tags/${CR_VER}"
+fi
 
-git clean -ffd &&
-git clean -ffd &&
+git checkout -f "tags/${CR_VER}"
+
+git clean -ffd
+git clean -ffd
 
 printf "${GRE}gclient sync${c0}\n"  &&
 gclient sync --with_branch_heads --with_tags --force --reset --nohooks --delete_unversioned_trees &&

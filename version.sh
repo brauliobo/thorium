@@ -37,7 +37,7 @@ if [ -d "$HOME/depot_tools" ]; then
   export PATH="$HOME/depot_tools:$PATH"
 fi
 
-ALACRIUM_VER="151.0.7922.138"
+ALACRIUM_VER="151.0.7922.173"
 
 export ALACRIUM_VER &&
 
@@ -47,16 +47,21 @@ printf "\n"
 printf "${RED}NOTE: ${YEL}Checking out${CYA} tags/$ALACRIUM_VER ${YEL}in ${CR_SRC_DIR}...${c0}\n"
 printf "\n"
 
-cd ${CR_SRC_DIR} &&
+cd "${CR_SRC_DIR}"
 
-git checkout -f tags/$ALACRIUM_VER &&
+if ! git rev-parse -q --verify "refs/tags/${ALACRIUM_VER}" >/dev/null; then
+  git fetch --depth=1 origin \
+    "refs/tags/${ALACRIUM_VER}:refs/tags/${ALACRIUM_VER}"
+fi
+
+git checkout -f "tags/${ALACRIUM_VER}"
 
 # M147+ ships JPEG XL natively; no separate JPEG XL DEPS overlay is required.
 
-cd ${CR_SRC_DIR} &&
+cd "${CR_SRC_DIR}"
 
-git clean -ffd &&
-git clean -ffd &&
+git clean -ffd
+git clean -ffd
 
 printf "${GRE}gclient sync${c0}\n"  &&
 gclient sync --with_branch_heads --with_tags --force --reset --nohooks --delete_unversioned_trees &&
