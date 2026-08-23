@@ -335,6 +335,17 @@ stage_install_common() {
       "${OUTPUTDIR}/installer/theme/${logo}" \
       "${STAGEDIR}/${INSTALLDIR}/"
   done
+  for logo in ${LOGO_RESOURCES_PNG}; do
+    size="$(echo "${logo}" | sed 's/[^0-9]//g')"
+    install -m 755 -d \
+      "${STAGEDIR}/usr/share/icons/hicolor/${size}x${size}/apps"
+    install -m 644 \
+      "${OUTPUTDIR}/installer/theme/${logo}" \
+      "${STAGEDIR}/usr/share/icons/hicolor/${size}x${size}/apps/${PACKAGE}.png"
+  done
+  install -m 755 -d "${STAGEDIR}/usr/share/icons/hicolor/scalable/apps"
+  install -m 644 "${OUTPUTDIR}/alacrium.svg" \
+    "${STAGEDIR}/usr/share/icons/hicolor/scalable/apps/${PACKAGE}.svg"
 
   # desktop integration
   install -m 755 "${OUTPUTDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"

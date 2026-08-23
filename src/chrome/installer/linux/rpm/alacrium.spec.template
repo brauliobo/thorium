@@ -108,6 +108,8 @@ rm -rf "$RPM_BUILD_ROOT"
 /usr/share/applications/@@RDN_DESKTOP@@.desktop
 /usr/share/applications/alacrium-shell.desktop
 /usr/share/gnome-control-center/default-apps/@@PACKAGE@@.xml
+/usr/share/icons/hicolor/*/apps/@@PACKAGE@@.png
+/usr/share/icons/hicolor/scalable/apps/@@PACKAGE@@.svg
 /usr/share/icons/hicolor/256x256/apps/alacrium-shell.png
 %docdir /usr/share/man/man1
 # These two files will be the same on non-stable channels.
