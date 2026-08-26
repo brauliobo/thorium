@@ -1,8 +1,0 @@
-import("//third_party/blink/renderer/modules/modules.gni")
-
-blink_modules_sources("global_privacy_control") {
-  sources = [
-    "global_privacy_control.cc",
-    "global_privacy_control.h",
-  ]
-}

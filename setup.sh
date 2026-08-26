@@ -127,7 +127,6 @@ patchAlacrium () {
 	printf "\n" &&
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
 	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${ALACRIUM_ROOT}/other/add-hevc-ffmpeg-decoder-parser.patch" "HEVC ffmpeg parser patch" &&
-	apply_patch_once "${CR_SRC_DIR}/third_party/ffmpeg" "${ALACRIUM_ROOT}/other/change-libavcodec-header.patch" "libavcodec header patch for HEVC" &&
 	prepare_ffmpeg_hevc_autorename_sources &&
 
 	printf "\n" &&
@@ -157,7 +156,6 @@ patchAlacrium () {
 	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-sync-redirect-chain-limit.patch" "History sync redirect chain limit patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/history-delete-directive-startup-guard.patch" "History delete directive startup guard patch" &&
 	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/google-api-keys-defaults.patch" "Google API key defaults patch" &&
-	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/chromium-gemini-flash-icon.patch" "Chromium Gemini Flash icon patch" &&
 	# Kept because it is related to Alacrium custom flags (not upstreamable).
 	apply_patch_once "${CR_SRC_DIR}" "${ALACRIUM_ROOT}/other/fix_disable_aero_crash.patch" "Disable aero crash fix"
 }

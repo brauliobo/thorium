@@ -1,34 +1,7 @@
-diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index 8b130bc3a328f..451efd376f1d8 100644
---- a/components/browsing_data/content/browsing_data_model.cc
-+++ b/components/browsing_data/content/browsing_data_model.cc
-@@ -991,16 +991,12 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
- 
- void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
-   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
--  bool is_shared_storage_enabled =
--      base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
-+  bool is_shared_storage_enabled = false;
-   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
-       network::features::kCompressionDictionaryTransport);
--  bool is_interest_group_enabled =
--      base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
--  bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(
--      attribution_reporting::features::kConversionMeasurement);
--  bool is_private_aggregation_enabled =
--      base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
-+  bool is_interest_group_enabled = false;
-+  bool is_attribution_reporting_enabled = false;
-+  bool is_private_aggregation_enabled = false;
- 
-   base::RepeatingClosure completion =
-       base::BindRepeating([](const base::OnceClosure&) {},
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index c2a7047d75598..b82ad41ebceec 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
-@@ -8,7 +8,7 @@
- 
+@@ -8,6 +8,6 @@
  namespace privacy_sandbox {
  
 -BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -36,8 +9,7 @@ index c2a7047d75598..b82ad41ebceec 100644
  
  const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
  const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
-@@ -58,7 +58,7 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
- BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
+@@ -60,6 +60,6 @@ BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
  
  BASE_FEATURE(kEnforcePrivacySandboxAttestations,
 -             base::FEATURE_ENABLED_BY_DEFAULT);
@@ -45,7 +17,9 @@ index c2a7047d75598..b82ad41ebceec 100644
  
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
               base::FEATURE_DISABLED_BY_DEFAULT);
-@@ -74,8 +74,8 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
+@@ -76,10 +76,10 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
+ #endif  // BUILDFLAG(IS_ANDROID)
+ 
  BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
 -             base::FEATURE_ENABLED_BY_DEFAULT);
 +             base::FEATURE_DISABLED_BY_DEFAULT);
@@ -56,15 +30,13 @@ index c2a7047d75598..b82ad41ebceec 100644
  
  BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
               base::FEATURE_ENABLED_BY_DEFAULT);
-@@ -88,5 +88,5 @@ BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
- BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+@@ -91,4 +91,4 @@ BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
  
  BASE_FEATURE(kPrivacySandboxAdPrivacyUxDeprecation,
 -             base::FEATURE_ENABLED_BY_DEFAULT);
 +             base::FEATURE_DISABLED_BY_DEFAULT);
  }  // namespace privacy_sandbox
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index c58d4cb4a9e53..29149cc0844d9 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -51,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -77,10 +49,9 @@ index c58d4cb4a9e53..29149cc0844d9 100644
  
    registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 90e887eef88c6..135d26550f5ec 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-@@ -129,7 +129,8 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
+@@ -122,7 +122,8 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
  
  // static
  bool PrivacySandboxSettingsImpl::IsAllowed(Status status) {
@@ -90,7 +61,7 @@ index 90e887eef88c6..135d26550f5ec 100644
  }
  
  // static
-@@ -808,7 +809,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
+@@ -697,7 +698,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
@@ -99,7 +70,7 @@ index 90e887eef88c6..135d26550f5ec 100644
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxCurrentlyUnrestricted() const {
-@@ -873,15 +874,12 @@ PrivacySandboxSettingsImpl::GetSiteAccessAllowedStatus(
+@@ -762,15 +763,12 @@ PrivacySandboxSettingsImpl::GetSiteAccessAllowedStatus(
  PrivacySandboxSettingsImpl::Status
  PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
      bool should_ignore_restriction /*=false*/) const {
@@ -117,150 +88,3 @@ index 90e887eef88c6..135d26550f5ec 100644
  }
  
  PrivacySandboxSettingsImpl::Status
-diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 12f09023269e2..3caa1997aa6ad 100644
---- a/content/browser/attribution_reporting/attribution_suitable_context.cc
-+++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
-@@ -59,67 +59,8 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
- // static
- std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
-     RenderFrameHostImpl* initiator_frame) {
--  if (!initiator_frame) {
--    return std::nullopt;
--  }
--
--  if (!base::FeatureList::IsEnabled(
--          attribution_reporting::features::kConversionMeasurement)) {
--    return std::nullopt;
--  }
--
--  if (!initiator_frame->IsFeatureEnabled(
--          network::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
--    return std::nullopt;
--  }
--  RenderFrameHostImpl* initiator_root_frame =
--      initiator_frame->GetOutermostMainFrame();
--  CHECK(initiator_root_frame);
--
--  // We need a suitable origin here because we need to be able to eventually
--  // store it as either the source or destination origin. Using
--  // `is_web_secure_context` only would allow opaque origins to pass through,
--  // but they cannot be handled by the storage layer.
--  std::optional<attribution_reporting::SuitableOrigin>
--      initiator_root_frame_origin = SuitableOrigin::Create(
--          initiator_root_frame->GetLastCommittedOrigin());
--  if (!initiator_root_frame_origin.has_value()) {
--    return std::nullopt;
--  }
--  // If the `initiator_frame` is a subframe, it's origin's security isn't
--  // covered by the SuitableOrigin check above, we therefore validate that it's
--  // origin is secure using `is_web_secure_context`.
--  if (initiator_frame != initiator_root_frame &&
--      !initiator_frame->policy_container_host()
--           ->policies()
--           .is_web_secure_context) {
--    return std::nullopt;
--  }
--
--  auto* web_contents = WebContents::FromRenderFrameHost(initiator_frame);
--  if (!web_contents) {
--    return std::nullopt;
--  }
--  auto* manager = AttributionManager::FromWebContents(web_contents);
--  CHECK(manager);
--
--  auto* attribution_host = AttributionHost::FromWebContents(web_contents);
--  CHECK(attribution_host);
--
--  AttributionDataHostManager* data_host_manager = manager->GetDataHostManager();
--  CHECK(data_host_manager);
--
--  return AttributionSuitableContext(
--      /*context_origin=*/std::move(initiator_root_frame_origin.value()),
--      initiator_frame->IsNestedWithinFencedFrame(),
--      initiator_root_frame->GetGlobalId(), initiator_frame->navigation_id(),
--      attribution_host->GetMostRecentNavigationInputEvent(),
--      AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
--          web_contents),
--      UkmSourceIdAllowed(initiator_root_frame)
--          ? attribution_host->GetPageUkmSourceId()
--          : ukm::kInvalidSourceId,
--      data_host_manager->AsWeakPtr());
-+  (void)initiator_frame;
-+  return std::nullopt;
- }
- 
- // static
-diff --git a/content/browser/interest_group/ad_auction_service_impl.cc b/content/browser/interest_group/ad_auction_service_impl.cc
-index 0f75f7628248f..a2d5ececb61ce 100644
---- a/content/browser/interest_group/ad_auction_service_impl.cc
-+++ b/content/browser/interest_group/ad_auction_service_impl.cc
-@@ -190,6 +190,8 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
- void AdAuctionServiceImpl::CreateMojoService(
-     RenderFrameHost* render_frame_host,
-     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver) {
-+  return;
-+
-   CHECK(render_frame_host);
- 
-   // The object is bound to the lifetime of `render_frame_host` and the mojo
-diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index 2a49d3a2e90b9..3314c89b9de1e 100644
---- a/content/browser/storage_partition_impl.cc
-+++ b/content/browser/storage_partition_impl.cc
-@@ -1468,31 +1468,7 @@ void StoragePartitionImpl::Initialize(
- 
-   bucket_manager_ = std::make_unique<BucketManager>(this);
- 
--  if (base::FeatureList::IsEnabled(
--          attribution_reporting::features::kConversionMeasurement)) {
--    // The Conversion Measurement API is not available in Incognito mode, but
--    // this is enforced by the `AttributionManagerImpl` itself for better error
--    // reporting and metrics.
--    attribution_manager_ = std::make_unique<AttributionManagerImpl>(
--        this, path, special_storage_policy_);
--  }
--
--  if (base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
--    // Auction worklets on non-Android use dedicated processes; on Android due
--    // to high cost of process launch they try to reuse renderers.
--    interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
--        path, is_in_memory(),
--#if BUILDFLAG(IS_ANDROID)
--        InterestGroupManagerImpl::ProcessMode::kInRenderer,
--#else
--        InterestGroupManagerImpl::ProcessMode::kDedicated,
--#endif
--        GetURLLoaderFactoryForBrowserProcess(),
--        base::BindRepeating(&BrowserContext::GetKAnonymityServiceDelegate,
--                            // This use of Unretained is safe since the browser
--                            // context owns this storage partition.
--                            base::Unretained(browser_context_)));
--  }
-+  // Alacrium disables Attribution Reporting and Protected Audience storage.
- 
-   // The Topics API is not available in Incognito mode.
-   if (!is_in_memory() &&
-@@ -1560,21 +1536,7 @@ void StoragePartitionImpl::Initialize(
-   }
- #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
- 
--  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
--    base::FilePath shared_storage_path =
--        is_in_memory() ? base::FilePath()
--                       : path.Append(storage::kSharedStoragePath);
--    shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
--        shared_storage_path, special_storage_policy_);
--    shared_storage_header_observer_ =
--        std::make_unique<SharedStorageHeaderObserver>(this);
--  }
--
--  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
--    private_aggregation_manager_ =
--        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
--                                                        this);
--  }
-+  // Alacrium disables Shared Storage and Private Aggregation storage.
- 
-   if (base::FeatureList::IsEnabled(
-           blink::features::kDeclarativePerformanceObserver)) {

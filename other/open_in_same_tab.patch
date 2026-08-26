@@ -135,9 +135,7 @@ diff --git a/chrome/browser/ui/actions/chrome_action_id.h b/chrome/browser/ui/ac
 index fb93a1bc1e616..cba464deeb599 100644
 --- a/chrome/browser/ui/actions/chrome_action_id.h
 +++ b/chrome/browser/ui/actions/chrome_action_id.h
-@@ -267,6 +267,7 @@
-   E(kActionExtensionsContextCustomLast, IDC_EXTENSIONS_CONTEXT_CUSTOM_LAST) \
-   /* Context menu items in the render view. */ \
+@@ -222,4 +222,5 @@
    /* Link items. */ \
 +  E(kActionContentContextOpenLinkSameTab, IDC_CONTENT_CONTEXT_OPENLINKSAMETAB) \
    E(kActionContentContextOpenLinkNewTab, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB) \

@@ -1,6 +1,0 @@
-[
-    RuntimeEnabled=GlobalPrivacyControl,
-    ImplementedAs=GlobalPrivacyControl
-] partial interface WorkerNavigator {
-    readonly attribute boolean globalPrivacyControl;
-};

@@ -2460,12 +2460,12 @@ diff --git a/ffmpeg_generated.gni b/ffmpeg_generated.gni
 index 145ceba51b..67ffd65aad 100644
 --- a/ffmpeg_generated.gni
 +++ b/ffmpeg_generated.gni
-@@ -298,6 +298,26 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
+@@ -322,7 +322,23 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
      (is_apple && ffmpeg_branding == "Chrome") ||
      (is_win && ffmpeg_branding == "Chrome") ||
      (use_linux_config && ffmpeg_branding == "Chrome")) {
-+  ffmpeg_c_sources += [
-+    "libavcodec/aom_film_grain.c",
+   ffmpeg_c_sources += [
+     "libavcodec/aom_film_grain.c",
 +    "libavcodec/bswapdsp.c",
 +    "libavcodec/dovi_rpu.c",
 +    "libavcodec/dovi_rpudec.c",
@@ -2482,12 +2482,9 @@ index 145ceba51b..67ffd65aad 100644
 +    "libavcodec/hevc/ps.c",
 +    "libavcodec/hevc/refs.c",
 +    "libavcodec/hevc/sei.c",
-+  ]
-+
-   ffmpeg_c_sources += [
      "libavcodec/atsc_a53.c",
      "libavcodec/autorename_libavcodec_videodsp.c",
-@@ -332,6 +352,24 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
+@@ -345,7 +361,25 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
  if ((current_cpu == "x64" && ffmpeg_branding == "Chrome") ||
      (is_win && current_cpu == "x86" && ffmpeg_branding == "Chrome") ||
      (use_linux_config && current_cpu == "x86" && ffmpeg_branding == "Chrome")) {
@@ -2511,6 +2508,7 @@ index 145ceba51b..67ffd65aad 100644
 +
    ffmpeg_c_sources += [
      "libavcodec/x86/autorename_libavcodec_x86_aacpsdsp_init.c",
+     "libavcodec/x86/autorename_libavcodec_x86_h264_intrapred_init.c",
      "libavcodec/x86/autorename_libavcodec_x86_h264dsp_init.c",
 @@ -452,6 +490,18 @@ if (use_linux_config && current_cpu == "riscv64" &&
  
