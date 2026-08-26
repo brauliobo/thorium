@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/platform/loader/ftp_directory_listing.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -97,12 +100,12 @@ scoped_refptr<SharedBuffer> GenerateFtpDirectoryListingHtml(
 
     bool is_directory =
         (entry.type == net::FtpDirectoryListingEntry::DIRECTORY);
-    base::ByteCount size =
-        entry.type == net::FtpDirectoryListingEntry::FILE
-            ? base::ByteCount(entry.size)
-            : base::ByteCount(0);
     std::string entry_string = net::GetDirectoryListingEntry(
-        entry.name, entry.raw_name, is_directory, size, entry.last_modified);
+        entry.name, entry.raw_name, is_directory,
+        entry.type == net::FtpDirectoryListingEntry::FILE
+            ? std::make_optional<base::ByteSize>(base::as_unsigned(entry.size))
+            : std::nullopt,
+        entry.last_modified);
     output->Append(
         base::span<const char>(entry_string.data(), entry_string.size()));
   }
