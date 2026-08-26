@@ -190,6 +190,7 @@ declare_args() {
   # the codebase which have been made manifestly safe.
   clang_unsafe_buffers_paths = ""
   clang_warning_suppression_file = ""
+  rust_clippy_conf_file = ""
 }
 
 declare_args() {

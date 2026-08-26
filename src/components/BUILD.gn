@@ -186,7 +186,9 @@ test("components_unittests") {
 
   deps = [
     "//base",
-    "//components/accessibility_annotator/core:unit_tests",
+    "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
+    "//components/accessibility_annotator/core/content_annotator:unit_tests",
+    "//components/accessibility_annotator/core/storage:unit_tests",
     "//components/account_settings:unit_tests",
     "//components/activity_reporter:unit_tests",
     "//components/actor/core:unit_tests",
@@ -195,7 +197,6 @@ test("components_unittests") {
     "//components/apdu:unit_tests",
     "//components/application_locale_storage:unit_tests",
     "//components/assist_ranker:unit_tests",
-    "//components/attribution_reporting:unit_tests",
     "//components/autofill/core/browser:unit_tests",
     "//components/autofill/core/browser/integrators/password_manager:unit_tests",
     "//components/autofill/core/common:unit_tests",
@@ -1402,8 +1403,6 @@ if (use_blink) {
 
   test("components_perftests") {
     sources = [
-      "attribution_reporting/aggregatable_utils_perftest.cc",
-      "attribution_reporting/privacy_math_perftest.cc",
       "autofill/core/browser/ml_model/field_classification_model_executor_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
@@ -1414,7 +1413,6 @@ if (use_blink) {
 
     deps = [
       "//base",
-      "//components/attribution_reporting",
       "//components/autofill/content/browser",
       "//components/autofill/core/common:test_support",
       "//components/bookmarks/test",
